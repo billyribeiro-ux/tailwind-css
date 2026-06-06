@@ -1,0 +1,93 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Borders, Radius & Shadows
+
+These are the "finishing" utilities — the difference between a flat rectangle and something that
+feels like a real surface you could touch.
+
+## Borders
+
+Set width with `border` (1px) or `border-2/4/8`, a side with `border-t` etc., colour with
+`border-*`, and style with `border-dashed` / `border-dotted`.
+
+<CodeBlock
+	playground
+	filename="borders"
+	code={`<div class="space-y-3">
+  <div class="border border-slate-300 p-3">1px all around</div>
+  <div class="border-l-4 border-indigo-500 bg-indigo-50 p-3">Left accent border</div>
+  <div class="border-2 border-dashed border-slate-300 p-3">Dashed</div>
+</div>`}
+/>
+
+## Border radius
+
+`rounded` rounds all corners; add a side (`rounded-t`, `rounded-l`) or a corner (`rounded-tl`).
+Sizes go `rounded-sm` → `rounded-3xl` → `rounded-full`.
+
+<CodeBlock
+	playground
+	filename="radius"
+	code={`<div class="flex items-center gap-3">
+  <div class="h-16 w-16 rounded bg-indigo-400"></div>
+  <div class="h-16 w-16 rounded-xl bg-indigo-400"></div>
+  <div class="h-16 w-16 rounded-3xl bg-indigo-400"></div>
+  <div class="h-16 w-16 rounded-full bg-indigo-400"></div>
+</div>`}
+/>
+
+## Shadows and rings
+
+`shadow-*` creates elevation; `ring-*` adds an outlined halo (great for focus and avatars). Shadows
+should imply hierarchy: bigger shadow = "closer" to the user.
+
+<CodeBlock
+	playground
+	filename="elevation"
+	code={`<div class="flex gap-4 p-4">
+  <div class="rounded-xl bg-white p-6 shadow-sm">shadow-sm</div>
+  <div class="rounded-xl bg-white p-6 shadow-md">shadow-md</div>
+  <div class="rounded-xl bg-white p-6 shadow-xl">shadow-xl</div>
+  <div class="rounded-xl bg-white p-6 ring-2 ring-indigo-400">ring-2</div>
+</div>`}
+/>
+
+<Callout type="insight" title="Elevation is a language — speak it consistently">
+
+Shadows aren't decoration; they encode a *z-axis hierarchy*. Resting cards sit low (`shadow-sm`),
+dropdowns and popovers float higher (`shadow-lg`), modals highest of all. If every element has a
+giant shadow, none of them mean anything. Decide on 2–3 elevation levels for your product and map
+them to UI roles — that's the kind of system thinking that scales across a whole design language.
+
+</Callout>
+
+<Callout type="warning" title="Rings need a base ring colour or width">
+
+`ring-indigo-400` alone shows nothing until there's a ring width (`ring-2`). The pair is what you
+want — and `ring` is the idiomatic choice for focus styles because it doesn't shift layout the way a
+border can.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why prefer `ring` over `border` for focus indicators?"
+	options={[
+		{ text: 'Rings are a brighter colour', correct: false },
+		{ text: 'Rings draw outside the box and do not shift layout', correct: true },
+		{ text: 'Borders cannot be coloured', correct: false },
+		{ text: 'Rings are required for dark mode', correct: false }
+	]}
+	explanation="A ring is drawn as an outline (box-shadow-like) so adding/removing it doesn't reflow the element."
+/>
+
+## Recap
+
+- `border` (+ side/colour/style), `rounded` (+ side/corner/size), `shadow`, `ring`.
+- Use **elevation as a consistent hierarchy** (2–3 levels mapped to roles).
+- Prefer **`ring`** for focus — it doesn't disturb layout.
+
+Next: bring all of Module 2 together in a pricing card.

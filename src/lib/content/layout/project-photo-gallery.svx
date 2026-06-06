@@ -1,0 +1,95 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Project: Photo Gallery
+
+Galleries are the perfect grid exercise: a responsive layout, a featured tile that spans, hover
+overlays using positioning, and `object-cover` to keep images tidy.
+
+<ProjectBrief
+	title="Build a responsive photo gallery"
+	time="35 min"
+	goal="Create an auto-responsive image grid where the first photo spans two columns, images keep their aspect with object-cover, and each tile reveals a caption overlay on hover."
+	requirements={[
+		'A grid that reflows column count by available width',
+		'A featured first tile spanning 2 columns',
+		'Images cropped cleanly with object-cover and a fixed aspect',
+		'A caption overlay positioned over each image on hover'
+	]}
+	stretch={[
+		'Add rounded corners and a subtle zoom on hover',
+		'Make the overlay gradient instead of flat',
+		'Add a small icon button in each tile corner'
+	]}
+/>
+
+## The finished gallery
+
+<CodeBlock
+	playground
+	filename="gallery.html (solution)"
+	code={`<div class="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-3">
+  <figure class="group relative col-span-2 overflow-hidden rounded-xl">
+    <img src="https://picsum.photos/id/1015/600/400" alt="" class="aspect-video w-full object-cover transition duration-300 group-hover:scale-105" />
+    <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm font-medium text-white opacity-0 transition group-hover:opacity-100">
+      Featured · Mountain lake
+    </figcaption>
+  </figure>
+
+  <figure class="group relative overflow-hidden rounded-xl">
+    <img src="https://picsum.photos/id/1025/300/300" alt="" class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
+    <figcaption class="absolute inset-x-0 bottom-0 bg-black/60 p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">A good boy</figcaption>
+  </figure>
+
+  <figure class="group relative overflow-hidden rounded-xl">
+    <img src="https://picsum.photos/id/1043/300/300" alt="" class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
+    <figcaption class="absolute inset-x-0 bottom-0 bg-black/60 p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">City lights</figcaption>
+  </figure>
+
+  <figure class="group relative overflow-hidden rounded-xl">
+    <img src="https://picsum.photos/id/1003/300/300" alt="" class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
+    <figcaption class="absolute inset-x-0 bottom-0 bg-black/60 p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">Into the wild</figcaption>
+  </figure>
+</div>`}
+/>
+
+## Techniques in play
+
+- **`grid-cols-[repeat(auto-fit,minmax(10rem,1fr))]`** — the gallery picks its own column count.
+- **`col-span-2`** promotes the first tile to a featured size.
+- **`object-cover` + `aspect-*`** crop every image to a uniform shape, no matter its native ratio —
+  this is what makes galleries look orderly.
+- **`group` + `group-hover:`** (a Module 4 preview) reveals the caption when the *figure* is hovered,
+  not just the caption itself.
+- **`absolute inset-x-0 bottom-0`** pins captions to the bottom edge.
+
+<Callout type="insight" title="`object-cover` is how pros tame user-uploaded images">
+
+In real products, images come in every conceivable size and ratio. The amateur lets them squish or
+overflow; the professional fixes a container aspect ratio and uses `object-cover` so every image
+crops to fill predictably. Combine that with a `auto-fit` grid and you have a gallery that looks
+intentional with *zero* per-image babysitting — exactly the kind of robust default you want when
+content is out of your control.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why pair `aspect-square` with `object-cover` on gallery images?"
+	options={[
+		{ text: 'To make images load faster', correct: false },
+		{ text: 'To force a uniform shape and crop any image to fill it without distortion', correct: true },
+		{ text: 'To convert images to squares on the server', correct: false },
+		{ text: 'It is required for grid to work', correct: false }
+	]}
+	explanation="The aspect utility fixes the box shape; object-cover crops the image to fill it cleanly."
+/>
+
+## Recap & module wrap-up
+
+Module 3 done. You can place anything: flexbox for one axis, grid for two, positioning for overlays
+and sticky elements, and `object-cover` for orderly media.
+
+Next module: **Responsive & State** — make all of this adapt to every screen and react to the user.

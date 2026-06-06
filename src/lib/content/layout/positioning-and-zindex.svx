@@ -1,0 +1,100 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Positioning & Z-Index
+
+Most layout flows naturally, but sometimes you need to pin a badge to a corner, stick a header to
+the top, or stack a modal over everything. That's what positioning is for.
+
+## The position values
+
+- `relative` — stays in flow, becomes a positioning context for absolute children.
+- `absolute` — removed from flow, positioned against the nearest `relative` ancestor.
+- `fixed` — positioned against the viewport; stays put on scroll.
+- `sticky` — flows normally until it hits an offset, then sticks.
+
+## Absolute inside relative
+
+The bread-and-butter pattern: a `relative` parent with an `absolute` child placed by `top/right/...`
+or `inset-*`.
+
+<CodeBlock
+	playground
+	filename="badge"
+	code={`<div class="relative inline-block">
+  <div class="h-24 w-24 rounded-xl bg-indigo-500"></div>
+  <span class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+    3
+  </span>
+</div>`}
+/>
+
+## Inset shorthands
+
+`inset-0` means top/right/bottom/left all 0 — perfect for full-cover overlays.
+
+<CodeBlock
+	playground
+	filename="overlay"
+	code={`<div class="relative h-40 overflow-hidden rounded-xl">
+  <img src="https://picsum.photos/400/200" alt="" class="h-full w-full object-cover" />
+  <div class="absolute inset-0 flex items-center justify-center bg-slate-900/50 text-lg font-bold text-white">
+    Overlay text
+  </div>
+</div>`}
+/>
+
+## Sticky headers
+
+`sticky top-0` keeps an element visible as you scroll past it — used by nearly every app header
+(including this course's).
+
+<CodeBlock
+	language="html"
+	filename="sticky"
+	code={`<header class="sticky top-0 z-40 bg-white/80 backdrop-blur">…</header>`}
+/>
+
+## Z-index
+
+`z-*` controls stacking order among positioned elements. Higher wins.
+
+<Callout type="insight" title="Manage z-index as a scale, not as magic numbers">
+
+`z-index: 9999` is a confession that you've lost control of stacking. Senior teams define a **small,
+named z-scale** — say dropdown `z-10`, sticky header `z-40`, modal `z-50`, toast `z-60` — and never
+deviate. When every overlay's layer is a deliberate, documented choice, you stop playing
+whack-a-mole with components fighting to be on top. Tailwind's `z-0…z-50` defaults nudge you toward
+exactly this discipline.
+
+</Callout>
+
+<Callout type="warning" title="`absolute` needs a positioned ancestor">
+
+An `absolute` element positions against the nearest ancestor that is `relative`/`absolute`/`fixed`.
+Forget the `relative` on the parent and your badge will fly off to the page corner. It's the most
+common positioning bug.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="A notification badge isn't sitting on its button — it jumped to the page corner. Most likely fix?"
+	options={[
+		{ text: 'Add z-50 to the badge', correct: false },
+		{ text: 'Add `relative` to the button (the badge’s parent)', correct: true },
+		{ text: 'Change the badge to `fixed`', correct: false },
+		{ text: 'Remove the gap utility', correct: false }
+	]}
+	explanation="An absolute child anchors to the nearest positioned ancestor; the parent needs `relative`."
+/>
+
+## Recap
+
+- `relative` / `absolute` / `fixed` / `sticky` cover every pinning need.
+- `inset-0` for full overlays; `sticky top-0` for headers.
+- Keep `z-index` a **small, named scale** — never `9999`.
+
+Next: bring layout together in a responsive photo gallery.

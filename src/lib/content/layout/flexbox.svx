@@ -1,0 +1,107 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Flexbox
+
+Flexbox is the tool you'll reach for most: navbars, toolbars, card rows, centering — anything in a
+single row or column. Learn its five core utilities and you've learned 80% of day-to-day layout.
+
+## Turn it on and pick a direction
+
+`flex` starts a flex container. Items lay out in a row by default; `flex-col` makes a column.
+
+<CodeBlock
+	playground
+	filename="row vs column"
+	code={`<div class="flex gap-2">
+  <div class="bg-indigo-200 p-3">A</div>
+  <div class="bg-indigo-200 p-3">B</div>
+  <div class="bg-indigo-200 p-3">C</div>
+</div>
+<div class="mt-4 flex flex-col gap-2">
+  <div class="bg-emerald-200 p-3">A</div>
+  <div class="bg-emerald-200 p-3">B</div>
+</div>`}
+/>
+
+## Alignment: the two axes
+
+- **`justify-*`** aligns along the **main axis** (horizontal in a row).
+- **`items-*`** aligns along the **cross axis** (vertical in a row).
+
+The classic "center anything" is `flex items-center justify-center`.
+
+<CodeBlock
+	playground
+	filename="centering"
+	code={`<div class="flex h-32 items-center justify-center rounded-xl bg-slate-100">
+  <div class="rounded-lg bg-indigo-600 px-4 py-2 text-white">Perfectly centered</div>
+</div>`}
+/>
+
+## The navbar pattern
+
+`justify-between` pushes children to the edges — the foundation of nearly every header.
+
+<CodeBlock
+	playground
+	filename="navbar"
+	code={`<nav class="flex items-center justify-between rounded-xl bg-white p-4 shadow">
+  <span class="font-bold text-slate-900">Logo</span>
+  <div class="flex items-center gap-4 text-sm text-slate-600">
+    <a href="#">Home</a><a href="#">About</a>
+    <button class="rounded-lg bg-indigo-600 px-3 py-1.5 text-white">Sign in</button>
+  </div>
+</nav>`}
+/>
+
+## Grow, shrink, and wrap
+
+`flex-1` lets an item grow to fill space; `flex-wrap` lets items wrap to new lines when they run out
+of room.
+
+<CodeBlock
+	playground
+	filename="grow"
+	code={`<div class="flex gap-2">
+  <div class="bg-amber-200 p-3">fixed</div>
+  <div class="flex-1 bg-amber-300 p-3">flex-1 grows to fill</div>
+  <div class="bg-amber-200 p-3">fixed</div>
+</div>`}
+/>
+
+<Callout type="insight" title="Name the axis before you reach for a class">
+
+The number one flexbox mistake is reaching for `items-center` when you meant `justify-center` (or
+vice-versa). Build the habit: *"Which axis am I aligning on?"* Main axis = direction items flow =
+`justify`. Cross axis = perpendicular = `items`. Internalise that and flexbox stops being trial and
+error. When you mentor juniors, this single mental model fixes most of their layout struggles.
+
+</Callout>
+
+<Callout type="tip" title="`gap` over margins">
+
+Spacing flex children with `gap-*` is cleaner than margins: no trailing-margin cleanup, and it works
+identically in flex and grid.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="In a default flex row, which utility vertically centers the items?"
+	options={[
+		{ text: 'justify-center', correct: false },
+		{ text: 'items-center', correct: true },
+		{ text: 'text-center', correct: false },
+		{ text: 'self-middle', correct: false }
+	]}
+	explanation="In a row, the cross axis is vertical, and items-* controls cross-axis alignment."
+/>
+
+## Recap
+
+- `flex` + `flex-col` set the direction.
+- **`justify-*`** = main axis, **`items-*`** = cross axis. Center = both `center`.
+- `justify-between` builds navbars; `flex-1` grows; `flex-wrap` wraps; `gap-*` spaces.

@@ -1,0 +1,81 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Display & the Box Model
+
+Before flexbox and grid, you need the foundation everything sits on: how elements *display* and how
+the **box model** computes size. Most layout confusion traces back to these two ideas.
+
+## Display modes
+
+`block` takes the full width and stacks; `inline` flows with text and ignores width/height;
+`inline-block` flows but respects sizing; `hidden` removes it; `flex`/`grid` start a layout context.
+
+<CodeBlock
+	playground
+	filename="display"
+	code={`<div class="space-y-3">
+  <span class="block bg-indigo-200 p-2">block — full width, stacks</span>
+  <span class="inline bg-emerald-200 p-2">inline</span>
+  <span class="inline bg-emerald-200 p-2">flows together</span>
+  <div class="inline-block bg-amber-200 p-2">inline-block respects width/height</div>
+</div>`}
+/>
+
+## The box model
+
+Every element is content + padding + border + margin. Tailwind's preflight sets `box-sizing:
+border-box` globally, which means **`width` includes padding and border** — the intuitive behaviour.
+
+<CodeBlock
+	playground
+	filename="border-box"
+	code={`<div class="w-64 border-4 border-indigo-500 bg-indigo-100 p-6">
+  w-64 stays 16rem wide even with p-6 and border-4, thanks to border-box.
+</div>`}
+/>
+
+## Overflow
+
+When content exceeds its box, control it with `overflow-hidden`, `overflow-auto` (scroll if
+needed), or `overflow-scroll`.
+
+<CodeBlock
+	playground
+	filename="overflow"
+	code={`<div class="h-24 w-64 overflow-auto rounded border border-slate-300 p-3 text-sm">
+  This box has a fixed height, so its overflowing content becomes scrollable. Keep typing in your
+  head and imagine more and more lines appearing here until a scrollbar shows up on the right.
+</div>`}
+/>
+
+<Callout type="insight" title="border-box is the quiet hero">
+
+A huge share of "why is my layout 8px too wide?" bugs in legacy CSS came from `content-box`, where
+padding and border *add* to the declared width. Tailwind normalises everyone to `border-box`, so
+`w-64` means 64 — full stop. When you debug layout, remember the model: if a row overflows, suspect
+a child whose `w-full` plus margin exceeds the parent, not a mysterious framework bug.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="With Tailwind's default `border-box`, how wide is `w-64 p-6 border-4`?"
+	options={[
+		{ text: '16rem total — padding and border are included', correct: true },
+		{ text: '16rem plus 3rem of padding plus 8px of border', correct: false },
+		{ text: 'It depends on the parent', correct: false },
+		{ text: 'Zero until content is added', correct: false }
+	]}
+	explanation="border-box folds padding and border into the declared width, so w-64 stays 16rem."
+/>
+
+## Recap
+
+- `block`, `inline`, `inline-block`, `hidden`, plus `flex`/`grid` contexts.
+- Tailwind uses **`border-box`**: `width` includes padding + border.
+- Manage overflow with `overflow-auto` / `hidden` and a constrained size.
+
+Next: flexbox — the workhorse of one-dimensional layout.

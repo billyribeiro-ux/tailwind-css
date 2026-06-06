@@ -1,0 +1,104 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Your First Utilities
+
+The single most valuable Tailwind skill is **reading a class string fluently** — looking at
+`flex items-center gap-4 rounded-lg bg-white p-6 shadow` and *seeing the box it describes*. Let's
+build that skill deliberately.
+
+## The anatomy of a utility
+
+Most utilities follow a simple grammar: **`property-value`** or **`property-side-value`**.
+
+<CodeBlock
+	language="html"
+	filename="reading utilities"
+	code={`text-lg       /* font-size: large            */
+font-bold     /* font-weight: 700            */
+text-blue-600 /* color: a specific blue      */
+p-4           /* padding: 1rem on all sides  */
+px-4          /* padding-left + padding-right */
+mt-2          /* margin-top: 0.5rem          */
+gap-3         /* gap between flex/grid items */`}
+/>
+
+Notice the shorthands: `p` = padding, `m` = margin, `x` = horizontal, `y` = vertical, `t/r/b/l` =
+top/right/bottom/left. Once you know the grammar, you can *guess* class names correctly — that's the
+goal.
+
+## The spacing scale
+
+Numbers like `p-4` aren't pixels — they're steps on a **scale**. `1` = `0.25rem` (4px), `2` =
+`0.5rem` (8px), `4` = `1rem` (16px), and so on. Because everyone draws from the same scale,
+spacing across an app stays harmonious.
+
+<CodeBlock
+	playground
+	filename="spacing scale"
+	code={`<div class="space-y-2">
+  <div class="bg-blue-200 p-1">p-1 = 4px</div>
+  <div class="bg-blue-200 p-2">p-2 = 8px</div>
+  <div class="bg-blue-200 p-4">p-4 = 16px</div>
+  <div class="bg-blue-200 p-8">p-8 = 32px</div>
+</div>`}
+/>
+
+## Composing a real element
+
+Watch how a handful of utilities combine into a finished UI element. Open the playground and try
+changing `rounded-lg` to `rounded-full`, or `shadow` to `shadow-xl`.
+
+<CodeBlock
+	playground
+	filename="a card"
+	code={`<div class="max-w-sm rounded-xl bg-white p-6 shadow-md">
+  <h2 class="text-lg font-semibold text-slate-900">Reading is a superpower</h2>
+  <p class="mt-2 text-sm text-slate-500">
+    You just composed padding, radius, shadow, color and type — entirely in markup.
+  </p>
+  <button class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white">
+    Nice
+  </button>
+</div>`}
+/>
+
+<Callout type="tip" title="Don't memorise — recognise">
+
+You do not need to memorise every class. Install the **Tailwind CSS IntelliSense** extension and
+you'll get autocomplete with a live preview of each value. Your job is to learn the *grammar* so
+autocomplete becomes a conversation, not a guessing game.
+
+</Callout>
+
+<Callout type="insight" title="Constraints are a feature, not a limitation">
+
+Beginners often want `margin-top: 13px`. Tailwind nudges you to `mt-3` (12px) or `mt-4` (16px). That
+friction is intentional. A constrained scale eliminates a whole category of "why is this 1px off"
+bugs and design drift. As a lead, you'll come to value tools that make the *consistent* choice the
+*default* choice — it's how you keep quality high without policing every pull request.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What does `px-6` do?"
+	options={[
+		{ text: 'Sets padding on all four sides to step 6', correct: false },
+		{ text: 'Sets left and right padding to step 6 (1.5rem)', correct: true },
+		{ text: 'Sets the font size to 6 pixels', correct: false },
+		{ text: 'Adds 6px of margin on the x-axis', correct: false }
+	]}
+	explanation="p = padding, x = horizontal (left + right), 6 = a step on the spacing scale (1.5rem)."
+/>
+
+## Recap
+
+- Utilities follow a readable grammar: **property → side → value**.
+- Numbers are **scale steps**, not pixels — that's what keeps spacing consistent.
+- Real UI is just a handful of utilities composed together.
+- Lean on **IntelliSense**; learn the grammar, not the dictionary.
+
+Next: the daily workflow that makes all of this feel effortless.

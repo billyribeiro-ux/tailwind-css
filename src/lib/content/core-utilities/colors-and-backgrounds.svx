@@ -1,0 +1,92 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Colors & Backgrounds
+
+Tailwind ships a beautiful, scientifically-spaced colour palette. Used well, it makes your UI look
+professional with zero design effort.
+
+## The colour scale
+
+Every colour runs from `50` (lightest) to `950` (darkest). The same number means similar lightness
+across hues, which is why mixing colours still looks balanced.
+
+<CodeBlock
+	playground
+	filename="the slate scale"
+	code={`<div class="flex">
+  <div class="h-12 flex-1 bg-slate-100"></div>
+  <div class="h-12 flex-1 bg-slate-300"></div>
+  <div class="h-12 flex-1 bg-slate-500"></div>
+  <div class="h-12 flex-1 bg-slate-700"></div>
+  <div class="h-12 flex-1 bg-slate-900"></div>
+</div>`}
+/>
+
+Apply colour to text (`text-*`), background (`bg-*`), border (`border-*`), ring (`ring-*`), and
+more — all using the same scale.
+
+## Opacity
+
+Add a slash to set opacity: `bg-blue-600/50` is 50% opaque. Great for overlays and subtle tints.
+
+<CodeBlock
+	playground
+	filename="opacity"
+	code={`<div class="space-y-2">
+  <div class="bg-blue-600 p-3 text-white">bg-blue-600</div>
+  <div class="bg-blue-600/50 p-3 text-white">bg-blue-600/50</div>
+  <div class="bg-blue-600/20 p-3 text-blue-900">bg-blue-600/20</div>
+</div>`}
+/>
+
+## Gradients
+
+Compose gradients with a direction (`bg-gradient-to-r`) plus `from-*`, `via-*`, `to-*`.
+
+<CodeBlock
+	playground
+	filename="gradient"
+	code={`<div class="rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-10 text-center text-lg font-bold text-white">
+  Gradient
+</div>`}
+/>
+
+<Callout type="insight" title="Pick a neutral and 1–2 accents, then commit">
+
+The most common amateur mistake is using too many colours. A distinguished UI usually has **one
+neutral ramp** (slate/zinc/gray) carrying 90% of the interface, plus **one brand accent** and maybe
+a semantic set (red for danger, emerald for success). Constraining your palette is what makes an
+interface feel intentional. In Module 6 you'll formalise this as *semantic tokens* — but the
+discipline starts now: resist the rainbow.
+
+</Callout>
+
+<Callout type="warning" title="Contrast is not optional">
+
+`text-slate-400` on `bg-white` may look elegant but can fail accessibility contrast for body text.
+We cover contrast properly in Module 10 — for now, keep body text at `slate-600`+ on light
+backgrounds and verify anything that looks faint.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What does `bg-emerald-500/30` mean?"
+	options={[
+		{ text: 'Emerald background at brightness step 530', correct: false },
+		{ text: 'Emerald 500 background at 30% opacity', correct: true },
+		{ text: '30px of emerald padding', correct: false },
+		{ text: 'A gradient from emerald-500 to 30', correct: false }
+	]}
+	explanation="The /NN suffix sets the alpha (opacity) of any colour utility."
+/>
+
+## Recap
+
+- Colours run **50→950**; equal numbers ≈ equal lightness across hues.
+- Use the same scale for `text`, `bg`, `border`, `ring`.
+- `/NN` sets **opacity**; gradients use `from/via/to` + a direction.
+- Constrain your palette: one neutral, one accent, semantic colours for meaning.

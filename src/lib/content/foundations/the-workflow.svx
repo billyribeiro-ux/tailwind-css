@@ -1,0 +1,99 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# The Tailwind Workflow
+
+Tools don't make you fast — *workflows* do. This short lesson sets up the feedback loop that makes
+Tailwind feel like a superpower, plus the habit that separates seniors from juniors: knowing how to
+find the answer.
+
+## The fast feedback loop
+
+The Tailwind loop is: **type a class → see the result instantly**. With Vite's hot module
+replacement, your change appears before your hands leave the keyboard. The Playground in this course
+recreates that loop right in the lesson.
+
+<CodeBlock
+	playground
+	filename="try the loop"
+	code={`<button class="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition hover:bg-indigo-700">
+  Change my color, padding, or radius
+</button>`}
+/>
+
+## IntelliSense is non-negotiable
+
+Install **Tailwind CSS IntelliSense** in your editor. It gives you:
+
+- Autocomplete for every class, filtered as you type
+- A hover preview showing the exact CSS each class generates
+- Linting that warns about conflicting classes (e.g. `p-2 p-4`)
+- Color swatches inline next to color utilities
+
+<Callout type="tip" title="Sort your classes automatically">
+
+Add **`prettier-plugin-tailwindcss`**. It reorders class names into Tailwind's recommended order on
+save, so every file in your codebase lists classes consistently. Consistency you don't have to think
+about is the best kind.
+
+</Callout>
+
+## How to read the docs like a pro
+
+You will look things up constantly — that's normal and good. The Tailwind docs are organised by
+**CSS property**, not by alphabet. Want to center something? Search the concept ("justify",
+"align"), not a guessed class name.
+
+<CodeBlock
+	language="text"
+	filename="a mental search index"
+	code={`I want to…                  → look up
+space between items         → "gap"
+center horizontally (flex)  → "justify-content"
+center vertically (flex)    → "align-items"
+make text smaller           → "font-size"
+round the corners           → "border-radius"
+add a drop shadow           → "box-shadow"`}
+/>
+
+<Callout type="insight" title="The senior skill is retrieval, not recall">
+
+Junior engineers try to memorise APIs. Senior engineers build a mental *index* — they may not recall
+the exact class, but they know the underlying CSS concept and can find it in seconds. This is why we
+keep tying utilities back to the CSS they generate: you're learning a transferable model, not
+trivia. Master the concept and every framework, including the next one, becomes easy.
+
+</Callout>
+
+## A sane authoring rhythm
+
+1. Sketch the structure with semantic HTML first.
+2. Layout next (flex/grid) — get the boxes in the right places.
+3. Spacing and sizing.
+4. Color, type, and the finishing touches (shadows, radius).
+5. Responsive and state variants last.
+
+Working in that order keeps you from fiddling with colors before the layout even holds together.
+
+## Knowledge check
+
+<Quiz
+	question="Which tool reorders your Tailwind classes consistently on save?"
+	options={[
+		{ text: 'Tailwind CSS IntelliSense', correct: false },
+		{ text: 'prettier-plugin-tailwindcss', correct: true },
+		{ text: 'The @tailwindcss/vite plugin', correct: false },
+		{ text: 'ESLint', correct: false }
+	]}
+	explanation="IntelliSense gives autocomplete/hover; the Prettier plugin handles class ordering."
+/>
+
+## Recap
+
+- The core loop is **type → see**; keep it tight with Vite + HMR.
+- **IntelliSense** + **prettier-plugin-tailwindcss** are baseline setup, not extras.
+- Read the docs **by CSS concept**, not by guessing class names.
+- Author in a sane order: structure → layout → spacing → color → responsive/state.
+
+Now let's put it all together and build your first real project.

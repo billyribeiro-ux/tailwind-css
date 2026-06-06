@@ -1,0 +1,114 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Project: Pricing Card
+
+Pricing cards are everywhere, and they exercise every core utility: spacing, colour, type, borders,
+radius and shadow. Let's build a convincing one.
+
+<ProjectBrief
+	title="Build a highlighted pricing card"
+	time="35 min"
+	goal="Create a 'Pro' pricing card with a featured badge, price, feature list with checkmarks, and a call-to-action — visually distinct enough to draw the eye."
+	requirements={[
+		'A card with padding, large radius, and a shadow',
+		'A coloured "Most popular" badge',
+		'A large price with a smaller /month suffix',
+		'A feature list, each row with a check icon',
+		'A primary CTA button spanning the card width'
+	]}
+	stretch={[
+		'Add a coloured ring to signal this is the featured plan',
+		'Add a subtle gradient header',
+		'Render a second, muted "Basic" plan beside it'
+	]}
+/>
+
+## The finished card
+
+<CodeBlock
+	playground
+	filename="pricing-card.html (solution)"
+	code={`<div class="mx-auto max-w-sm rounded-3xl bg-white p-8 shadow-xl ring-2 ring-indigo-500">
+  <span class="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold tracking-wide text-indigo-700 uppercase">
+    Most popular
+  </span>
+
+  <h3 class="mt-4 text-lg font-semibold text-slate-900">Pro</h3>
+  <p class="mt-1 text-sm text-slate-500">For growing teams that need more.</p>
+
+  <p class="mt-6">
+    <span class="text-5xl font-extrabold tracking-tight text-slate-900">$29</span>
+    <span class="text-sm font-medium text-slate-400">/month</span>
+  </p>
+
+  <ul class="mt-6 space-y-3 text-sm text-slate-600">
+    <li class="flex items-center gap-3">
+      <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">✓</span>
+      Unlimited projects
+    </li>
+    <li class="flex items-center gap-3">
+      <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">✓</span>
+      Priority support
+    </li>
+    <li class="flex items-center gap-3">
+      <span class="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">✓</span>
+      Advanced analytics
+    </li>
+  </ul>
+
+  <button class="mt-8 w-full rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white shadow-lg shadow-indigo-600/30 transition hover:bg-indigo-700">
+    Start free trial
+  </button>
+</div>`}
+/>
+
+## Key moves to notice
+
+- **The ring (`ring-2 ring-indigo-500`)** is what makes this read as the *featured* plan without a
+  heavier border that would shift layout.
+- **Price typography** uses scale + weight contrast: a huge `text-5xl font-extrabold` number against
+  a tiny muted `/month`.
+- **Feature rows** are `flex items-center gap-3` — a preview of Module 3 — with a circular check
+  badge built from `flex`, `rounded-full`, and a background tint.
+- **The CTA shadow is tinted** (`shadow-indigo-600/30`) to match the button, a small detail that
+  reads as premium.
+
+<Callout type="insight" title="Visual hierarchy is a decision, not an accident">
+
+A good pricing card answers one question instantly: *where do I click?* Everything here — the ring,
+the badge, the colour weight of the CTA, the shadow — funnels attention to the button. When you
+design, name the single most important action and make the visual system point at it. That intent is
+what separates a card that converts from one that merely exists.
+
+</Callout>
+
+<Callout type="tip" title="Real check icons">
+
+We used a `✓` character for portability in the playground. In your SvelteKit app you'd import a
+proper icon (this course uses `phosphor-svelte`): `import { Check } from 'phosphor-svelte'` and
+render `<Check />`. You'll do exactly that in Module 7's component library.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why use `ring-2` instead of `border-2` to highlight the featured plan?"
+	options={[
+		{ text: 'Rings can be coloured and borders cannot', correct: false },
+		{ text: 'The ring overlays without changing the box size or shifting siblings', correct: true },
+		{ text: 'Borders are not supported on rounded elements', correct: false },
+		{ text: 'Rings are cheaper to render', correct: false }
+	]}
+	explanation="Because the ring draws as an outline, the featured card stays the same size as its neighbours."
+/>
+
+## Recap & module wrap-up
+
+Module 2 complete — you now command the core utilities. You built a real pricing card using spacing,
+colour, typography, borders, radius and shadows, and you made deliberate **hierarchy** decisions.
+
+Next module: **Layout** — Flexbox, Grid and positioning — so you can place these beautiful elements
+anywhere with total control.

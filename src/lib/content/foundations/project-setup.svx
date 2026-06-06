@@ -1,0 +1,114 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Setting Up Tailwind v4 with SvelteKit
+
+Theory is nice, but engineers learn by running real code. In this lesson you'll set up the **exact
+stack this course is built with**: SvelteKit, Tailwind CSS v4, and TypeScript — the modern,
+fast, first-party way.
+
+## Why this matters
+
+How you install Tailwind shapes your whole experience. Tailwind **v4** introduced a first-party
+**Vite plugin** that is faster and needs almost no configuration — there's no `tailwind.config.js`
+to babysit and no separate PostCSS setup. Getting this right once means every later lesson "just
+works."
+
+## Step 1 — Create the project
+
+We use `pnpm` (fast, disk-efficient) and the official Svelte CLI, `sv`. The `sv` CLI can scaffold
+SvelteKit *and* wire up Tailwind for you in one command.
+
+<CodeBlock
+	language="shell"
+	filename="terminal"
+	code={`# scaffold a SvelteKit + TypeScript app and add Tailwind in one go
+pnpm dlx sv create my-app --template minimal --types ts --add tailwindcss
+
+cd my-app
+pnpm install
+pnpm dev`}
+/>
+
+That's the shortcut. But a distinguished engineer understands what the tool did for them — so let's
+look at the three files that actually matter.
+
+## Step 2 — The Vite plugin
+
+Tailwind v4 hooks into your build through `@tailwindcss/vite`. Order matters: put it **before** the
+SvelteKit plugin.
+
+<CodeBlock
+	language="typescript"
+	filename="vite.config.ts"
+	code={`import tailwindcss from '@tailwindcss/vite';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [tailwindcss(), sveltekit()]
+});`}
+/>
+
+## Step 3 — Import Tailwind in your CSS
+
+In v4 you don't write `@tailwind base; @tailwind components; @tailwind utilities;` anymore. It's a
+single line:
+
+<CodeBlock
+	language="css"
+	filename="src/app.css"
+	code={`@import 'tailwindcss';`}
+/>
+
+## Step 4 — Use it
+
+Import that CSS once in your root layout, then write utilities anywhere.
+
+<CodeBlock
+	playground
+	filename="+page.svelte (preview)"
+	code={`<h1 class="text-3xl font-bold text-blue-600">It works!</h1>
+<p class="mt-2 text-slate-500">Tailwind v4 is compiling these classes for you.</p>`}
+/>
+
+<Callout type="insight" title="Why v4's approach is a big deal">
+
+Tailwind v4 is **CSS-first**: your theme, your tokens, and your customisations live in CSS using
+`@theme` (Module 6), not in a JavaScript config object. This is more than a style preference — it
+means your design system is expressed in the platform's own language, the dev server starts faster,
+and incremental rebuilds are measured in *microseconds*. When you evaluate tools as a senior, look
+for ones that lean into the platform instead of fighting it. v4 is a textbook example.
+
+</Callout>
+
+<Callout type="warning" title="Upgrading from v3?">
+
+If you find a tutorial telling you to create `tailwind.config.js` and add `content: [...]` paths —
+that's **v3**. In v4 the engine finds your templates automatically and configuration lives in CSS.
+Always check you're reading v4 docs.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="In Tailwind v4 with Vite, where does your theme customisation live?"
+	options={[
+		{ text: 'In tailwind.config.js as a JavaScript object', correct: false },
+		{ text: 'In your CSS, using the @theme directive', correct: true },
+		{ text: 'In package.json under a "tailwind" key', correct: false },
+		{ text: 'In a postcss.config.cjs file', correct: false }
+	]}
+	explanation="v4 is CSS-first: @import 'tailwindcss' plus @theme replaces the old JS config and PostCSS dance."
+/>
+
+## Recap
+
+- Use the **`@tailwindcss/vite`** plugin, placed before `sveltekit()`.
+- A single **`@import 'tailwindcss'`** replaces v3's three `@tailwind` directives.
+- There's **no `tailwind.config.js`** in v4 — configuration is CSS-first via `@theme`.
+- `pnpm dlx sv create … --add tailwindcss` wires all of this up for you.
+
+Next: let's actually read and write utilities with confidence.

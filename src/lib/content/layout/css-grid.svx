@@ -1,0 +1,97 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# CSS Grid
+
+Where flexbox is one-dimensional, **grid is two-dimensional** — rows *and* columns at once. It's the
+right tool for galleries, dashboards, and any real page-level layout.
+
+## Columns and gap
+
+`grid grid-cols-3` makes three equal columns; `gap-*` spaces them.
+
+<CodeBlock
+	playground
+	filename="3 columns"
+	code={`<div class="grid grid-cols-3 gap-3">
+  <div class="rounded bg-indigo-200 p-4">1</div>
+  <div class="rounded bg-indigo-200 p-4">2</div>
+  <div class="rounded bg-indigo-200 p-4">3</div>
+  <div class="rounded bg-indigo-200 p-4">4</div>
+  <div class="rounded bg-indigo-200 p-4">5</div>
+  <div class="rounded bg-indigo-200 p-4">6</div>
+</div>`}
+/>
+
+## Spanning columns
+
+Items can span multiple tracks with `col-span-*`. This is how you make a "feature" tile twice as
+wide.
+
+<CodeBlock
+	playground
+	filename="spanning"
+	code={`<div class="grid grid-cols-3 gap-3">
+  <div class="col-span-2 rounded bg-emerald-300 p-4">col-span-2</div>
+  <div class="rounded bg-emerald-200 p-4">1</div>
+  <div class="rounded bg-emerald-200 p-4">1</div>
+  <div class="col-span-2 rounded bg-emerald-300 p-4">col-span-2</div>
+</div>`}
+/>
+
+## Responsive auto-fit grids
+
+The real power move: a grid that decides its own column count based on available width — no media
+queries. Use an arbitrary value with `auto-fit` and `minmax`.
+
+<CodeBlock
+	playground
+	filename="auto-fit"
+	code={`<div class="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-3">
+  <div class="rounded bg-amber-200 p-4">Card</div>
+  <div class="rounded bg-amber-200 p-4">Card</div>
+  <div class="rounded bg-amber-200 p-4">Card</div>
+  <div class="rounded bg-amber-200 p-4">Card</div>
+  <div class="rounded bg-amber-200 p-4">Card</div>
+</div>`}
+/>
+
+Resize the preview pane: each card stays at least `8rem`, and the grid adds or removes columns to
+fit. This single line replaces a stack of breakpoints.
+
+<Callout type="insight" title="Flex vs Grid — choose by dimensionality">
+
+A crisp heuristic you can teach your team: **one direction → flexbox; two directions (aligned rows
+*and* columns) → grid.** A toolbar is flex. A photo gallery or dashboard is grid. Reaching for
+flexbox to fake a grid (nested rows with manual widths) is a classic smell that produces fragile
+layouts. Pick the tool that matches the shape of the problem.
+
+</Callout>
+
+<Callout type="tip" title="`grid-cols-[...]` is an arbitrary value">
+
+The square-bracket syntax (`grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]`) is Tailwind's escape
+hatch for any CSS value that isn't in the default scale. Use it sparingly and deliberately — it's
+powerful, but a pile of arbitrary values is a sign you may need a custom theme token (Module 6).
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You need a card grid that adds/removes columns automatically as the screen resizes, without breakpoints. What do you use?"
+	options={[
+		{ text: 'flex flex-wrap with fixed widths', correct: false },
+		{ text: 'grid-cols-[repeat(auto-fit,minmax(…,1fr))]', correct: true },
+		{ text: 'grid-cols-3 only', correct: false },
+		{ text: 'block with floats', correct: false }
+	]}
+	explanation="auto-fit + minmax lets the grid compute its own column count from the available width."
+/>
+
+## Recap
+
+- `grid grid-cols-N gap-*` for equal columns; `col-span-*` to span.
+- **`auto-fit` + `minmax`** builds responsive grids with zero media queries.
+- Choose by dimensionality: **one axis → flex, two axes → grid**.

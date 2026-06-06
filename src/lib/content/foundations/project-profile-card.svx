@@ -1,0 +1,149 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Project: Profile Card
+
+Time to build. You now know enough to make something real and good-looking entirely from utilities.
+
+<ProjectBrief
+	title="Build a polished profile card"
+	time="30 min"
+	goal="Create a centered profile card with an avatar, name, role, bio, stats, and a follow button — using only the utilities from Module 1."
+	requirements={[
+		'A card with white background, padding, rounded corners and a shadow',
+		'A circular avatar centered at the top',
+		'Name, role and a short bio with a clear type hierarchy',
+		'A row of three stats (followers, following, posts)',
+		'A full-width primary button'
+	]}
+	stretch={[
+		'Add a subtle hover lift to the whole card',
+		'Add a coloured ring around the avatar',
+		'Give the button a hover state'
+	]}
+/>
+
+## What you're building
+
+Open the playground and study the finished result before you read the steps. Try changing colours
+and spacing to make it yours.
+
+<CodeBlock
+	playground
+	filename="profile-card.html (solution)"
+	code={`<div class="mx-auto max-w-xs rounded-2xl bg-white p-6 text-center shadow-lg">
+  <img
+    src="https://i.pravatar.cc/120?img=12"
+    alt="Avatar"
+    class="mx-auto h-24 w-24 rounded-full ring-4 ring-indigo-100"
+  />
+  <h2 class="mt-4 text-xl font-bold text-slate-900">Ada Lovelace</h2>
+  <p class="text-sm font-medium text-indigo-600">Principal Engineer</p>
+  <p class="mt-3 text-sm text-slate-500">
+    Building delightful interfaces and mentoring the next generation of engineers.
+  </p>
+
+  <div class="mt-5 flex justify-around border-t border-slate-100 pt-4">
+    <div>
+      <p class="text-lg font-bold text-slate-900">8.2k</p>
+      <p class="text-xs text-slate-400">Followers</p>
+    </div>
+    <div>
+      <p class="text-lg font-bold text-slate-900">312</p>
+      <p class="text-xs text-slate-400">Following</p>
+    </div>
+    <div>
+      <p class="text-lg font-bold text-slate-900">96</p>
+      <p class="text-xs text-slate-400">Posts</p>
+    </div>
+  </div>
+
+  <button class="mt-5 w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white transition hover:bg-indigo-700">
+    Follow
+  </button>
+</div>`}
+/>
+
+## Build it step by step
+
+**1. The card shell.** Constrain the width, center it, and give it surface styling.
+
+<CodeBlock
+	language="html"
+	code={`<div class="mx-auto max-w-xs rounded-2xl bg-white p-6 text-center shadow-lg">
+  <!-- contents -->
+</div>`}
+/>
+
+**2. The avatar.** `rounded-full` makes a circle; `ring-4` adds a soft coloured halo.
+
+<CodeBlock
+	language="html"
+	code={`<img src="..." alt="Avatar" class="mx-auto h-24 w-24 rounded-full ring-4 ring-indigo-100" />`}
+/>
+
+**3. The text hierarchy.** Size and weight communicate importance — name boldest, role coloured,
+bio muted.
+
+<CodeBlock
+	language="html"
+	code={`<h2 class="mt-4 text-xl font-bold text-slate-900">Ada Lovelace</h2>
+<p class="text-sm font-medium text-indigo-600">Principal Engineer</p>
+<p class="mt-3 text-sm text-slate-500">Building delightful interfaces…</p>`}
+/>
+
+**4. The stats row.** A quick taste of flexbox (Module 3): `flex justify-around` spreads three
+items evenly.
+
+<CodeBlock
+	language="html"
+	code={`<div class="mt-5 flex justify-around border-t border-slate-100 pt-4">
+  <div><p class="text-lg font-bold">8.2k</p><p class="text-xs text-slate-400">Followers</p></div>
+  <!-- repeat -->
+</div>`}
+/>
+
+**5. The button.** Full width, with a `transition` and `hover:` state for polish.
+
+<Callout type="insight" title="Notice what you didn't write">
+
+You built a complete, professional component and never opened a CSS file, never invented a class
+name, and never worried about a style leaking somewhere else. Every decision — spacing, colour,
+radius — came from a shared scale, so it looks coherent by default. *This* is the productivity story
+of utility-first, and you just lived it.
+
+</Callout>
+
+<Callout type="tip" title="Make it yours">
+
+Swap `indigo` for `emerald` or `rose` across the card. Because Tailwind's colour scales are
+internally consistent (the `600` of every colour has similar contrast), the card stays balanced no
+matter which hue you pick.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Which class turns the square avatar image into a circle?"
+	options={[
+		{ text: 'rounded-lg', correct: false },
+		{ text: 'rounded-full', correct: true },
+		{ text: 'circle', correct: false },
+		{ text: 'avatar', correct: false }
+	]}
+	explanation="rounded-full applies a border-radius large enough to fully round a square into a circle."
+/>
+
+## Recap & module wrap-up
+
+You finished Module 1. You can now:
+
+- Explain what utility-first CSS is and why it scales.
+- Set up Tailwind v4 with SvelteKit the modern way.
+- Read and write utilities fluently using the spacing/colour scales.
+- Compose a real, polished component from scratch.
+
+Next module: we go deep on the **core utilities** — spacing, colour, typography, borders and
+shadows — that you'll reach for every single day.

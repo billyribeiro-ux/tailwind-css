@@ -1,0 +1,96 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Spacing & Sizing
+
+Spacing is the invisible skeleton of every interface. Get it consistent and your UI looks
+designed; get it random and it looks broken — even if the colours are perfect.
+
+## Padding and margin
+
+`p` is padding (inside), `m` is margin (outside). Add a side (`t r b l`) or an axis (`x y`).
+
+<CodeBlock
+	language="html"
+	code={`p-4    /* padding: 1rem all sides   */
+pt-6   /* padding-top: 1.5rem        */
+px-8   /* padding-left + right       */
+m-0    /* margin: 0                  */
+mx-auto/* horizontal auto → centers  */
+-mt-2  /* negative margin-top        */`}
+/>
+
+<CodeBlock
+	playground
+	filename="padding vs margin"
+	code={`<div class="bg-slate-100 p-2">
+  <div class="bg-indigo-200 p-6 m-4">p-6 inside, m-4 outside</div>
+</div>`}
+/>
+
+## The spacing between children
+
+Reach for `space-x-*` / `space-y-*` (or `gap-*` in flex/grid) instead of adding margins to each
+child. It's cleaner and avoids the "first/last child margin" problem.
+
+<CodeBlock
+	playground
+	filename="space-y"
+	code={`<div class="space-y-3">
+  <div class="rounded bg-indigo-100 p-3">One</div>
+  <div class="rounded bg-indigo-100 p-3">Two</div>
+  <div class="rounded bg-indigo-100 p-3">Three</div>
+</div>`}
+/>
+
+## Sizing: width and height
+
+Widths can be fixed steps (`w-64`), fractions (`w-1/2`), full (`w-full`), screen (`w-screen`), or
+content-based (`w-fit`, `w-max`, `w-min`). Constrain with `max-w-*` and `min-w-*`.
+
+<CodeBlock
+	playground
+	filename="widths"
+	code={`<div class="space-y-2">
+  <div class="w-1/4 bg-emerald-300 p-2">w-1/4</div>
+  <div class="w-1/2 bg-emerald-300 p-2">w-1/2</div>
+  <div class="w-full bg-emerald-300 p-2">w-full</div>
+  <div class="max-w-xs bg-emerald-300 p-2">max-w-xs (caps at ~20rem)</div>
+</div>`}
+/>
+
+<Callout type="insight" title="max-w over fixed w for readability and resilience">
+
+A senior reflex: prefer `max-w-prose` / `max-w-2xl` plus `mx-auto` over a hard `w-[680px]`. You get
+a layout that's readable on large screens *and* shrinks gracefully on small ones, with no media
+query. Fixed widths are how you end up with horizontal scrollbars on a phone. Constrain the maximum,
+let the minimum flow.
+
+</Callout>
+
+<Callout type="warning" title="`space-y` and flex don't mix well">
+
+`space-y-*` works by adding margins between siblings. Inside a `flex` container it can behave
+unexpectedly. In flex/grid, use **`gap-*`** instead — it's purpose-built for spacing between items.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You have a vertical stack of cards and want even spacing between them. Best choice?"
+	options={[
+		{ text: 'Add mb-4 to every card, including the last', correct: false },
+		{ text: 'Wrap them and use space-y-4 (or gap-4 with flex/grid)', correct: true },
+		{ text: 'Add a fixed height to each card', correct: false },
+		{ text: 'Use p-4 on the container', correct: false }
+	]}
+	explanation="space-y-* / gap-* express 'space between siblings' directly and avoid trailing-margin bugs."
+/>
+
+## Recap
+
+- `p`/`m` + side/axis is the spacing grammar; `mx-auto` centers.
+- Prefer **`space-y`/`gap`** over per-child margins.
+- Size with steps, fractions, `full`, and content keywords; **cap with `max-w`** for resilient layouts.
