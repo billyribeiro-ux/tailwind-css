@@ -1,0 +1,100 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const customKeyframes = `@theme {
+  --animate-wiggle: wiggle 0.6s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}`;
+</script>
+
+# Keyframe Animations
+
+Transitions animate *between two states*. **Keyframe animations** run continuously or on their own
+timeline — spinners, pulses, skeletons, attention nudges. Tailwind ships a few and lets you author
+your own.
+
+## Built-in animations
+
+`animate-spin`, `animate-ping`, `animate-pulse`, `animate-bounce` cover the common cases.
+
+<CodeBlock
+	playground
+	filename="built-ins"
+	code={`<div class="flex items-center gap-6">
+  <div class="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
+  <span class="relative flex h-4 w-4">
+    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75"></span>
+    <span class="relative inline-flex h-4 w-4 rounded-full bg-indigo-600"></span>
+  </span>
+  <div class="h-4 w-32 animate-pulse rounded bg-slate-200"></div>
+</div>`}
+/>
+
+`animate-pulse` is the backbone of skeleton loaders; `animate-ping` makes notification dots; the
+spinner is a `border-t` on a spinning circle.
+
+## Custom animations in v4
+
+Define an `--animate-*` token in `@theme` plus a `@keyframes` block. The token becomes an
+`animate-*` utility.
+
+<CodeBlock
+	language="css"
+	filename="app.css"
+	code={`@theme {
+  --animate-wiggle: wiggle 0.6s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}`}
+/>
+
+<CodeBlock
+	playground
+	themeCss={customKeyframes}
+	filename="animate-wiggle"
+	code={`<button class="animate-wiggle rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white">
+  Notice me
+</button>`}
+/>
+
+<Callout type="insight" title="Motion is a budget — spend it on meaning">
+
+Continuous animation is attention-grabbing by design, which makes it dangerous. A page with three
+things spinning, pulsing, and wiggling at once is exhausting and signals *nothing* because everything
+competes. Reserve looping animation for genuine communication: a spinner means "working," a pulse
+means "loading here," a single nudge means "look here now." Everything else should be quiet until the
+user interacts. Treating motion as a scarce budget — not a decoration — is what separates polished
+products from carnivals.
+
+</Callout>
+
+<Callout type="warning" title="Skeletons need fixed dimensions">
+
+`animate-pulse` only reads as a skeleton if the placeholder has the *shape* of the eventual content —
+give it explicit width/height/radius. A pulsing zero-height div does nothing.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Which utility is the basis of a skeleton-loading placeholder?"
+	options={[
+		{ text: 'animate-spin', correct: false },
+		{ text: 'animate-pulse on a correctly-sized element', correct: true },
+		{ text: 'animate-bounce', correct: false },
+		{ text: 'transition-all', correct: false }
+	]}
+	explanation="animate-pulse on shaped placeholders communicates 'content loading here'."
+/>
+
+## Recap
+
+- Built-ins: `animate-spin/ping/pulse/bounce` for spinners, dots, skeletons.
+- Author custom animations with **`--animate-*` token + `@keyframes`** in v4.
+- Spend looping motion on **meaning**; keep the rest of the page calm.

@@ -1,0 +1,92 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Scroll-Driven Animation
+
+Modern CSS can tie animation to *scroll position* — progress bars that fill as you read, elements
+that reveal as they enter the viewport — with no scroll-event JavaScript. Tailwind exposes these via
+utilities and arbitrary values.
+
+## A reading progress bar
+
+A scroll-timeline animation links an element's animation to the document's scroll progress. The
+classic use is a top progress bar.
+
+<CodeBlock
+	language="css"
+	filename="progress.css"
+	code={`@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.read-progress {
+  transform-origin: left;
+  animation: grow linear;
+  animation-timeline: scroll(root);
+}`}
+/>
+
+The bar's growth is driven entirely by how far the page is scrolled — no `scroll` listener, no
+layout thrash.
+
+## Reveal-on-enter with view timelines
+
+A *view timeline* animates an element based on its position within the viewport — perfect for
+fade-up-on-scroll sections.
+
+<CodeBlock
+	language="css"
+	filename="reveal.css"
+	code={`@keyframes reveal {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  animation: reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}`}
+/>
+
+## When JS is still the answer
+
+For complex, interruptible, or physics-based motion (drag, spring), reach for Svelte's reactivity or
+a motion library. Scroll-driven CSS is for *declarative, scroll-linked* effects.
+
+<Callout type="insight" title="Prefer declarative scroll effects — they don't jank">
+
+The old way to do scroll animation was a JavaScript `scroll` listener recalculating positions on
+every frame — a notorious source of jank and battery drain, especially on mobile. CSS scroll-driven
+animations run off the main thread and stay smooth by construction. The principle generalises:
+**push work to the platform's declarative layer whenever you can.** It's faster, it survives before
+your JS hydrates, and it's less code to maintain. When you do need JS for richer motion, you'll know
+it's a deliberate trade, not a default — and you'll scope it to just the interactive bits.
+
+</Callout>
+
+<Callout type="warning" title="Reduced motion, again">
+
+Scroll-driven reveals can be disorienting. Wrap them so they collapse to a simple fade — or nothing —
+under `prefers-reduced-motion: reduce`. Motion should never be the only way information appears.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What's the main advantage of CSS scroll-driven animation over a JS scroll listener?"
+	options={[
+		{ text: 'It supports more colours', correct: false },
+		{ text: 'It runs off the main thread declaratively, avoiding scroll jank', correct: true },
+		{ text: 'It works only in dark mode', correct: false },
+		{ text: 'It requires no CSS', correct: false }
+	]}
+	explanation="Scroll/view timelines are declarative and run smoothly without per-frame JS recalculation."
+/>
+
+## Recap
+
+- **`animation-timeline: scroll()`** links animation to page scroll (progress bars).
+- **`animation-timeline: view()`** links it to viewport entry (reveals).
+- Prefer declarative scroll animation; use JS only for rich/interruptible motion; respect reduced motion.
+
+Next: an interactive UI kit pulling all of Module 8 together.

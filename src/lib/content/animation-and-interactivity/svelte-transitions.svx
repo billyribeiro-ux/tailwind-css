@@ -1,0 +1,98 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const svelteFade = `${S} lang="ts">
+  import { fade, fly } from 'svelte/transition';
+  let open = $state(false);
+${E}
+
+<button onclick={() => (open = !open)} class="rounded-lg bg-indigo-600 px-4 py-2 text-white">
+  Toggle
+</button>
+
+{#if open}
+  <div transition:fly={{ y: 8, duration: 200 }}
+       class="mt-3 rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
+    I fly in and out — Svelte animates my mount/unmount, Tailwind styles me.
+  </div>
+{/if}`;
+</script>
+
+# Svelte Transitions + Tailwind
+
+CSS transitions animate *changes* to an element that already exists. But what about elements that
+**enter and leave** the DOM — a dropdown opening, a toast appearing? That's where Svelte's transition
+system shines, and it pairs perfectly with Tailwind.
+
+## The division of labour
+
+- **Svelte** handles *mount/unmount* animation via `transition:fade`, `transition:fly`, etc.
+- **Tailwind** handles the element's *appearance* (the classes).
+
+<CodeBlock language="svelte" filename="Dropdown.svelte" code={svelteFade} />
+
+When `open` becomes false, Svelte doesn't yank the element out — it plays the transition *out* first,
+then removes it. Pure CSS can't do that for conditionally-rendered nodes.
+
+## Common transitions
+
+`fade`, `fly`, `slide`, `scale`, and `blur` from `svelte/transition`; `in:`/`out:` for different
+enter/leave; `transition:` for symmetric. Pass `{ duration, delay, easing }`.
+
+<CodeBlock
+	language="svelte"
+	filename="patterns"
+	code={`{#if show}
+  <p transition:fade>symmetric fade</p>
+{/if}
+
+{#if show}
+  <p in:fly={{ y: 20 }} out:fade>fly in, fade out</p>
+{/if}`}
+/>
+
+## Animating lists
+
+Combine `transition:` with `animate:flip` to get smooth reordering — items slide to new positions
+instead of jumping.
+
+<Callout type="insight" title="Use the right layer for the job">
+
+There's a clean mental split worth teaching: **state-driven appearance → Tailwind variants;
+presence/absence → Svelte transitions; continuous → CSS keyframes.** Hovering a button is Tailwind
+(`hover:`). A modal entering and leaving is Svelte (`transition:scale`). A spinner is keyframes
+(`animate-spin`). Reaching for the wrong layer is how you end up with brittle JavaScript animating
+things CSS could do, or CSS hacks faking what Svelte does natively. Match the tool to the *kind* of
+change and your animation code stays small and obvious.
+
+</Callout>
+
+<Callout type="warning" title="Respect `prefers-reduced-motion`">
+
+Some users get motion-sick or distracted by animation. Honour their OS setting — globally neutralise
+transitions in a media query (this course does, in `layout.css`), and/or guard big motion in code.
+Accessible motion is reduced, not removed.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why use Svelte's `transition:` instead of a CSS transition for a dropdown that's conditionally rendered with {#if}?"
+	options={[
+		{ text: 'CSS can’t set colours on dropdowns', correct: false },
+		{ text: 'Svelte can animate the element OUT before removing it from the DOM', correct: true },
+		{ text: 'It’s required for dark mode', correct: false },
+		{ text: 'CSS transitions don’t support duration', correct: false }
+	]}
+	explanation="For mount/unmount, Svelte plays the out-transition before removal; CSS can't animate a node that's being deleted."
+/>
+
+## Recap
+
+- **Svelte transitions** animate enter/leave of conditionally-rendered elements.
+- **Tailwind** styles them; the two compose cleanly.
+- Match layer to change: variants (state), Svelte (presence), keyframes (continuous); respect reduced motion.

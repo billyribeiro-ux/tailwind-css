@@ -1,0 +1,137 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const accordion = `${S} lang="ts">
+  import { slide } from 'svelte/transition';
+  let openId = $state<number | null>(0);
+  const items = [
+    { q: 'Is it accessible?', a: 'Yes — buttons, aria-expanded, keyboard support.' },
+    { q: 'Is it animated?', a: 'Svelte slide handles the open/close height.' }
+  ];
+  const toggle = (i: number) => (openId = openId === i ? null : i);
+${E}
+
+<div class="divide-y divide-slate-200 rounded-xl border border-slate-200">
+  {#each items as item, i}
+    <div>
+      <button onclick={() => toggle(i)} aria-expanded={openId === i}
+        class="flex w-full items-center justify-between p-4 text-left font-medium">
+        {item.q}
+        <span class="transition-transform {openId === i ? 'rotate-180' : ''}">⌄</span>
+      </button>
+      {#if openId === i}
+        <p transition:slide class="px-4 pb-4 text-sm text-slate-500">{item.a}</p>
+      {/if}
+    </div>
+  {/each}
+</div>`;
+
+	const modal = `${S} lang="ts">
+  import { fade, scale } from 'svelte/transition';
+  let open = $state(false);
+${E}
+
+<button onclick={() => (open = true)} class="rounded-lg bg-indigo-600 px-4 py-2 text-white">Open modal</button>
+
+{#if open}
+  <div transition:fade class="fixed inset-0 z-50 bg-slate-900/50" onclick={() => (open = false)}></div>
+  <div transition:scale={{ start: 0.95 }} role="dialog" aria-modal="true"
+       class="fixed inset-0 z-50 m-auto h-fit max-w-md rounded-2xl bg-white p-6 shadow-xl">
+    <h2 class="text-lg font-semibold">Confirm action</h2>
+    <p class="mt-1 text-sm text-slate-500">This animates in with scale + fade.</p>
+    <button onclick={() => (open = false)} class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-white">Got it</button>
+  </div>
+{/if}`;
+</script>
+
+# Project: Interactive UI Kit
+
+The capstone of Module 8: four interactive components — accordion, modal, toast, carousel — each
+combining Svelte state, Svelte transitions, and Tailwind styling, all accessible and motion-aware.
+
+<ProjectBrief
+	title="Build an animated, accessible UI kit"
+	time="60 min"
+	goal="Implement an accordion, a modal dialog, a toast notification, and a simple carousel — each driven by Svelte 5 runes, animated with svelte/transition, styled with Tailwind, and accessible (focus, aria, keyboard)."
+	requirements={[
+		'Accordion with aria-expanded and slide animation',
+		'Modal with backdrop, scale+fade transition, role=dialog and aria-modal',
+		'Toast that auto-dismisses with a fly transition',
+		'Carousel with prev/next and translate-based sliding',
+		'All motion respects prefers-reduced-motion'
+	]}
+	stretch={[
+		'Trap focus inside the modal and close on Escape',
+		'Allow only one accordion item open at a time (done in the sample)',
+		'Auto-advance the carousel with a pause-on-hover'
+	]}
+/>
+
+## Accordion
+
+<CodeBlock language="svelte" filename="Accordion.svelte" code={accordion} />
+
+## Modal
+
+<CodeBlock language="svelte" filename="Modal.svelte" code={modal} />
+
+(Build the **Toast** with a `fly` transition + a `setTimeout` auto-dismiss, and the **Carousel** by
+translating a flex track with `style="transform: translateX(...)"` driven by an index rune.)
+
+## Live preview of the look
+
+<CodeBlock
+	playground
+	filename="ui-kit-look.html"
+	code={`<div class="space-y-4">
+  <!-- accordion (open state) -->
+  <div class="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+    <div>
+      <div class="flex items-center justify-between p-4 font-medium text-slate-900">Is it accessible? <span class="rotate-180">⌄</span></div>
+      <p class="px-4 pb-4 text-sm text-slate-500">Yes — buttons, aria-expanded, keyboard support.</p>
+    </div>
+    <div class="flex items-center justify-between p-4 font-medium text-slate-900">Is it animated? <span>⌄</span></div>
+  </div>
+  <!-- toast -->
+  <div class="flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-lg">
+    <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Saved successfully
+  </div>
+</div>`}
+/>
+
+<Callout type="insight" title="Interactive components are where a11y is won or lost">
+
+Anyone can make a div that toggles. The gap between junior and senior work shows up in the details
+your sample components include: `aria-expanded` on the accordion trigger, `role="dialog"` and
+`aria-modal` plus focus trapping on the modal, Escape-to-close, an `aria-live` region for toasts, and
+motion that backs off under `prefers-reduced-motion`. These aren't extras — for an interactive
+component they're part of *correct*. When you review a PR adding a modal, the first questions are
+"where does focus go, how does it close with a keyboard, and what does a screen reader announce?" Make
+those questions reflexive and your interactive UI will be genuinely usable by everyone.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="A modal opens visually but keyboard users get stuck behind it. What's missing?"
+	options={[
+		{ text: 'A bigger z-index', correct: false },
+		{ text: 'Focus management — move focus into the modal, trap it, and restore on close', correct: true },
+		{ text: 'A longer transition', correct: false },
+		{ text: 'A darker backdrop', correct: false }
+	]}
+	explanation="Accessible modals move focus in, trap it while open, close on Escape, and return focus to the trigger."
+/>
+
+## Recap & module wrap-up
+
+Module 8 complete. You can animate state with Tailwind, mount/unmount with Svelte transitions, drive
+motion from scroll with CSS, and build accessible interactive components — without sacrificing
+performance or inclusivity.
+
+Next module: **Advanced Layout & Patterns** — subgrid, container queries, sticky patterns and
+internationalised layouts.

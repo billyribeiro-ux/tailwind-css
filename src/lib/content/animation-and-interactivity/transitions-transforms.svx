@@ -1,0 +1,86 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Transitions & Transforms
+
+Good motion is felt, not seen. It tells users "that worked" and makes interfaces feel alive. The two
+building blocks are **transitions** (animate a change) and **transforms** (move/scale/rotate without
+disturbing layout).
+
+## Transitions
+
+`transition` animates property changes; tune with `duration-*`, `ease-*`, and `delay-*`.
+
+<CodeBlock
+	playground
+	filename="hover transition"
+	code={`<button class="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition duration-200 ease-out hover:bg-indigo-700 hover:shadow-lg">
+  Smooth on hover
+</button>`}
+/>
+
+## Transforms
+
+`scale-*`, `rotate-*`, `translate-x/y-*`, and `skew-*` move an element *visually* — they don't push
+neighbours around, so they're cheap and smooth.
+
+<CodeBlock
+	playground
+	filename="transform on hover"
+	code={`<div class="flex gap-4">
+  <div class="rounded-xl bg-emerald-400 p-6 transition hover:scale-110">scale</div>
+  <div class="rounded-xl bg-sky-400 p-6 transition hover:-translate-y-2">translate</div>
+  <div class="rounded-xl bg-amber-400 p-6 transition hover:rotate-6">rotate</div>
+</div>`}
+/>
+
+## The hover-lift card
+
+Combining transform + shadow gives the classic "lift" that signals interactivity.
+
+<CodeBlock
+	playground
+	filename="lift"
+	code={`<div class="max-w-xs cursor-pointer rounded-2xl bg-white p-6 shadow transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+  <h3 class="font-semibold text-slate-900">Hover me</h3>
+  <p class="mt-1 text-sm text-slate-500">A subtle lift reads as "clickable".</p>
+</div>`}
+/>
+
+<Callout type="insight" title="Animate transform and opacity — almost nothing else">
+
+Performance and taste point the same way here. The browser can animate `transform` and `opacity` on
+the GPU without recalculating layout, so they stay buttery at 60fps. Animating `width`, `height`,
+`top`, or `margin` forces layout on every frame and janks on lower-end devices. The senior rule of
+thumb: **if it moves, use `translate`; if it resizes, use `scale`; if it appears, use `opacity`.**
+This one constraint keeps your motion both elegant and fast, and it's the first thing to check when
+an animation feels sluggish.
+
+</Callout>
+
+<Callout type="tip" title="Duration is a dialect">
+
+Keep durations short and consistent: ~150ms for hovers, ~200–300ms for larger state changes. Long
+animations (500ms+) feel sluggish for everyday interactions. Pick 2–3 durations and reuse them.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why prefer animating `transform`/`opacity` over `width`/`top`?"
+	options={[
+		{ text: 'They look brighter', correct: false },
+		{ text: 'They’re GPU-accelerated and don’t trigger layout, so they stay smooth', correct: true },
+		{ text: 'They’re the only animatable properties', correct: false },
+		{ text: 'They work without the transition class', correct: false }
+	]}
+	explanation="transform/opacity animate without layout recalculation; width/top reflow every frame and cause jank."
+/>
+
+## Recap
+
+- `transition` + `duration`/`ease`/`delay` animate changes smoothly.
+- Transforms (`scale/rotate/translate`) move things without affecting layout.
+- **Animate `transform` and `opacity`**; keep durations short and consistent.
