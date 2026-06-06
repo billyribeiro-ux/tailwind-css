@@ -1,0 +1,95 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Critical CSS & Budgets
+
+Performance isn't a one-time optimisation; it's a *budget* you defend over time. This lesson covers
+how Tailwind fits into a production performance strategy and how to keep it honest in CI.
+
+## Critical CSS, mostly for free
+
+"Critical CSS" means the styles needed for above-the-fold content load first so the page paints fast.
+Because Tailwind output is small and SvelteKit can inline/prioritise it, you're most of the way there
+without manual extraction. Keep the total small and this rarely needs special handling.
+
+## Measure, don't guess
+
+Use the build output and a bundle analyzer to see real numbers. Track:
+
+<CodeBlock
+	language="text"
+	filename="what to track"
+	code={`CSS size (gzipped)        — usually tiny with Tailwind; watch arbitrary-value sprawl
+JS bundle (per route)     — usually the real cost; split heavy widgets
+Largest Contentful Paint  — the perceived load metric
+Cumulative Layout Shift   — avoid by reserving space (aspect-ratio, fixed dims)`}
+/>
+
+## Lazy-load the heavy stuff
+
+The biggest wins are usually JS. Dynamically import heavy, non-critical widgets so they don't block
+first paint.
+
+<CodeBlock
+	language="typescript"
+	filename="lazy import (this course's Monaco)"
+	code={`// Monaco is large — load it only when an editor actually mounts, client-side
+onMount(async () => {
+  const { setupMonaco } = await import('$lib/monaco/monaco');
+  const monaco = setupMonaco();
+  // …create editor
+});`}
+/>
+
+## Enforce a budget in CI
+
+A budget only works if the build *fails* when you blow it. Add a size check to CI so regressions can't
+merge silently.
+
+<CodeBlock
+	language="yaml"
+	filename="size budget (concept)"
+	code={`# fail the build if a bundle exceeds its budget
+- name: Check bundle size
+  run: pnpm build && node scripts/check-size.mjs   # asserts dist sizes < limits`}
+/>
+
+<Callout type="insight" title="A budget you don't enforce is a wish">
+
+Every team says performance matters; few make it un-regressable. The difference is *enforcement*. A
+documented budget that CI checks on every PR converts performance from periodic heroic clean-ups into
+a property the codebase maintains automatically — the same philosophy as baking accessibility into
+tokens. As a lead, the highest-leverage thing you can do for performance isn't a clever optimisation;
+it's installing the *ratchet* that prevents backsliding, so the whole team's everyday work stays fast
+by default. Pair that with measuring real metrics, and you'll out-perform teams that optimise
+reactively.
+
+</Callout>
+
+<Callout type="warning" title="Reserve space to avoid layout shift">
+
+Images and async widgets that pop in shift the layout (bad CLS). Reserve their space up front with
+`aspect-[16/9]`, fixed dimensions, or skeletons. This course's Monaco containers have a computed
+height for exactly this reason.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What turns a performance budget from a wish into a guarantee?"
+	options={[
+		{ text: 'Writing it in the README', correct: false },
+		{ text: 'A CI check that fails the build when budgets are exceeded', correct: true },
+		{ text: 'Asking everyone to be careful', correct: false },
+		{ text: 'Only supporting fast devices', correct: false }
+	]}
+	explanation="Enforcement in CI is what prevents silent regressions — the budget becomes a ratchet, not a hope."
+/>
+
+## Recap
+
+- Tailwind's small output gives you **near-critical CSS for free**; keep it small.
+- **Measure** CSS, JS, LCP, CLS; the real cost is usually JS — **lazy-load** heavy widgets.
+- **Enforce** the budget in CI; reserve space to avoid layout shift.

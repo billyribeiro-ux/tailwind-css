@@ -1,0 +1,94 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const componentTest = `import { render } from 'vitest-browser-svelte';
+import { expect, test } from 'vitest';
+import Button from '$lib/components/ui/Button.svelte';
+
+test('danger intent applies the danger classes', async () => {
+  const screen = render(Button, { intent: 'danger', children: () => 'Delete' });
+  const button = screen.getByRole('button', { name: 'Delete' });
+  await expect.element(button).toBeInTheDocument();
+  expect(button.element().className).toContain('bg-red-600');
+});`;
+
+	const a11yTest = `import { render } from 'vitest-browser-svelte';
+import { expect, test } from 'vitest';
+import IconButton from '$lib/components/ui/IconButton.svelte';
+
+test('icon-only button exposes an accessible name', async () => {
+  const screen = render(IconButton, { label: 'Close' });
+  // queryable by its accessible name → screen readers can find it too
+  await expect.element(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+});`;
+</script>
+
+# Testing UI
+
+Styling rarely breaks loudly — it breaks *quietly*: a variant stops applying, a focus ring vanishes,
+an icon button loses its label. Tests turn those silent regressions into red builds.
+
+## What's worth testing in a UI
+
+You can't (and shouldn't) snapshot every pixel. Test the things that *matter and regress*:
+
+- **Behaviour:** does clicking toggle, submit, open?
+- **Variant contracts:** does `intent="danger"` actually produce the danger styling?
+- **Accessibility:** is every control reachable by role and name?
+
+## Component tests with vitest-browser-svelte
+
+This course is configured with Vitest's browser mode and `vitest-browser-svelte`, which renders real
+components in a real browser.
+
+<CodeBlock language="typescript" filename="Button.svelte.spec.ts" code={componentTest} />
+
+## Accessibility as an assertion
+
+Querying by **role and accessible name** is a two-for-one: it tests behaviour *and* proves the element
+is accessible (if the test can't find it by name, neither can a screen reader).
+
+<CodeBlock language="typescript" filename="IconButton.svelte.spec.ts" code={a11yTest} />
+
+## Pure logic stays fast
+
+Logic without a DOM (your `cn()`, variant maps, navigation helpers) gets plain, fast unit tests — like
+the `navigation.spec.ts` and `cn.spec.ts` already in this project.
+
+<Callout type="insight" title="Test the contract, not the implementation">
+
+The trap in UI testing is asserting on *implementation details* — exact class strings, DOM structure —
+which makes tests brittle and refactors painful. Aim higher: test the **contract** the component
+promises. "A danger button is announced as a button named X and signals danger" is a contract; "div >
+span.bg-red-600" is an implementation detail. Querying by role/name (as above) tests the contract
+*and* accessibility at once. When you set testing strategy for a team, push toward
+behaviour-and-contract tests and away from snapshot-everything — you'll get suites that catch real
+regressions without screaming on every legitimate change.
+
+</Callout>
+
+<Callout type="tip" title="Run tests in CI, not just locally">
+
+Tests only protect you if they run on every PR. The next lesson wires `pnpm test` (plus lint and
+type-check) into CI so nothing red can merge.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why query elements by role and accessible name in component tests?"
+	options={[
+		{ text: 'It’s faster than CSS selectors', correct: false },
+		{ text: 'It tests behaviour and proves accessibility simultaneously', correct: true },
+		{ text: 'It avoids needing a browser', correct: false },
+		{ text: 'It snapshots the DOM', correct: false }
+	]}
+	explanation="If a test can find a control by role+name, so can assistive tech — the query doubles as an a11y check."
+/>
+
+## Recap
+
+- Test **behaviour, variant contracts, and accessibility** — not every pixel.
+- Use **vitest-browser-svelte** for components; plain unit tests for pure logic.
+- Query by **role/name** to test contract + a11y together; avoid brittle snapshots.

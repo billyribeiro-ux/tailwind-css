@@ -1,0 +1,87 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# SSR & Prerender Styling
+
+In a SvelteKit app, your HTML is rendered on the server (or at build time) and *then* hydrated in the
+browser. Styling has to look correct at every stage — no flashes, no layout shift, no mismatch.
+
+## The good news
+
+Tailwind is pure CSS in a stylesheet, so server-rendered HTML is fully styled on first paint — no
+runtime style injection, no flash of unstyled content. This is a real advantage over CSS-in-JS
+approaches that style during hydration.
+
+## The theming gotcha: FOUC
+
+The one thing that *can* flash is **theme**, because the correct theme depends on `localStorage`/OS,
+which the server can't know. Fix it with a tiny synchronous script in `app.html` that sets the `dark`
+class *before* first paint.
+
+<CodeBlock
+	language="html"
+	filename="app.html"
+	code={`<head>
+  <script>
+    const saved = localStorage.getItem('theme');
+    const dark = saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
+    if (dark) document.documentElement.classList.add('dark');
+  </script>
+  %sveltekit.head%
+</head>`}
+/>
+
+This course does exactly this — that's why toggling theme never flashes on reload.
+
+## Prerendering to static HTML
+
+For content that doesn't change per request (docs, marketing, this course), prerender it. You get real
+HTML files, instant loads, and trivial hosting.
+
+<CodeBlock
+	language="typescript"
+	filename="+layout.ts"
+	code={`// Prerender the whole route subtree to static HTML
+export const prerender = true;`}
+/>
+
+For dynamic routes, export `entries()` so the prerenderer knows which pages to generate (this course's
+lesson route does precisely that).
+
+<Callout type="insight" title="Render styling on the server; reconcile state on the client">
+
+The clean mental model for SSR styling: **appearance is static CSS the server can fully resolve;
+*stateful* appearance (theme, user prefs) needs a pre-paint reconciliation step.** Tailwind nails the
+first half for free. For the second, the inline head script is the canonical pattern — a few lines
+that read client-only state synchronously before paint. Understanding this split is what lets you ship
+SSR/SSG apps that are fast *and* flash-free. Engineers who don't grasp it either avoid SSR
+(losing performance) or ship janky theme flashes (losing polish). You now have both.
+
+</Callout>
+
+<Callout type="warning" title="Don't read `window`/`localStorage` in component init">
+
+During SSR there's no `window`. Guard browser-only code (SvelteKit's `browser` flag, or `onMount`,
+which only runs client-side). The theme/progress stores in this course do exactly that.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why can theme cause a flash on load even though Tailwind CSS doesn't?"
+	options={[
+		{ text: 'Tailwind injects styles during hydration', correct: false },
+		{ text: 'The correct theme depends on client-only state the server can’t know, so it must be set pre-paint', correct: true },
+		{ text: 'Dark mode disables SSR', correct: false },
+		{ text: 'CSS loads after JavaScript', correct: false }
+	]}
+	explanation="Server can't read localStorage/OS; an inline pre-paint script sets the dark class to avoid FOUC."
+/>
+
+## Recap
+
+- Tailwind is static CSS → **fully styled on first server paint**, no FOUC of styles.
+- Prevent **theme** flashes with a synchronous pre-paint script in `app.html`.
+- **Prerender** static content (`prerender = true` + `entries()`); guard browser-only code.

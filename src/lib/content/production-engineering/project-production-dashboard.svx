@@ -1,0 +1,142 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+
+	const dashTheme = `@theme {
+  --color-surface: white;
+  --color-surface-raised: oklch(0.98 0.005 256);
+  --color-ink: oklch(0.27 0.03 256);
+  --color-muted: oklch(0.52 0.02 256);
+  --color-accent: oklch(0.55 0.21 258);
+  --color-positive: oklch(0.6 0.15 150);
+  --color-negative: oklch(0.58 0.22 27);
+}
+.dark {
+  --color-surface: oklch(0.21 0.02 256);
+  --color-surface-raised: oklch(0.27 0.03 256);
+  --color-ink: oklch(0.96 0.01 256);
+  --color-muted: oklch(0.70 0.02 256);
+}`;
+</script>
+
+# Project: Production Dashboard
+
+The integration project for production engineering: a data-dense dashboard built on your design
+system, prerendered, themed, accessible, tested, and CI-guarded. This is what "done" looks like at
+work.
+
+<ProjectBrief
+	title="Ship a production-grade dashboard"
+	time="90 min"
+	goal="Build a dashboard (stat cards, a table, a chart placeholder) on semantic tokens, with the app shell, container-query layout, dark mode, accessibility, a component test, and a CI workflow."
+	requirements={[
+		'Reuse the app shell (Module 9) and design system (Module 10)',
+		'Stat cards with positive/negative deltas via semantic tokens',
+		'An accessible data table (proper <th>, scope, caption)',
+		'Container-query responsive card grid',
+		'Light/dark themed, contrast-safe, with visible focus',
+		'At least one component test + a CI workflow running lint/check/test/build'
+	]}
+	stretch={[
+		'Add a date-range filter with accessible controls',
+		'Lazy-load the chart library on mount',
+		'Add a CI bundle-size budget check'
+	]}
+/>
+
+## Stat cards with semantic deltas
+
+Notice deltas use `text-positive`/`text-negative` tokens, not raw green/red — so a theme or brand
+change updates them everywhere.
+
+<CodeBlock
+	playground
+	themeCss={dashTheme}
+	filename="stats.html"
+	code={`<div class="@container bg-surface p-6">
+  <div class="grid gap-4 @md:grid-cols-2 @2xl:grid-cols-4">
+    <div class="rounded-xl bg-surface-raised p-5 ring-1 ring-black/5">
+      <p class="text-sm text-muted">Revenue</p>
+      <p class="mt-1 text-2xl font-bold text-ink">$48.2k</p>
+      <p class="mt-1 text-sm font-medium text-positive">▲ 6.4%</p>
+    </div>
+    <div class="rounded-xl bg-surface-raised p-5 ring-1 ring-black/5">
+      <p class="text-sm text-muted">Churn</p>
+      <p class="mt-1 text-2xl font-bold text-ink">1.8%</p>
+      <p class="mt-1 text-sm font-medium text-negative">▲ 0.3%</p>
+    </div>
+    <div class="rounded-xl bg-surface-raised p-5 ring-1 ring-black/5">
+      <p class="text-sm text-muted">Active users</p>
+      <p class="mt-1 text-2xl font-bold text-ink">12,480</p>
+      <p class="mt-1 text-sm font-medium text-positive">▲ 3.1%</p>
+    </div>
+    <div class="rounded-xl bg-surface-raised p-5 ring-1 ring-black/5">
+      <p class="text-sm text-muted">Tickets</p>
+      <p class="mt-1 text-2xl font-bold text-ink">37</p>
+      <p class="mt-1 text-sm font-medium text-negative">▼ 12%</p>
+    </div>
+  </div>
+</div>`}
+/>
+
+## An accessible data table
+
+Real tables need semantics: `<thead>`, `<th scope="col">`, a `<caption>`, and zebra striping for
+scanability.
+
+<CodeBlock
+	playground
+	themeCss={dashTheme}
+	filename="table.html"
+	code={`<div class="overflow-hidden rounded-xl bg-surface-raised ring-1 ring-black/5">
+  <table class="w-full text-left text-sm">
+    <caption class="sr-only">Recent transactions</caption>
+    <thead class="bg-black/5 text-xs uppercase text-muted">
+      <tr>
+        <th scope="col" class="px-4 py-3">Customer</th>
+        <th scope="col" class="px-4 py-3">Status</th>
+        <th scope="col" class="px-4 py-3 text-end">Amount</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-black/5 text-ink">
+      <tr><td class="px-4 py-3">Acme Inc.</td><td class="px-4 py-3"><span class="rounded-full bg-positive/15 px-2 py-0.5 text-xs text-positive">Paid</span></td><td class="px-4 py-3 text-end">$1,200</td></tr>
+      <tr><td class="px-4 py-3">Globex</td><td class="px-4 py-3"><span class="rounded-full bg-negative/15 px-2 py-0.5 text-xs text-negative">Overdue</span></td><td class="px-4 py-3 text-end">$840</td></tr>
+      <tr><td class="px-4 py-3">Initech</td><td class="px-4 py-3"><span class="rounded-full bg-positive/15 px-2 py-0.5 text-xs text-positive">Paid</span></td><td class="px-4 py-3 text-end">$2,310</td></tr>
+    </tbody>
+  </table>
+</div>`}
+/>
+
+<Callout type="insight" title="Production-grade is the sum of everything quiet">
+
+Look at what this dashboard quietly does right: semantic tokens (one rebrand, everywhere), container
+queries (works in any column), a real accessible table (`scope`, `caption`, `text-end` for RTL),
+dark mode that stays contrast-safe, deltas that mean something, and the testing/CI scaffolding to keep
+it that way. None of it is flashy — and that's exactly the point. "Senior" output rarely looks
+impressive in a screenshot; it looks *unremarkable and correct*, and it stays correct under change
+because the systems underneath it are sound. When you can produce this almost by reflex — reaching for
+the token, the role attribute, the container query without being told — you're operating at the level
+this course set out to reach.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why use `text-positive`/`text-negative` tokens for deltas instead of `text-green-600`/`text-red-600`?"
+	options={[
+		{ text: 'They render faster', correct: false },
+		{ text: 'Semantic tokens keep meaning consistent and re-theme/rebrand in one place', correct: true },
+		{ text: 'Green and red don’t exist in v4', correct: false },
+		{ text: 'It disables dark mode', correct: false }
+	]}
+	explanation="Semantic delta tokens centralise the meaning of up/down, surviving theme and brand changes."
+/>
+
+## Recap & module wrap-up
+
+Module 11 complete. You can ship and *maintain* UI in production: flash-free SSR/prerender, enforced
+performance budgets, meaningful UI tests, CI as a quality ratchet, living docs, and a real dashboard
+composed from your own system.
+
+Next, the final module: **Distinguished & Capstones** — plugins, custom variants, headless UI,
+engineering tradeoffs, leading an org, and four portfolio capstones.

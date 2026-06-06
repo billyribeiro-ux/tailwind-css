@@ -1,0 +1,87 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const ciYaml = `name: CI
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint        # prettier + eslint
+      - run: pnpm run check       # svelte-check (strict types)
+      - run: pnpm test            # unit + component tests
+      - run: pnpm run build       # prerender must succeed`;
+</script>
+
+# CI & Living Documentation
+
+A design system is only as healthy as the automation that guards it and the documentation that makes
+it usable. This lesson closes the production loop: enforce quality in CI, and document the system so
+it spreads.
+
+## Continuous Integration
+
+CI is your quality ratchet: lint, type-check, test, and build on every push and PR. If any step
+fails, the change can't merge.
+
+<CodeBlock language="yaml" filename=".github/workflows/ci.yml" code={ciYaml} />
+
+Note the pinned **Node 24.16.0** matching `.nvmrc`, and `--frozen-lockfile` so CI uses the exact
+dependency tree — reproducible builds, no "works on my machine."
+
+## Living documentation
+
+Docs that live *outside* the code rot. Living docs render the *actual* components and tokens, so they
+can never drift from reality.
+
+- **Token reference:** generate a table from your token source.
+- **Component gallery:** render every variant of every recipe.
+- **Usage rules:** when to use what, with do/don't examples.
+
+<Callout type="tip" title="This course is living documentation">
+
+You're reading living docs right now. The lessons render real components (`CodeBlock`, `Callout`,
+`Quiz`), the Playground compiles real Tailwind, and the curriculum is generated from one data source.
+That's the model: documentation that *is* the system, not a description of it.
+
+</Callout>
+
+<Callout type="insight" title="Adoption is an engineering problem, and tooling is the solution">
+
+The hardest part of a design system isn't building it — it's getting people to *use* it correctly,
+consistently, forever. You don't win that with documents and good intentions; you win it with tooling
+that makes the right path the easy path: CI that blocks regressions, lint rules that flag raw hex
+values, a component gallery that's easier to copy from than to reinvent, codemods that migrate
+breaking changes for consumers. A principal engineer treats adoption as a product with users
+(developers) and removes their friction. Build the system *and* the on-ramps, and it spreads on its
+own. Build only the system, and you'll spend forever evangelising a thing nobody adopts.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What's the core benefit of 'living' documentation over a static styleguide doc?"
+	options={[
+		{ text: 'It looks nicer', correct: false },
+		{ text: 'It renders the real components/tokens, so it can’t drift from the actual system', correct: true },
+		{ text: 'It requires no maintenance ever', correct: false },
+		{ text: 'It replaces the need for CI', correct: false }
+	]}
+	explanation="Living docs are generated from and render the real system, eliminating doc-vs-reality drift."
+/>
+
+## Recap
+
+- **CI** (lint + check + test + build, pinned Node, frozen lockfile) is your quality ratchet.
+- **Living docs** render real tokens/components so they never drift.
+- Treat **adoption as an engineering problem** — remove friction with tooling.
+
+Next: the production dashboard project — everything, shipped properly.
