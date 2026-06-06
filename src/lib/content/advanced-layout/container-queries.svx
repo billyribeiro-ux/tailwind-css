@@ -1,0 +1,82 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Container Queries
+
+Media queries ask "how big is the *screen*?" But a component doesn't know or care about the screen —
+it cares how much space *it* was given. Container queries answer the right question, and they're the
+most important layout advance in years.
+
+## The problem with media queries for components
+
+A card in the sidebar and the same card in the main column have different widths but the *same*
+viewport. Media queries can't tell them apart, so a truly reusable component can't be responsive to
+its slot — until container queries.
+
+## Mark a container, query it
+
+Add `@container` to a parent, then size children with `@`-prefixed variants like `@md:` (which mean
+"when the *container* is at least this wide").
+
+<CodeBlock
+	playground
+	filename="container query"
+	code={`<div class="@container">
+  <div class="rounded-xl border p-4 @md:flex @md:items-center @md:gap-4">
+    <div class="h-20 w-20 shrink-0 rounded-lg bg-indigo-400"></div>
+    <div class="mt-3 @md:mt-0">
+      <h3 class="font-semibold">Adapts to its container</h3>
+      <p class="text-sm text-slate-500">Stacks when narrow, goes side-by-side when its container is wide — regardless of screen size.</p>
+    </div>
+  </div>
+</div>`}
+/>
+
+Resize the preview: the card switches layout based on the container's width, not the viewport's. Drop
+this same card into a narrow sidebar and it stacks automatically.
+
+## Named containers
+
+Name containers (`@container/card`) and target a specific one (`@md/card:`) when you nest them — the
+same naming idea you saw with `group`.
+
+<Callout type="insight" title="Container queries make components truly portable">
+
+This is the missing piece for genuine component reuse. Before container queries, a "responsive
+component" was a polite fiction — it responded to the *viewport*, so the same component behaved
+identically whether it had 1200px or 200px to work with. You compensated with prop hacks
+(`size="compact"`) passed down by parents who happened to know the layout. Container queries let a
+component be **self-aware**: it adapts to whatever space it's handed, anywhere, with no coordination
+from its parent. When you design a component library now, default to container queries for internal
+layout and reserve media queries for *page-level* structure. This is exactly the kind of shift a
+principal engineer drives across a codebase.
+
+</Callout>
+
+<Callout type="warning" title="`@md:` ≠ `md:`">
+
+`md:` is a viewport breakpoint; `@md:` is a *container* breakpoint and requires an ancestor marked
+`@container`. Mixing them up is the most common container-query bug — if nothing responds, check for
+the `@container` parent.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why are container queries better than media queries for a reusable card component?"
+	options={[
+		{ text: 'They’re faster to compile', correct: false },
+		{ text: 'The card adapts to the space it’s given, not the viewport — so it works in any slot', correct: true },
+		{ text: 'They support more breakpoints', correct: false },
+		{ text: 'They replace flexbox', correct: false }
+	]}
+	explanation="Container queries make a component responsive to its own container, enabling true portability."
+/>
+
+## Recap
+
+- **`@container`** marks a parent; **`@md:`** etc. respond to the container's width.
+- This makes components **self-aware and portable** across any layout slot.
+- Use container queries for component internals, media queries for page structure.

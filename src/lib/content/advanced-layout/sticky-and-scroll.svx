@@ -1,0 +1,85 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Sticky & Scroll Patterns
+
+Sticky positioning and scroll snapping create the polished navigation experiences users expect —
+headers that follow, sidebars that pin, and galleries that click into place.
+
+## Sticky headers and sidebars
+
+`sticky top-0` keeps an element in view once you scroll to it. A documentation sidebar is
+`sticky top-16` (offset for the header) plus a constrained height and its own scroll.
+
+<CodeBlock
+	language="html"
+	filename="sticky sidebar"
+	code={`<aside class="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+  <!-- nav that stays visible while main content scrolls -->
+</aside>`}
+/>
+
+This course's own sidebar uses exactly this pattern — `top-16` matches the header height,
+`h-[calc(100vh-4rem)]` fills the rest, and `overflow-y-auto` scrolls independently.
+
+## Scroll snap
+
+Snap turns a free-scrolling container into one that clicks to clean stops — carousels, paginated
+sections, image strips.
+
+<CodeBlock
+	playground
+	filename="scroll-snap gallery"
+	code={`<div class="flex snap-x snap-mandatory gap-4 overflow-x-auto rounded-xl bg-slate-100 p-4">
+  <div class="snap-center shrink-0 grid h-32 w-48 place-items-center rounded-xl bg-indigo-400 text-white">1</div>
+  <div class="snap-center shrink-0 grid h-32 w-48 place-items-center rounded-xl bg-indigo-400 text-white">2</div>
+  <div class="snap-center shrink-0 grid h-32 w-48 place-items-center rounded-xl bg-indigo-400 text-white">3</div>
+  <div class="snap-center shrink-0 grid h-32 w-48 place-items-center rounded-xl bg-indigo-400 text-white">4</div>
+</div>`}
+/>
+
+Scroll the strip horizontally — it snaps each card to center. `snap-x snap-mandatory` on the
+container, `snap-center` on items.
+
+## scroll-margin for anchored headings
+
+When you jump to an `#anchor`, a sticky header can cover it. `scroll-mt-*` adds offset so anchored
+content lands below the header — this course uses `prose-headings:scroll-mt-24`.
+
+<Callout type="insight" title="The whole nav experience is CSS now">
+
+Sticky headers, snap carousels, anchor offsets — a few years ago each meant a scroll listener and
+manual math. Today they're declarative utilities that run on the compositor, smoothly, before your JS
+even loads. The lesson for a lead: periodically re-examine the "we need JavaScript for this" beliefs
+your team carries from older eras. The platform moves; patterns that required libraries become one
+class. Keeping that map current is part of how you keep a codebase lean and a team productive.
+
+</Callout>
+
+<Callout type="warning" title="Sticky needs room and a scroll container">
+
+`sticky` does nothing if an ancestor has `overflow: hidden`, or if the element has no scrollable space
+to stick within. If your sticky element won't stick, check ancestor overflow and that the parent is
+tall enough to scroll.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Your sticky sidebar refuses to stick. Most likely culprit?"
+	options={[
+		{ text: 'Missing z-index', correct: false },
+		{ text: 'An ancestor has overflow:hidden, or there’s no scrollable height', correct: true },
+		{ text: 'You used top-16 instead of top-0', correct: false },
+		{ text: 'Sticky requires JavaScript', correct: false }
+	]}
+	explanation="Sticky breaks under an overflow-hidden ancestor or without scrollable space; check both."
+/>
+
+## Recap
+
+- `sticky top-*` pins headers/sidebars; pair with height + `overflow-y-auto`.
+- `snap-x/y` + `snap-*` create snapping carousels and sections.
+- `scroll-mt-*` offsets anchor targets under sticky headers.

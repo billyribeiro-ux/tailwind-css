@@ -1,0 +1,96 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Advanced Grid & Subgrid
+
+You know the basics of grid. Now the patterns that solve *real* layout pain: aligning content across
+sibling cards, named lines, and dense packing.
+
+## The alignment problem
+
+Put three cards in a grid where each has a title, a variable-length body, and a footer button. The
+buttons won't line up — each card sizes independently. **Subgrid** fixes this by letting a child grid
+share its parent's tracks.
+
+<CodeBlock
+	playground
+	filename="subgrid alignment"
+	code={`<div class="grid grid-cols-3 gap-4">
+  <div class="grid grid-rows-subgrid row-span-3 gap-2 rounded-xl border p-4">
+    <h3 class="font-semibold">Short</h3>
+    <p class="text-sm text-slate-500">A line.</p>
+    <button class="rounded bg-indigo-600 px-3 py-1.5 text-sm text-white">Action</button>
+  </div>
+  <div class="grid grid-rows-subgrid row-span-3 gap-2 rounded-xl border p-4">
+    <h3 class="font-semibold">Longer title that wraps</h3>
+    <p class="text-sm text-slate-500">More body text here that takes additional vertical space.</p>
+    <button class="rounded bg-indigo-600 px-3 py-1.5 text-sm text-white">Action</button>
+  </div>
+  <div class="grid grid-rows-subgrid row-span-3 gap-2 rounded-xl border p-4">
+    <h3 class="font-semibold">Mid</h3>
+    <p class="text-sm text-slate-500">Two lines of body text that wrap a bit here.</p>
+    <button class="rounded bg-indigo-600 px-3 py-1.5 text-sm text-white">Action</button>
+  </div>
+</div>`}
+/>
+
+Each card opts into the parent's rows with `grid-rows-subgrid row-span-3`, so titles, bodies and
+buttons align across all three regardless of content length.
+
+## Named lines and explicit placement
+
+For app layouts, name your grid lines and place items by name — far more readable than counting
+columns.
+
+<CodeBlock
+	language="html"
+	filename="named areas pattern"
+	code={`<div class="grid grid-cols-[200px_1fr] grid-rows-[auto_1fr_auto] min-h-screen">
+  <header class="col-span-2">…</header>
+  <aside>…</aside>
+  <main>…</main>
+  <footer class="col-span-2">…</footer>
+</div>`}
+/>
+
+## Dense packing
+
+`grid-flow-dense` backfills holes left by spanning items — great for mosaic galleries.
+
+<Callout type="insight" title="Subgrid is the answer to a decade-old hack">
+
+For years, aligning content across independent cards meant fragile JavaScript measuring heights, or
+forcing fixed heights that clipped content. Subgrid solves it *structurally*: children participate in
+a shared track system, so alignment is a property of the layout, not a script that runs after paint.
+When you hit a layout problem that feels like it "should" be simple but isn't, ask whether you're
+fighting the formatting context — the modern primitive (subgrid, container queries, `gap`) usually
+exists now. Reaching for JS to fix layout is increasingly a smell.
+
+</Callout>
+
+<Callout type="warning" title="Subgrid needs the child to be a grid too">
+
+`grid-rows-subgrid` works on a grid *item* that is itself `grid` and spans the relevant tracks
+(`row-span-3`). Forget the span and there are no parent tracks to inherit.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Three cards with variable content need their footers aligned. Best modern tool?"
+	options={[
+		{ text: 'Fixed heights on every card', correct: false },
+		{ text: 'Subgrid — children share the parent grid’s rows', correct: true },
+		{ text: 'JavaScript measuring and setting heights', correct: false },
+		{ text: 'Absolute positioning the footers', correct: false }
+	]}
+	explanation="Subgrid lets card internals align to shared parent tracks, no JS or fixed heights."
+/>
+
+## Recap
+
+- **Subgrid** aligns content across sibling cards via shared tracks.
+- Use explicit column/row templates for app layouts; `grid-flow-dense` for mosaics.
+- Prefer layout primitives over JS height hacks.

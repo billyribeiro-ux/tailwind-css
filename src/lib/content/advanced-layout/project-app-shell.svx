@@ -1,0 +1,118 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Project: Application Shell
+
+The application shell is the frame almost every web app shares: a sticky top bar, a sidebar, and a
+scrollable content area. You'll build one using grid for structure, sticky for the chrome, and
+container queries so the content cards adapt to the column width.
+
+<ProjectBrief
+	title="Build a responsive app shell"
+	time="60 min"
+	goal="Create an app shell with a sticky header, a sidebar that collapses on mobile, and a main area whose cards reflow via container queries — using logical properties throughout."
+	requirements={[
+		'A CSS grid defining header / sidebar / main regions',
+		'A sticky header (top-0) spanning the full width',
+		'A sidebar hidden on mobile, visible from lg up',
+		'A main content area marked @container with cards using @md: layout',
+		'Logical spacing utilities (ps/pe/ms/me) so it’s RTL-ready'
+	]}
+	stretch={[
+		'Add a mobile drawer for the sidebar (you built this pattern for this very course)',
+		'Make the sidebar independently scrollable',
+		'Add a sticky sub-header inside main'
+	]}
+/>
+
+## The shell structure
+
+<CodeBlock
+	language="html"
+	filename="app-shell.html"
+	code={`<div class="grid min-h-screen grid-rows-[auto_1fr] lg:grid-cols-[16rem_1fr]">
+  <!-- header spans both columns -->
+  <header class="sticky top-0 z-40 col-span-full flex items-center justify-between border-b bg-white/80 px-4 py-3 backdrop-blur">
+    <span class="font-bold">Console</span>
+    <div class="h-8 w-8 rounded-full bg-indigo-500"></div>
+  </header>
+
+  <!-- sidebar: hidden on mobile, sticky on desktop -->
+  <aside class="hidden border-e bg-slate-50 p-4 lg:block">
+    <nav class="space-y-1 text-sm">
+      <a class="block rounded-lg bg-indigo-100 px-3 py-2 font-medium text-indigo-700" href="#">Overview</a>
+      <a class="block rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-100" href="#">Projects</a>
+      <a class="block rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-100" href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- main: a container so cards respond to THIS column -->
+  <main class="@container p-4">
+    <div class="grid gap-4 @md:grid-cols-2 @2xl:grid-cols-3">
+      <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">Revenue</p><p class="mt-1 text-2xl font-bold">$48.2k</p></div>
+      <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">Users</p><p class="mt-1 text-2xl font-bold">12,480</p></div>
+      <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">Churn</p><p class="mt-1 text-2xl font-bold">1.8%</p></div>
+    </div>
+  </main>
+</div>`}
+/>
+
+## See it respond
+
+This is the content region in isolation — note the cards reflow by the *container's* width via
+`@md:`/`@2xl:`, so the same grid works whether the sidebar is open or not.
+
+<CodeBlock
+	playground
+	filename="content-region.html"
+	code={`<div class="@container">
+  <div class="grid gap-4 @md:grid-cols-2 @2xl:grid-cols-3">
+    <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">Revenue</p><p class="mt-1 text-2xl font-bold text-slate-900">$48.2k</p></div>
+    <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">Active users</p><p class="mt-1 text-2xl font-bold text-slate-900">12,480</p></div>
+    <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">Churn</p><p class="mt-1 text-2xl font-bold text-slate-900">1.8%</p></div>
+    <div class="rounded-xl border bg-white p-5"><p class="text-sm text-slate-500">MRR growth</p><p class="mt-1 text-2xl font-bold text-slate-900">+6.4%</p></div>
+  </div>
+</div>`}
+/>
+
+## Why this composition matters
+
+- **Grid** gives a robust two-axis frame: `grid-rows-[auto_1fr]` + `lg:grid-cols-[16rem_1fr]`.
+- **`col-span-full`** lets the header cross both columns.
+- **Sticky** chrome (`top-0`) keeps navigation present.
+- **Container queries** decouple the card grid from the viewport — it reacts to its own column.
+- **Logical `border-e`/`ps`** keep it internationalisation-ready.
+
+<Callout type="insight" title="The shell is the most-reused layout you'll ever write — get it principled">
+
+Every screen lives inside this frame, so its quality compounds. A shell built on solid primitives —
+grid regions, sticky chrome, container-aware content, logical spacing — absorbs new features
+gracefully for years. A shell built on nested flex hacks and viewport guesses fights you on every
+new screen. This is why we saved advanced layout for here: the shell is where *all* of it pays off at
+once. When you join a new codebase, the health of the app shell tells you most of what you need to
+know about the team's layout maturity. Make yours exemplary — others will copy it.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why mark `main` as `@container` in the shell?"
+	options={[
+		{ text: 'To make it scrollable', correct: false },
+		{ text: 'So its card grid responds to the content column width, independent of the viewport/sidebar', correct: true },
+		{ text: 'To enable dark mode', correct: false },
+		{ text: 'It’s required for grid', correct: false }
+	]}
+	explanation="Container queries let the cards reflow based on the actual content width whether or not the sidebar is shown."
+/>
+
+## Recap & module wrap-up
+
+Module 9 complete. You can build resilient, real-world layouts: subgrid alignment, sticky and snap
+patterns, container-query-driven components, and internationalised logical spacing — composed into a
+production app shell.
+
+Next module: **Architecture at Scale** — design systems, accessibility, performance, and custom
+utilities for codebases that many engineers depend on.

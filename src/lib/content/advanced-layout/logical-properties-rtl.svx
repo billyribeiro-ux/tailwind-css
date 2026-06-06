@@ -1,0 +1,91 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Logical Properties & RTL
+
+If your product might ever ship in Arabic, Hebrew, Persian, or Urdu, your layout must mirror. Logical
+properties make that automatic — and they're good practice even for left-to-right-only apps.
+
+## Physical vs logical
+
+Physical utilities (`ml-4`, `pr-2`, `left-0`, `text-left`) are tied to screen edges. **Logical**
+utilities (`ms-4`, `pe-2`, `start-0`, `text-start`) are tied to *reading direction* — "start" and
+"end" flip automatically in RTL.
+
+<CodeBlock
+	language="html"
+	filename="physical → logical"
+	code={`ml-4   → ms-4    /* margin-inline-start  */
+mr-4   → me-4    /* margin-inline-end    */
+pl-2   → ps-2    /* padding-inline-start */
+pr-2   → pe-2    /* padding-inline-end   */
+left-0 → start-0 /* inset-inline-start   */
+text-left → text-start`}
+/>
+
+## It just flips
+
+Set `dir="rtl"` on a container and logical utilities mirror; physical ones don't.
+
+<CodeBlock
+	playground
+	filename="rtl mirroring"
+	code={`<div dir="rtl" class="space-y-3 rounded-xl border p-4">
+  <div class="border-s-4 border-indigo-500 ps-3">
+    Logical: border-s + ps-3 sit on the START edge → mirrors to the right in RTL.
+  </div>
+  <div class="border-l-4 border-red-400 pl-3">
+    Physical: border-l + pl-3 stay on the LEFT even in RTL (usually wrong).
+  </div>
+</div>`}
+/>
+
+The logical row correctly hugs the reading-start edge; the physical row is stuck on the left.
+
+## Beyond margins
+
+`text-start/end`, `start-*`/`end-*` for positioning, and `rtl:`/`ltr:` variants for the rare cases
+that need direction-specific tweaks.
+
+<Callout type="insight" title="Author logical-first — it's a tiny habit with global reach">
+
+Internationalisation is brutally expensive to retrofit: physical properties are scattered through
+thousands of components, each a small bug that only surfaces when an RTL locale ships. The fix costs
+almost nothing if you start logical-first — `ms`/`me`/`ps`/`pe`/`start`/`end` instead of
+`ml`/`mr`/`pl`/`pr`/`left`/`right`. It reads just as clearly, costs zero extra effort, and means
+"add Arabic" is a content project, not a layout rewrite. Building for a future you can't yet see —
+markets, locales, scale — at no present cost is precisely the kind of leverage senior engineers are
+paid to create. Make logical properties your default and you've de-risked internationalisation
+before anyone asks for it.
+
+</Callout>
+
+<Callout type="tip" title="Icons may still need a manual flip">
+
+Logical properties handle layout, but a directional glyph (an arrow, a chevron) may need
+`rtl:rotate-180` or `rtl:-scale-x-100` to point the right way. Layout flips for free; *meaning*
+sometimes needs a nudge.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Which utility correctly hugs the reading-start edge in both LTR and RTL?"
+	options={[
+		{ text: 'ml-4', correct: false },
+		{ text: 'ms-4 (margin-inline-start)', correct: true },
+		{ text: 'left-4', correct: false },
+		{ text: 'pl-4', correct: false }
+	]}
+	explanation="Logical utilities like ms-* follow reading direction and mirror automatically under dir=rtl."
+/>
+
+## Recap
+
+- Prefer **logical** (`ms/me/ps/pe/start/end/text-start`) over physical utilities.
+- They mirror automatically under `dir="rtl"`; physical ones don't.
+- Author logical-first to make internationalisation nearly free; flip directional icons manually.
+
+Next: assemble it all into a responsive application shell.
