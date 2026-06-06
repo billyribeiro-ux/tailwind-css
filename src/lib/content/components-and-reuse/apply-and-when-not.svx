@@ -58,7 +58,6 @@ Tailwind maturity; juniors `@apply` everything, seniors almost never do.
   /* Sensible default for all body links you don't render yourself */
   a { @apply text-indigo-600 underline-offset-2 hover:underline; }
 }
-
 @layer components {
   /* Styling HTML from a CMS/markdown where you can't add classes per element */
   .rich-content table { @apply w-full border-collapse text-sm; }

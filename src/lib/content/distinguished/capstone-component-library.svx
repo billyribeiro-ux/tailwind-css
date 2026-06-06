@@ -1,0 +1,84 @@
+<script>
+	import { CodeBlock, Callout, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Capstone: Component Library
+
+Package your learning into a real, documented, variant-driven component library — the kind a team
+could install and depend on. This is Module 7's project grown up into a governed, distributable
+system.
+
+<ProjectBrief
+	title="Build and document a component library"
+	time="3–5 hours"
+	goal="Build ~10 typed, accessible, variant-driven Svelte 5 components on a shared token + cn() foundation, with a barrel export, a docs/gallery page rendering every variant, and tests — packaged for reuse."
+	requirements={[
+		'A token foundation (semantic CSS variables) + shared cn() utility',
+		'At least 10 components: Button, IconButton, Badge, Card, Alert, Input, Select, Checkbox, Modal, Tabs',
+		'Typed orthogonal variant props; every component accepts a `class` override via cn()',
+		'Accessibility built in: roles, labels, focus management, keyboard support',
+		'A barrel export (index.ts) and a living docs/gallery page',
+		'Component tests querying by role/name; CI running lint/check/test/build'
+	]}
+	stretch={[
+		'Publish as a private npm package consumed by a second app',
+		'Add a dark-mode and a second-brand story to the gallery',
+		'Generate the token table in docs from the token source'
+	]}
+/>
+
+## The gallery is the product
+
+A component library *is* its documentation. Ship a page that renders every component in every variant —
+it's how consumers discover, compare, and copy.
+
+<CodeBlock
+	playground
+	filename="gallery-snippet.html"
+	code={`<div class="space-y-6">
+  <div>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Button · intents</p>
+    <div class="flex flex-wrap gap-2">
+      <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Primary</button>
+      <button class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-900">Secondary</button>
+      <button class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white">Danger</button>
+    </div>
+  </div>
+  <div>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Badge · tones</p>
+    <div class="flex flex-wrap gap-2">
+      <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">neutral</span>
+      <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700">success</span>
+      <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">warning</span>
+      <span class="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">danger</span>
+    </div>
+  </div>
+</div>`}
+/>
+
+## Architecture guidance
+
+- **One contract, everywhere:** every component = typed variants + `cn(base, variants, className)` +
+  semantic tokens + built-in a11y. Uniformity is the value.
+- **Compose primitives:** Modal uses your focus-trap; Tabs uses custom variants on `data-state`.
+- **Headless where it's hard:** wrap a headless library for Tabs/Modal/Menu, style with Tailwind.
+- **Govern it:** semver, changelog, deprecation policy — it's a public API now (Module 10).
+
+<Callout type="insight" title="A library's worth is its consistency, not its component count">
+
+It's tempting to measure a library by how many components it has. The real measure is how *predictable*
+it is: does knowing one component let you predict the next? Same variant grammar, same override
+mechanism, same a11y guarantees, same naming. That predictability is what lets a team adopt it without
+reading every source file — they learn the *pattern* once and trust the rest. Ten ruthlessly consistent
+components beat fifty inconsistent ones every time. When you build this capstone, obsess over
+*uniformity of contract*; it's the difference between a library people love and one they fight. This is
+the same restraint Module 10 preached, now expressed as a shippable artifact you can put in a
+portfolio.
+
+</Callout>
+
+## Acceptance criteria
+
+- 10+ components sharing one contract (typed variants + cn override + semantic tokens + a11y).
+- Barrel export; living gallery rendering all variants in light/dark.
+- Role/name-based component tests; CI green; consumable from a second app.

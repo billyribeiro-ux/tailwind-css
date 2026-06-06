@@ -42,12 +42,10 @@ The plugin makes these themeable too — `accent`/colour utilities and sizing ju
   <select class="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500">
     <option>Starter</option><option>Pro</option><option>Enterprise</option>
   </select>
-
   <label class="flex items-center gap-2 text-sm text-slate-700">
     <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
     Subscribe to the newsletter
   </label>
-
   <div class="flex gap-4 text-sm text-slate-700">
     <label class="flex items-center gap-2">
       <input type="radio" name="plan" class="border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Monthly

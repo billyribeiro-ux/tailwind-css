@@ -25,8 +25,9 @@ Tailwind:         grows fast at first, then flattens (new features reuse existin
 
 - **Arbitrary values everywhere** (`p-[13px]`, `text-[#abc123]`): each unique one is a new rule.
   Prefer tokens.
-- **Dynamically constructed class names**: `class={\`bg-\${color}-500\`}` can't be statically found —
-  either it's missing or you over-safelist. Use complete class names mapped from props.
+- **Dynamically constructed class names** — building a class string from a variable at runtime (see
+  the example below) — can't be found by the scanner, so the class is either missing in production or
+  forces you to over-safelist. Use complete class names mapped from props.
 - **Unused heavy plugins** or giant component CSS via `@apply`.
 
 <CodeBlock

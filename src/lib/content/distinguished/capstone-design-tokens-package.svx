@@ -1,0 +1,114 @@
+<script>
+	import { CodeBlock, Callout, ProjectBrief } from '$lib/components/lesson';
+
+	const pkgCss = `/* @acme/tokens — the published design language */
+@theme {
+  --color-surface: white;
+  --color-ink: oklch(0.27 0.03 264);
+  --color-muted: oklch(0.52 0.02 264);
+  --color-accent: oklch(0.58 0.2 277);
+  --color-accent-ink: white;
+  --radius-card: 0.875rem;
+}
+.dark {
+  --color-surface: oklch(0.21 0.02 264);
+  --color-ink: oklch(0.96 0.01 264);
+  --color-muted: oklch(0.70 0.02 264);
+}
+[data-brand='aurora'] { --color-accent: oklch(0.7 0.15 165); }`;
+
+	const consume = `@import 'tailwindcss';
+@import '@acme/tokens';   /* inherit the whole design language */`;
+</script>
+
+# Capstone: Design-Tokens Package
+
+The final capstone is the most "principal" of all: package your design language as a **versioned,
+multi-brand, themeable tokens package** that any app or library can consume. This is the artifact that
+unifies an organisation.
+
+<ProjectBrief
+	title="Publish a versioned design-tokens package"
+	time="2–4 hours"
+	goal="Create a distributable tokens package (semantic tokens + light/dark + multi-brand overrides) with documentation, semver, and a changelog, consumed by at least one downstream app to prove the contract."
+	requirements={[
+		'Semantic token set in @theme (color/spacing/radius/font), light + dark',
+		'At least one brand override scope (data-brand)',
+		'Packaged so consumers @import it and inherit utilities + variables',
+		'A documented token reference (name → value → purpose) generated or maintained',
+		'Semver + CHANGELOG; tokens treated as a public API',
+		'A downstream app importing the package and building successfully'
+	]}
+	stretch={[
+		'Provide a companion JS plugin for any generated utilities',
+		'Add a high-contrast theme scope',
+		'Validate contrast of every ink/surface pairing in CI'
+	]}
+/>
+
+## The package
+
+<CodeBlock language="css" filename="@acme/tokens/index.css" code={pkgCss} />
+
+## Consuming it downstream
+
+<CodeBlock language="css" filename="app/src/app.css" code={consume} />
+
+Now every consuming app shares one design language. Re-tune `accent` in the package, publish a minor
+version, and every app upgrades on its schedule — coherently.
+
+## See the contract in action
+
+This is the package's tokens driving UI. Toggle the site theme and imagine swapping `data-brand` — the
+*same* markup, re-skinned by the published contract.
+
+<CodeBlock
+	playground
+	themeCss={pkgCss}
+	filename="consumer-ui.html"
+	code={`<div data-brand="aurora" class="bg-surface p-6">
+  <div class="rounded-card bg-surface p-6 shadow ring-1 ring-black/10">
+    <h3 class="text-lg font-semibold text-ink">Powered by @acme/tokens</h3>
+    <p class="mt-1 text-sm text-muted">One package, every app, every brand, both themes.</p>
+    <button class="mt-4 rounded-lg bg-accent px-4 py-2 font-medium text-accent-ink">Accent action</button>
+  </div>
+</div>`}
+/>
+
+<Callout type="insight" title="A tokens package is organisational leverage in its purest form">
+
+Step back and see what you've built across this course. You learned to style one element, then one
+component, then a system, then to ship and maintain it — and now to *distribute the design language
+itself* as a versioned dependency a whole company builds on. A single change to this package can update
+the look of every product in the org, consistently, safely, on each team's schedule. That is leverage
+measured in organisations, not files — the literal definition of distinguished-engineer impact. The CSS
+is almost trivial; the *value* is the contract, the governance, and the trust that lets hundreds of
+engineers move in the same direction without coordination overhead. If you can design, ship, govern,
+and evangelise this package, you are operating at the level this course set out to reach.
+
+</Callout>
+
+## Acceptance criteria
+
+- Importable package; a downstream app consumes it and builds.
+- Semantic tokens with light/dark + at least one brand; documented token reference.
+- Semver + CHANGELOG; tokens governed as a public API; pairings contrast-safe.
+
+---
+
+## 🎓 You finished the course
+
+That's all twelve modules, sixty-five lessons, and sixteen projects — from *"what is a utility class?"*
+to *"I publish the design language an organisation runs on."*
+
+You can now:
+
+- **Build** anything from utilities, fluently, with taste and accessibility by default.
+- **Architect** design systems as layered tokens and recipes, governed like an API.
+- **Ship** flash-free SSR, enforce performance budgets, test UI, and run CI.
+- **Lead** — make explicit tradeoffs, extend the framework judiciously, and multiply your team's
+  judgement through systems and mentoring.
+
+The tool was Tailwind. The real subject was **leverage** — making the consistent, accessible,
+maintainable choice the *easy* choice, for yourself and everyone who builds after you. Now go build
+something, and bring others up with you.

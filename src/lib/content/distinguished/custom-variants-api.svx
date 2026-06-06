@@ -1,0 +1,92 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const cssVariants = `/* state from a data attribute */
+@custom-variant expanded (&:where([aria-expanded='true']));
+/* a structural variant */
+@custom-variant first-of-type (&:first-of-type);
+/* a media/feature variant */
+@custom-variant hocus (&:hover, &:focus-visible);`;
+
+	const jsVariant = `import plugin from 'tailwindcss/plugin';
+
+export default plugin(function ({ addVariant }) {
+  // style descendants when an ancestor is [data-loading]
+  addVariant('loading', '&:where([data-loading] *)');
+  // combine pseudo-states
+  addVariant('hocus', ['&:hover', '&:focus-visible']);
+});`;
+</script>
+
+# Custom Variants
+
+Variants are the prefixes before the colon — `hover:`, `md:`, `dark:`, `group-hover:`. v4 lets you
+mint your own, which is how you teach Tailwind about *your* component states (open, loading, selected)
+and structural targets.
+
+## CSS custom variants
+
+The same `@custom-variant` you used for dark mode defines any selector-based variant.
+
+<CodeBlock language="css" filename="variants.css" code={cssVariants} />
+
+<CodeBlock
+	language="html"
+	filename="using them"
+	code={`<button aria-expanded="true" class="text-slate-500 expanded:text-indigo-600">
+  I turn indigo while expanded
+</button>
+<a href="#" class="text-slate-600 hocus:text-indigo-600">Hover or keyboard-focus me</a>`}
+/>
+
+## JS variants for logic
+
+When a variant needs multiple selectors or programmatic logic, `addVariant` in a plugin handles it.
+
+<CodeBlock language="javascript" filename="plugins/variants.js" code={jsVariant} />
+
+## Why custom variants beat ad-hoc classes
+
+A `loading:` variant lets you write `loading:opacity-50 loading:pointer-events-none` declaratively,
+driven by a single `data-loading` attribute on an ancestor — instead of toggling many classes in JS.
+The *state* lives in one attribute; the *styling* is pure, composable CSS.
+
+<Callout type="insight" title="Custom variants turn component state into a styling vocabulary">
+
+This is the elegant endgame of everything you've learned about state. Instead of JavaScript imperatively
+adding and removing style classes as state changes, you express component states as *attributes*
+(`data-state`, `aria-expanded`, `data-loading`) and let custom variants style off them declaratively.
+Your JS does one job — set the attribute — and CSS handles every visual consequence, composably and
+before hydration. This is exactly how modern headless UI libraries work (next lesson), and adopting
+the pattern in your own components makes them simpler, faster, and more predictable. When state maps
+to attributes and attributes map to variants, your styling becomes a clean function of state — and
+clean functions are what senior engineers build everywhere.
+
+</Callout>
+
+<Callout type="warning" title="Keep your variant vocabulary small and documented">
+
+Each custom variant is something every contributor must learn. A focused set (`open`, `loading`,
+`selected`, `hocus`) is a feature; twenty obscure ones are a liability. Name them by state, document
+them, and govern them like tokens.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What's the architectural benefit of a `loading:` custom variant driven by a `data-loading` attribute?"
+	options={[
+		{ text: 'It removes the need for CSS', correct: false },
+		{ text: 'JS only sets one attribute; CSS handles all visual consequences declaratively', correct: true },
+		{ text: 'It makes the bundle larger on purpose', correct: false },
+		{ text: 'It disables hover states', correct: false }
+	]}
+	explanation="State→attribute→variant keeps styling a pure function of state, minimising imperative class juggling."
+/>
+
+## Recap
+
+- Define variants with **`@custom-variant`** (CSS) or **`addVariant`** (JS plugin).
+- Map component **state to attributes**, then style with custom variants.
+- Keep the variant vocabulary **small, intentional, documented**.

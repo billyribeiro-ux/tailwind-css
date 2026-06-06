@@ -36,17 +36,14 @@ overlays using positioning, and `object-cover` to keep images tidy.
       Featured · Mountain lake
     </figcaption>
   </figure>
-
   <figure class="group relative overflow-hidden rounded-xl">
     <img src="https://picsum.photos/id/1025/300/300" alt="" class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
     <figcaption class="absolute inset-x-0 bottom-0 bg-black/60 p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">A good boy</figcaption>
   </figure>
-
   <figure class="group relative overflow-hidden rounded-xl">
     <img src="https://picsum.photos/id/1043/300/300" alt="" class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
     <figcaption class="absolute inset-x-0 bottom-0 bg-black/60 p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">City lights</figcaption>
   </figure>
-
   <figure class="group relative overflow-hidden rounded-xl">
     <img src="https://picsum.photos/id/1003/300/300" alt="" class="aspect-square w-full object-cover transition duration-300 group-hover:scale-105" />
     <figcaption class="absolute inset-x-0 bottom-0 bg-black/60 p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">Into the wild</figcaption>

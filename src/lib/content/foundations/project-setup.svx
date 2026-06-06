@@ -25,7 +25,6 @@ SvelteKit *and* wire up Tailwind for you in one command.
 	filename="terminal"
 	code={`# scaffold a SvelteKit + TypeScript app and add Tailwind in one go
 pnpm dlx sv create my-app --template minimal --types ts --add tailwindcss
-
 cd my-app
 pnpm install
 pnpm dev`}
@@ -45,7 +44,6 @@ SvelteKit plugin.
 	code={`import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-
 export default defineConfig({
   plugins: [tailwindcss(), sveltekit()]
 });`}

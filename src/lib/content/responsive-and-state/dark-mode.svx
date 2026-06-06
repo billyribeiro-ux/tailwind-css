@@ -38,7 +38,6 @@ strategy**: define a custom variant and toggle a `dark` class on `<html>`.
 	language="css"
 	filename="app.css (class-based dark mode in v4)"
 	code={`@import 'tailwindcss';
-
 /* Make dark: respond to a .dark class instead of the OS setting */
 @custom-variant dark (&:where(.dark, .dark *));`}
 />

@@ -20,7 +20,6 @@ they vanish on input and many are too low-contrast.
   Full name
   <input class="mt-1 block w-full rounded-lg border px-3 py-2" />
 </label>
-
 <!-- Option B: link by id -->
 <label for="phone" class="text-sm font-medium">Phone</label>
 <input id="phone" class="mt-1 block w-full rounded-lg border px-3 py-2" />`}

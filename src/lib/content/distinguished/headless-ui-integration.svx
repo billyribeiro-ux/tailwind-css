@@ -1,0 +1,92 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const headlessExample = `${S} lang="ts">
+  // A headless library (e.g. Bits UI / Melt UI) provides behaviour + a11y + data-attributes.
+  // YOU provide the styling with Tailwind, keyed off those attributes.
+  import { Accordion } from 'bits-ui';
+${E}
+
+<Accordion.Root class="divide-y divide-slate-200 rounded-xl border">
+  <Accordion.Item value="a">
+    <Accordion.Trigger
+      class="flex w-full items-center justify-between p-4 font-medium
+             data-[state=open]:text-indigo-600">
+      Section A
+    </Accordion.Trigger>
+    <Accordion.Content
+      class="overflow-hidden px-4 text-sm text-slate-500
+             data-[state=open]:pb-4">
+      Styled by Tailwind, behaviour + a11y by the library.
+    </Accordion.Content>
+  </Accordion.Item>
+</Accordion.Root>`;
+</script>
+
+# Headless UI Integration
+
+The state of the art for complex components (menus, dialogs, comboboxes, date pickers) is the
+**headless** pattern: a library owns *behaviour and accessibility*; you own *appearance* with Tailwind.
+You get robust a11y without sacrificing design control.
+
+## The division of responsibility
+
+- **Headless library** (Bits UI, Melt UI, etc.): keyboard interaction, focus management, ARIA, state
+  — exposed via `data-*` attributes and props.
+- **You + Tailwind:** every pixel of styling, keyed off those attributes with `data-[state=open]:`
+  variants.
+
+<CodeBlock language="svelte" filename="StyledAccordion.svelte" code={headlessExample} />
+
+Notice `data-[state=open]:text-indigo-600` — arbitrary **attribute variants** let you style directly
+off the library's state. This is the custom-variant idea from the last lesson, applied to a library's
+attributes.
+
+## Why not build it yourself?
+
+You *can* hand-roll a dialog (you did, in Module 8). But production menus and comboboxes have brutal
+accessibility edge cases — focus trapping, typeahead, RTL, screen-reader semantics, collision-aware
+positioning. A mature headless library has solved these and battle-tested them.
+
+<Callout type="insight" title="Buy the behaviour, build the brand">
+
+Here's a senior build-vs-buy heuristic that pays off repeatedly: **outsource the commodity, own the
+differentiator.** Accessible dialog mechanics are a commodity — hard to get right, identical across
+every product, and a poor use of your team's time to re-derive and re-test forever. Your *visual
+design* is a differentiator — it's your brand, and Tailwind gives you total control over it. Headless
+libraries draw exactly this line: they hand you correct, accessible behaviour and get out of the way
+of styling. Recognising which parts of a system are commodity (adopt) versus differentiator (build) is
+one of the most leveraged judgements you'll make as a technical leader — it's how you spend finite
+engineering effort where it actually creates value.
+
+</Callout>
+
+<Callout type="warning" title="Headless still needs YOU to handle focus visibility and contrast">
+
+A headless library wires the ARIA and keyboard logic, but it can't choose your focus ring or guarantee
+your contrast — those are styling, which is your job. Don't assume "accessible library" means
+"accessible result"; you still apply `focus-visible:` rings and contrast-safe tokens.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="In the headless pattern, what does the library own vs. what do you own?"
+	options={[
+		{ text: 'The library owns styling; you own behaviour', correct: false },
+		{ text: 'The library owns behaviour + accessibility; you own styling with Tailwind', correct: true },
+		{ text: 'You own everything; the library is just types', correct: false },
+		{ text: 'The library owns both behaviour and styling', correct: false }
+	]}
+	explanation="Headless = behaviour/a11y from the library, full visual control via Tailwind on data-* state."
+/>
+
+## Recap
+
+- **Headless libraries** provide behaviour + a11y via `data-*`/props; you style with Tailwind.
+- Use **attribute variants** (`data-[state=open]:`) to style off library state.
+- **Buy the commodity** (accessible mechanics), **build the differentiator** (your design) — but still apply focus/contrast yourself.

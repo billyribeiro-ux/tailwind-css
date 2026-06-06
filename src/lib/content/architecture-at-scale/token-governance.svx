@@ -18,7 +18,6 @@ Good token names describe *purpose*, not appearance or location. `--color-danger
 	code={`/* ✅ intent-based, reusable */
 --color-surface  --color-surface-raised  --color-ink  --color-muted
 --color-accent   --color-danger          --color-success
-
 /* ❌ ties the name to a value or a single use */
 --color-light-grey   --color-signup-button-bg   --color-red-thing`}
 />

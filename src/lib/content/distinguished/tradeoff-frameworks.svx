@@ -1,0 +1,93 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Engineering Tradeoffs
+
+Principal-level work is rarely "what's the class for X?" It's "given *these* constraints, what's the
+right call?" This lesson gives you decision frameworks for the recurring Tailwind tradeoffs, so your
+choices are reasoned rather than reflexive.
+
+## Utility vs component vs custom utility vs @apply
+
+The decision that comes up daily. Use this ladder:
+
+<CodeBlock
+	language="text"
+	filename="decision ladder"
+	code={`Does markup + behaviour repeat?            → Component (recipe)
+Does an atomic, behaviour-free CSS pattern repeat? → @utility
+Styling HTML you don't render (CMS/markdown)?      → @apply in a layer
+One-off styling, used once?                        → Inline utilities
+Need generation or cross-repo sharing?             → JS plugin`}
+/>
+
+## Token vs arbitrary value
+
+<CodeBlock
+	language="text"
+	filename="token vs arbitrary"
+	code={`Used in 2+ places, or a design decision?   → Token (@theme)
+Genuinely one-off, local, unlikely to repeat? → Arbitrary value [..]
+Appearing a lot as arbitrary values?          → Smell: promote to a token`}
+/>
+
+## Build vs buy (components)
+
+<CodeBlock
+	language="text"
+	filename="build vs buy"
+	code={`Commodity behaviour with hard a11y (menu, combobox, dialog)? → Buy (headless lib)
+Your visual differentiator / brand?                          → Build (Tailwind)
+Simple, low-risk, fully in your control (a styled button)?   → Build`}
+/>
+
+## How to reason, not just decide
+
+Every one of these trades the **same axes**: *upfront cost* vs *lifetime maintenance*, *flexibility* vs
+*consistency*, *control* vs *leverage*. Name the axes for the decision in front of you, weigh them
+against your real constraints (team size, change frequency, risk), and the answer usually becomes
+obvious.
+
+<Callout type="insight" title="Seniority is calibrated judgement under constraints — and the humility to revisit it">
+
+Juniors want a rule for everything; principals know the rule is "it depends," and can say *on what*. The
+abstraction that's right for a 3-person startup shipping weekly is wrong for a 300-engineer platform
+with a 5-year horizon — same code, different constraints, different answer. Two habits separate genuine
+seniority from cargo-culted "best practices." First, **make the tradeoff explicit**: state the axes and
+the constraints out loud so the team can challenge your reasoning, not just your conclusion. Second,
+**hold decisions provisionally**: the right call last year may be wrong now, and the strongest engineers
+revisit and reverse their own past decisions without ego when the constraints shift. Build vs buy,
+abstract vs inline, token vs one-off — none have permanent answers, only answers that fit a context.
+Master *reasoning about the context*, and you'll make good calls in situations no course could
+enumerate. That is the level this course set out to reach.
+
+</Callout>
+
+<Callout type="warning" title="Premature abstraction is as costly as no abstraction">
+
+The classic senior mistake in the other direction: building a configurable mega-component for a pattern
+that's appeared *once*. Abstraction has a cost — indirection, learning, maintenance. Wait for the
+*rule of three* (abstract on the third real occurrence), and let duplication live until the pattern is
+actually clear.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You keep writing the same `p-[13px]` arbitrary value across many components. The principled response?"
+	options={[
+		{ text: 'Keep it — arbitrary values are fine everywhere', correct: false },
+		{ text: 'Promote it to a spacing token; repeated arbitrary values are a signal', correct: true },
+		{ text: 'Wrap each in a component', correct: false },
+		{ text: 'Write a JS plugin', correct: false }
+	]}
+	explanation="A repeated arbitrary value is a design decision in disguise — make it a token so it's consistent and changeable."
+/>
+
+## Recap
+
+- Use the **ladder**: component → @utility → @apply → inline → plugin, by what repeats.
+- **Token** for repeated/design values; arbitrary for true one-offs (and watch for the smell).
+- Reason via shared axes: **cost vs maintenance, flexibility vs consistency, control vs leverage** — under your real constraints, revisited as they change.

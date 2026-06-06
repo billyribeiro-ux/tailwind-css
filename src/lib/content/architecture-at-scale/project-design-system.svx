@@ -51,7 +51,6 @@ utility — the seed of something a real team could grow.
 	filename="design-system.css"
 	code={`@import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --color-surface: white;
   --color-surface-raised: oklch(0.98 0.005 256);
@@ -68,7 +67,6 @@ utility — the seed of something a real team could grow.
   --color-ink: oklch(0.96 0.01 256);
   --color-muted: oklch(0.70 0.02 256);
 }
-
 /* a custom utility: a consistent, accessible focus ring */
 @utility focus-ring {
   outline: none;

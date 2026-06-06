@@ -25,7 +25,6 @@ attribute, a class, whatever scopes a subtree.
 	code={`@theme {
   --color-accent: oklch(0.55 0.21 258); /* default brand */
 }
-
 [data-brand='sunset'] { --color-accent: oklch(0.68 0.19 35); }
 [data-brand='forest'] { --color-accent: oklch(0.6 0.15 150); }`}
 />

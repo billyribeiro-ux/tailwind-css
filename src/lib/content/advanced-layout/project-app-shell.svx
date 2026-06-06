@@ -37,7 +37,6 @@ container queries so the content cards adapt to the column width.
     <span class="font-bold">Console</span>
     <div class="h-8 w-8 rounded-full bg-indigo-500"></div>
   </header>
-
   <!-- sidebar: hidden on mobile, sticky on desktop -->
   <aside class="hidden border-e bg-slate-50 p-4 lg:block">
     <nav class="space-y-1 text-sm">
@@ -46,7 +45,6 @@ container queries so the content cards adapt to the column width.
       <a class="block rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-100" href="#">Settings</a>
     </nav>
   </aside>
-
   <!-- main: a container so cards respond to THIS column -->
   <main class="@container p-4">
     <div class="grid gap-4 @md:grid-cols-2 @2xl:grid-cols-3">

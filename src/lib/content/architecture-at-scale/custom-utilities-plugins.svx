@@ -42,7 +42,6 @@ same way.
 	filename="custom variants"
 	code={`/* style when an ancestor has [data-state="open"] */
 @custom-variant open (&:where([data-state="open"] *));
-
 /* style the third child */
 @custom-variant third (&:nth-child(3));`}
 />

@@ -43,7 +43,6 @@ Toggle the site theme (top-right) and resize the preview to see it adapt.
       </button>
     </nav>
   </header>
-
   <section class="mx-auto max-w-2xl px-4 py-16 text-center">
     <span class="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
       New · v4 ready
@@ -60,7 +59,6 @@ Toggle the site theme (top-right) and resize the preview to see it adapt.
       <button class="rounded-xl border border-slate-300 px-6 py-3 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Live demo</button>
     </div>
   </section>
-
   <section class="mx-auto grid max-w-4xl grid-cols-1 gap-4 px-4 pb-16 sm:grid-cols-3">
     <div class="group rounded-xl border border-slate-200 p-5 transition hover:-translate-y-1 dark:border-slate-700">
       <div class="mb-3 h-10 w-10 rounded-lg bg-indigo-100 transition group-hover:bg-indigo-600 dark:bg-indigo-500/20"></div>

@@ -37,7 +37,6 @@ system into spaghetti.
 	filename="layers in practice"
 	code={`<!-- ✅ recipe consumes semantics -->
 <button class="bg-accent text-accent-ink rounded-card">…</button>
-
 <!-- ❌ recipe reaching past semantics to a primitive -->
 <button class="bg-blue-600 text-white rounded-[12px]">…</button>`}
 />

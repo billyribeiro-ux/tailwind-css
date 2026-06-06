@@ -48,7 +48,6 @@ enter/leave; `transition:` for symmetric. Pass `{ duration, delay, easing }`.
 	code={`{#if show}
   <p transition:fade>symmetric fade</p>
 {/if}
-
 {#if show}
   <p in:fly={{ y: 20 }} out:fade>fly in, fade out</p>
 {/if}`}
@@ -81,7 +80,7 @@ Accessible motion is reduced, not removed.
 ## Knowledge check
 
 <Quiz
-	question="Why use Svelte's `transition:` instead of a CSS transition for a dropdown that's conditionally rendered with {#if}?"
+	question="Why use Svelte's `transition:` instead of a CSS transition for a dropdown that's conditionally rendered with an &lbrace;#if&rbrace; block?"
 	options={[
 		{ text: 'CSS can’t set colours on dropdowns', correct: false },
 		{ text: 'Svelte can animate the element OUT before removing it from the DOM', correct: true },

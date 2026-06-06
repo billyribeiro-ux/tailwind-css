@@ -1,0 +1,86 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const jsPlugin = `import plugin from 'tailwindcss/plugin';
+
+export default plugin(function ({ addUtilities, matchUtilities, theme }) {
+  // static utilities
+  addUtilities({
+    '.text-balance': { 'text-wrap': 'balance' }
+  });
+
+  // dynamic utilities driven by a theme scale
+  matchUtilities(
+    { 'grid-stack': (value) => ({ display: 'grid', gridTemplateColumns: value }) },
+    { values: theme('gridTemplateColumns') }
+  );
+});`;
+
+	const usePlugin = `@import 'tailwindcss';
+@plugin './plugins/my-plugin.js';`;
+</script>
+
+# Authoring Tailwind Plugins
+
+You've defined custom utilities in CSS with `@utility`. For utilities that need *logic* — generating a
+family from data, computing values, distributing across repos — you write a **plugin**. This is how
+the ecosystem (typography, forms) is built, and how you'd ship your org's design language as a package.
+
+## CSS-first vs JS plugins
+
+- **CSS (`@utility`, `@theme`, `@custom-variant`):** the default in v4 — simple, fast, no JS.
+- **JS plugin (`@plugin`):** when you need programmatic generation — `matchUtilities` for dynamic
+  families, reading the theme, or publishing a reusable package.
+
+## A JS plugin
+
+<CodeBlock language="javascript" filename="plugins/my-plugin.js" code={jsPlugin} />
+
+`addUtilities` adds static classes; `matchUtilities` generates a *family* from theme values (and
+supports arbitrary values automatically). Register it from CSS:
+
+<CodeBlock language="css" filename="app.css" code={usePlugin} />
+
+## Packaging for distribution
+
+To share across repos, publish the plugin (and a companion CSS file of `@theme` tokens) as an npm
+package. Consumers `@plugin '@acme/tailwind'` and inherit your utilities, variants, and tokens — your
+design language as a dependency.
+
+<Callout type="insight" title="A plugin is a product with a support contract">
+
+Publishing a plugin feels like a victory lap, but it's the *start* of an obligation. Every utility and
+token you export becomes an API thousands of files may depend on, across teams you don't control. That
+means semver discipline, a changelog, deprecation paths, migration codemods, and docs — the full
+weight of maintaining a public library. The distinguished judgement isn't "can I build a plugin?"
+(you can); it's "*should* this be a plugin, given the lifetime cost, or would a CSS `@utility` or a
+component serve better with less commitment?" Reserve plugins for genuinely cross-cutting, cross-repo
+needs where the leverage justifies the maintenance. Most teams need far fewer than they think.
+
+</Callout>
+
+<Callout type="warning" title="Don't reach for JS when CSS will do">
+
+If your utility is static CSS, `@utility` is simpler, faster, and has no plugin lifecycle. Use a JS
+plugin only when you genuinely need *generation* or *distribution* — not as a reflex.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="When is a JS plugin the right choice over a CSS @utility?"
+	options={[
+		{ text: 'Always — JS is more powerful', correct: false },
+		{ text: 'When you need programmatic generation (matchUtilities) or cross-repo distribution', correct: true },
+		{ text: 'For any custom colour', correct: false },
+		{ text: 'Never — plugins are deprecated in v4', correct: false }
+	]}
+	explanation="CSS handles static utilities; reach for a JS plugin for generated families or publishable packages."
+/>
+
+## Recap
+
+- Prefer **CSS-first** (`@utility`/`@theme`/`@custom-variant`); use **JS plugins** for generation or distribution.
+- `addUtilities` (static) and `matchUtilities` (theme-driven families) are the core APIs.
+- A published plugin is a **maintained public API** — adopt that responsibility deliberately.

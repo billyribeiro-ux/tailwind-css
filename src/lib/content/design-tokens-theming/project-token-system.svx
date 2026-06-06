@@ -63,9 +63,7 @@ This is the `@theme` powering the Playground below (defaults + a `mint` brand + 
   --radius-card: 1rem;
   --shadow-card: 0 10px 30px -12px oklch(0.27 0.03 256 / 0.25);
 }
-
 [data-brand='mint'] { --color-accent: oklch(0.7 0.13 165); }
-
 .dark {
   --color-surface: oklch(0.27 0.03 256);
   --color-surface-2: oklch(0.32 0.03 256);

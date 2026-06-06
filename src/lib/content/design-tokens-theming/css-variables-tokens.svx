@@ -33,7 +33,6 @@ component edits.
   /* primitives */
   --color-blue-500: oklch(0.62 0.2 256);
   --color-slate-800: oklch(0.27 0.03 256);
-
   /* semantics → point at primitives */
   --color-accent: var(--color-blue-500);
   --color-ink: var(--color-slate-800);

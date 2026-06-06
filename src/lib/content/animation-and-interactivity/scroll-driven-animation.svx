@@ -17,7 +17,6 @@ classic use is a top progress bar.
 	language="css"
 	filename="progress.css"
 	code={`@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
 .read-progress {
   transform-origin: left;
   animation: grow linear;

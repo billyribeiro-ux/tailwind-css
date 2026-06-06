@@ -1,0 +1,91 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Leading a Design-System Org
+
+The final technical leap: from building the system to *leading* it across an organisation. The hard
+problems here are human and strategic as much as technical — and they're what distinguished engineers
+are uniquely positioned to solve.
+
+## The four jobs of a design-system lead
+
+<CodeBlock
+	language="text"
+	filename="the role"
+	code={`1. Architecture  — define the layers, tokens, and the dependency rules (Module 10)
+2. Adoption      — make the system the path of least resistance, then grow usage
+3. Governance    — evolve it as a versioned API without breaking consumers (Module 10)
+4. Advocacy      — teach, document, and build trust so teams *want* to adopt`}
+/>
+
+## Adoption is the real challenge
+
+A technically perfect system nobody uses has zero value. Drive adoption with **leverage, not
+mandates**:
+
+- **Make it easier than the alternative** — great docs, copy-paste examples, a component gallery,
+  scaffolding/codemods.
+- **Meet teams where they are** — incremental adoption, not a big-bang rewrite.
+- **Remove friction relentlessly** — every install step or confusing API is lost adoption.
+- **Showcase wins** — a flagship product on the system convinces skeptics faster than any doc.
+
+## Migration without breaking the world
+
+When you must make a breaking change, you own your consumers' transition:
+
+- Deprecate with warnings and a window, not a sudden removal.
+- Ship **codemods** that auto-migrate consumer code.
+- Provide a changelog and a clear upgrade guide.
+- Version with **semver** so teams upgrade on their schedule.
+
+## Mentoring scales you
+
+You cannot review every PR in a large org. You scale through people: teach the *principles* (the
+dependency rule, semantic tokens, accessibility-by-default, the tradeoff frameworks) so engineers make
+good decisions *without* you. A well-taught team is a force multiplier; a bottlenecked expert is a
+single point of failure.
+
+<Callout type="insight" title="At this level, your job is to multiply other people's judgement">
+
+The trajectory of this course mirrors the trajectory of a career. You started by learning to make
+*individual* good decisions — read a class, center a box. You progressed to making *systemic* good
+decisions — tokens, architecture, governance. The final step is making *other people's* decisions
+good: encoding judgement into systems (CI, lint rules, accessible-by-default components) and into
+people (mentoring, docs, principles). A distinguished engineer's impact isn't measured in the code
+they personally write — it's measured in the quality of the thousands of decisions made by others
+because of the systems and culture they built. The tools were always Tailwind; the real subject was
+*leverage*. Master that, and you lead not because of a title, but because your judgement is embedded
+everywhere your organisation builds.
+
+</Callout>
+
+<Callout type="warning" title="Mandates without ergonomics breed shadow systems">
+
+Force a system on teams without making it pleasant to use, and they'll quietly build workarounds —
+a parallel "shadow" system that fragments everything you tried to unify. Adoption is earned through
+ergonomics and trust, not org charts. If teams are routing around your system, fix the friction, don't
+escalate the mandate.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What most reliably drives adoption of a design system across an org?"
+	options={[
+		{ text: 'A mandate from leadership', correct: false },
+		{ text: 'Making the system the easiest path — great docs, low friction, codemods, showcased wins', correct: true },
+		{ text: 'Removing all customisation options', correct: false },
+		{ text: 'Keeping it undocumented so people ask you', correct: false }
+	]}
+	explanation="Adoption is won with ergonomics and trust; mandates without ease breed shadow systems."
+/>
+
+## Recap
+
+- A system lead owns **architecture, adoption, governance, and advocacy**.
+- Drive adoption with **leverage and ergonomics**, not mandates; migrate with deprecation + codemods.
+- **Scale through people**: teach principles so good decisions happen without you.
+
+Now prove all of it — across four capstones.

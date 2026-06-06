@@ -1,0 +1,83 @@
+<script>
+	import { CodeBlock, Callout, ProjectBrief } from '$lib/components/lesson';
+
+	const heroTheme = `@theme {
+  --color-ink: oklch(0.27 0.03 264);
+  --color-accent: oklch(0.58 0.2 277);
+}`;
+</script>
+
+# Capstone: SaaS Marketing Site
+
+Your first capstone is a complete, multi-section marketing site — the kind that converts. It exercises
+the full first half of the course (layout, responsive, type, color, motion) on top of your design
+system.
+
+<ProjectBrief
+	title="Build a converting SaaS marketing site"
+	time="2–4 hours"
+	goal="Build a polished, responsive, themeable marketing site: sticky nav, hero, logo cloud, feature grid, testimonial, pricing, FAQ (accordion), and footer — all on semantic tokens, dark-mode ready, accessible, and animated tastefully."
+	requirements={[
+		'Sticky nav with mobile menu and a clear primary CTA',
+		'Hero with responsive headline, subcopy, dual CTAs, and a gradient accent',
+		'Feature grid using container queries so it works in any column',
+		'Pricing section reusing your Module 2 pricing-card patterns',
+		'FAQ built on your accordion (or a headless library), fully accessible',
+		'Light/dark themes via semantic tokens; visible focus everywhere',
+		'Tasteful motion (hover lifts, reveal-on-scroll) honouring reduced-motion'
+	]}
+	stretch={[
+		'Add a second brand via data-brand to prove the token system',
+		'Prerender it (prerender = true) for instant loads',
+		'Add a Lighthouse/perf budget check in CI'
+	]}
+/>
+
+## A representative section: the hero
+
+<CodeBlock
+	playground
+	themeCss={heroTheme}
+	filename="hero.html"
+	code={`<section class="mx-auto max-w-3xl px-6 py-20 text-center">
+  <span class="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+    ● Now in public beta
+  </span>
+  <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-ink sm:text-6xl">
+    Analytics that
+    <span class="bg-gradient-to-r from-accent to-fuchsia-500 bg-clip-text text-transparent">explain themselves</span>
+  </h1>
+  <p class="mx-auto mt-5 max-w-prose text-lg text-slate-600">
+    Ship insight, not dashboards. Set up in minutes, understand in seconds.
+  </p>
+  <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+    <button class="rounded-xl bg-accent px-6 py-3 font-semibold text-white shadow-lg shadow-accent/30 transition hover:brightness-110">Start free</button>
+    <button class="rounded-xl border border-slate-300 px-6 py-3 font-semibold text-ink transition hover:bg-slate-100">Book a demo</button>
+  </div>
+</section>`}
+/>
+
+## Architecture guidance
+
+- **Compose, don't repeat:** each section is a Svelte component; the page assembles them.
+- **Semantics only:** sections consume `accent`, `ink`, `surface` — never raw colours — so the second
+  brand is a one-line proof.
+- **Container queries** for feature/pricing grids so sections drop into any layout.
+- **Motion budget:** one reveal style, one hover lift, reused — calm, not carnival.
+
+<Callout type="insight" title="A marketing site is judged in seconds — make the fundamentals flawless">
+
+Conversion lives in the fundamentals you've drilled: a single obvious CTA per section, restrained
+palette, confident type hierarchy, generous whitespace, fast load, and motion that guides rather than
+distracts. There's nothing exotic here — and that's the mark of mastery. When you can produce a site
+this polished from your own system, reusing patterns from across the course, you've proven the first
+half cold. Treat the visual restraint as the hard part, because it is.
+
+</Callout>
+
+## Acceptance criteria
+
+- Passes `pnpm check`, `pnpm lint`, `pnpm build` with prerendering.
+- Fully responsive from 320px up; keyboard-navigable; visible focus throughout.
+- Light and dark themes both contrast-safe; a second brand swappable via one attribute.
+- No raw colours in section components — semantic tokens only.

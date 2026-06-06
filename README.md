@@ -12,17 +12,17 @@ built with the stack it teaches around, so the course is its own best example.
 
 ## Stack
 
-| Concern    | Choice                                                |
-| ---------- | ----------------------------------------------------- |
-| Framework  | Svelte 5 (runes) + SvelteKit 2                         |
-| Styling    | Tailwind CSS v4 via `@tailwindcss/vite` (CSS-first)   |
-| Icons      | `phosphor-svelte`                                      |
-| Editor     | `monaco-editor` (client-only, Vite worker imports)    |
+| Concern      | Choice                                              |
+| ------------ | --------------------------------------------------- |
+| Framework    | Svelte 5 (runes) + SvelteKit 2                      |
+| Styling      | Tailwind CSS v4 via `@tailwindcss/vite` (CSS-first) |
+| Icons        | `phosphor-svelte`                                   |
+| Editor       | `monaco-editor` (client-only, Vite worker imports)  |
 | Live preview | `@tailwindcss/browser` (compiles v4 in the iframe)  |
-| Content    | mdsvex (`.svx`)                                        |
-| Language   | TypeScript (strict)                                   |
-| Tooling    | ESLint, Prettier (+ tailwind plugin), Vitest          |
-| Adapter    | `@sveltejs/adapter-auto`                               |
+| Content      | mdsvex (`.svx`)                                     |
+| Language     | TypeScript (strict)                                 |
+| Tooling      | ESLint, Prettier (+ tailwind plugin), Vitest        |
+| Adapter      | `@sveltejs/adapter-auto`                            |
 
 ## Requirements
 
@@ -39,15 +39,15 @@ pnpm dev           # http://localhost:5173
 
 ## Scripts
 
-| Script             | What it does                                  |
-| ------------------ | --------------------------------------------- |
-| `pnpm dev`         | Start the dev server                          |
-| `pnpm build`       | Prerender the whole course to static HTML     |
-| `pnpm preview`     | Preview the production build                  |
-| `pnpm check`       | `svelte-check` under strict TypeScript        |
-| `pnpm lint`        | Prettier + ESLint                             |
-| `pnpm format`      | Apply Prettier                                |
-| `pnpm test`        | Run the unit tests                            |
+| Script         | What it does                              |
+| -------------- | ----------------------------------------- |
+| `pnpm dev`     | Start the dev server                      |
+| `pnpm build`   | Prerender the whole course to static HTML |
+| `pnpm preview` | Preview the production build              |
+| `pnpm check`   | `svelte-check` under strict TypeScript    |
+| `pnpm lint`    | Prettier + ESLint                         |
+| `pnpm format`  | Apply Prettier                            |
+| `pnpm test`    | Run the unit tests                        |
 
 ## How it's organised
 

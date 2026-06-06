@@ -22,7 +22,6 @@ Inside `@theme`, you define **theme variables**. Each one does *two* things at o
 	language="css"
 	filename="app.css"
 	code={`@import 'tailwindcss';
-
 @theme {
   --color-brand-500: oklch(0.62 0.2 256);
 }`}
