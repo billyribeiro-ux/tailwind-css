@@ -1,0 +1,83 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const buttonComponent = `${S} lang="ts">
+  import type { Snippet } from 'svelte';
+  let {
+    children,
+    type = 'button'
+  }: { children: Snippet; type?: 'button' | 'submit' } = $props();
+${E}
+
+<button
+  {type}
+  class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-400 outline-none"
+>
+  {@render children()}
+</button>`;
+
+	const usage = `<Button>Save</Button>
+<Button type="submit">Submit</Button>`;
+</script>
+
+# Extracting Components
+
+We promised back in Module 1 that long class lists have a proper answer. Here it is. The first and
+best tool for reuse isn't a CSS feature at all — it's the **component**.
+
+## The DRY question
+
+Copy-pasting the same 8-class button five times is a maintenance trap: change the design and you're
+editing five places. The fix in a component framework like Svelte is obvious in hindsight — wrap the
+markup *and* its classes in a component, and reuse the component.
+
+<CodeBlock language="svelte" filename="Button.svelte" code={buttonComponent} />
+
+<CodeBlock language="svelte" filename="usage" code={usage} />
+
+Now the button's design lives in exactly one file. Restyle once, and every `<Button>` updates.
+
+## Components beat CSS abstractions
+
+You *could* make a `.btn` class with `@apply` (next lesson), but a component gives you more: typed
+props, slots/snippets, event handling, internal state, and accessibility wiring — all colocated.
+
+<Callout type="insight" title="Prefer component reuse over class reuse — almost always">
+
+Here's the senior default that resolves the "utility classes are repetitive" debate: **when markup
+repeats, extract a component; when only a class pattern repeats across unrelated markup, consider
+`@apply`.** A component encapsulates structure, behaviour, props and a11y — not just appearance. The
+moment you wrap that button, the long class list stops being a smell and becomes an implementation
+detail hidden behind a clean API. This is why utility-first scales: you don't fight repetition with
+more CSS, you fight it with the component model you already have.
+
+</Callout>
+
+<Callout type="tip" title="Use snippets, not just text">
+
+Svelte 5's `children: Snippet` lets consumers pass rich content (an icon + label), and `{@render
+children()}` places it. Type it as `Snippet` for a clean, checked API.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You've pasted the same button markup in six places. The best fix is:"
+	options={[
+		{ text: 'Create a .btn class with @apply and use it everywhere', correct: false },
+		{ text: 'Extract a Button.svelte component and reuse it', correct: true },
+		{ text: 'Leave it — repetition is fine', correct: false },
+		{ text: 'Write a custom Tailwind plugin', correct: false }
+	]}
+	explanation="When markup repeats, a component is the right unit of reuse — it carries structure, props and a11y, not just styles."
+/>
+
+## Recap
+
+- The primary tool for reuse is the **component**, not a CSS class.
+- A component encapsulates markup, classes, props, behaviour and accessibility.
+- Default rule: **markup repeats → extract a component.**

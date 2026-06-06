@@ -1,0 +1,111 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const variantButton = `${S} lang="ts">
+  import { cn } from '$lib/utils/cn';
+  import type { Snippet } from 'svelte';
+
+  type Intent = 'primary' | 'secondary' | 'danger';
+  type Size = 'sm' | 'md' | 'lg';
+
+  let {
+    children,
+    intent = 'primary',
+    size = 'md',
+    class: className = ''
+  }: {
+    children: Snippet;
+    intent?: Intent;
+    size?: Size;
+    class?: string;
+  } = $props();
+
+  const base =
+    'inline-flex items-center justify-center rounded-lg font-medium transition ' +
+    'focus-visible:ring-2 focus-visible:ring-offset-2 outline-none disabled:opacity-50';
+
+  const intents: Record<Intent, string> = {
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-400',
+    secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-400',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400'
+  };
+
+  const sizes: Record<Size, string> = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base'
+  };
+${E}
+
+<button class={cn(base, intents[intent], sizes[size], className)}>
+  {@render children()}
+</button>`;
+
+	const variantUsage = `<Button>Primary md</Button>
+<Button intent="secondary" size="sm">Secondary sm</Button>
+<Button intent="danger" size="lg">Danger lg</Button>`;
+</script>
+
+# Variant-Driven Components
+
+Real components have *variants*: a button is primary or danger, small or large. The professional
+pattern maps a typed prop to a class string — giving you a small, discoverable, type-safe API.
+
+## The pattern
+
+Define variant maps keyed by a union type, then compose with `cn()`.
+
+<CodeBlock language="svelte" filename="Button.svelte" code={variantButton} />
+
+<CodeBlock language="svelte" filename="usage" code={variantUsage} />
+
+## Why this is the sweet spot
+
+- **Type-safe:** `intent="warnig"` is a compile error; autocomplete lists valid values.
+- **Discoverable:** the union types *are* the documentation.
+- **Composable:** `cn(..., className)` still lets callers override per use.
+- **Centralised:** every primary button changes from one map.
+
+<Callout type="insight" title="Constrain the API surface on purpose">
+
+The power move here isn't the code — it's the *constraint*. By exposing `intent` and `size` unions
+instead of letting callers pass arbitrary classes, you make the **right thing easy and the wrong
+thing impossible**. A teammate can't accidentally create a 4th shade of "primary"; the design system
+only ships the variants you sanctioned. This is the same philosophy as Tailwind's spacing scale,
+applied at the component layer. Libraries like CVA (class-variance-authority) formalise exactly this
+pattern, but as you can see, a typed record + `cn()` gets you 90% of the value with zero
+dependencies. Knowing when a tiny in-house pattern beats a dependency is itself a senior judgement.
+
+</Callout>
+
+<Callout type="tip" title="Keep variants orthogonal">
+
+`intent` and `size` are independent axes — any intent works with any size. Resist cramming them into
+one `variant="primary-lg"` prop; orthogonal axes compose into N×M combinations for free and stay
+readable.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What's the main benefit of typed variant unions over a freeform `class` prop?"
+	options={[
+		{ text: 'Smaller bundle size', correct: false },
+		{ text: 'Invalid variants become compile errors and valid ones autocomplete', correct: true },
+		{ text: 'It removes the need for cn()', correct: false },
+		{ text: 'It disables overrides entirely', correct: false }
+	]}
+	explanation="Unions make the API self-documenting and type-checked, sanctioning only the variants you intend to ship."
+/>
+
+## Recap
+
+- Map **typed union props** (`intent`, `size`) to class strings, compose with `cn()`.
+- Keep variant axes **orthogonal** so they combine freely.
+- This is the core of every component library — and you can build it dependency-free.
+
+Next: assemble these patterns into a real component library.

@@ -1,0 +1,158 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const badge = `${S} lang="ts">
+  import { cn } from '$lib/utils/cn';
+  import type { Snippet } from 'svelte';
+  type Tone = 'neutral' | 'success' | 'warning' | 'danger';
+  let { children, tone = 'neutral', class: className = '' }:
+    { children: Snippet; tone?: Tone; class?: string } = $props();
+
+  const tones: Record<Tone, string> = {
+    neutral: 'bg-slate-100 text-slate-700',
+    success: 'bg-emerald-100 text-emerald-700',
+    warning: 'bg-amber-100 text-amber-700',
+    danger: 'bg-red-100 text-red-700'
+  };
+${E}
+
+<span class={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium', tones[tone], className)}>
+  {@render children()}
+</span>`;
+
+	const card = `${S} lang="ts">
+  import { cn } from '$lib/utils/cn';
+  import type { Snippet } from 'svelte';
+  let { children, class: className = '' }:
+    { children: Snippet; class?: string } = $props();
+${E}
+
+<div class={cn('rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900', className)}>
+  {@render children()}
+</div>`;
+
+	const alert = `${S} lang="ts">
+  import { cn } from '$lib/utils/cn';
+  import type { Snippet } from 'svelte';
+  type Tone = 'info' | 'success' | 'danger';
+  let { children, tone = 'info' }: { children: Snippet; tone?: Tone } = $props();
+
+  const tones: Record<Tone, string> = {
+    info: 'border-sky-300 bg-sky-50 text-sky-800',
+    success: 'border-emerald-300 bg-emerald-50 text-emerald-800',
+    danger: 'border-red-300 bg-red-50 text-red-800'
+  };
+${E}
+
+<div role="alert" class={cn('rounded-lg border-l-4 p-4 text-sm', tones[tone])}>
+  {@render children()}
+</div>`;
+</script>
+
+# Project: Component Library
+
+Time to consolidate Module 7 into a small, typed, cohesive component library — the kind you'd
+actually drop into a real SvelteKit app. You'll apply the variant pattern, `cn()` composition, and
+snippet-based content across four primitives.
+
+<ProjectBrief
+	title="Build a typed component library"
+	time="55 min"
+	goal="Create Button, Badge, Card and Alert as typed Svelte 5 components that share a cn() helper, expose orthogonal variant props, accept className overrides, and support dark mode."
+	requirements={[
+		'A shared cn() utility in $lib/utils',
+		'Button with intent + size variants (from the previous lesson)',
+		'Badge with a tone variant',
+		'Card as a styled container accepting children + class override',
+		'Alert with role="alert" and tone variants',
+		'Every component accepts a `class` prop merged via cn()'
+	]}
+	stretch={[
+		'Add an icon slot to Button and Alert',
+		'Add a loading state to Button',
+		'Write a Vitest test asserting the right classes per variant'
+	]}
+/>
+
+## Badge
+
+<CodeBlock language="svelte" filename="Badge.svelte" code={badge} />
+
+## Card
+
+<CodeBlock language="svelte" filename="Card.svelte" code={card} />
+
+## Alert
+
+<CodeBlock language="svelte" filename="Alert.svelte" code={alert} />
+
+(Reuse the `Button.svelte` from the previous lesson for the fourth primitive.)
+
+## The library in action
+
+Here's the rendered look of the four primitives composed together (static HTML preview — in your app
+these would be the components above):
+
+<CodeBlock
+	playground
+	filename="library-demo.html"
+	code={`<div class="space-y-4">
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex items-center gap-2">
+      <h3 class="font-semibold text-slate-900">Deployment</h3>
+      <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700">live</span>
+      <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">staging</span>
+    </div>
+    <div role="alert" class="mt-4 rounded-lg border-l-4 border-sky-300 bg-sky-50 p-4 text-sm text-sky-800">
+      A new version is available.
+    </div>
+    <div class="mt-4 flex gap-2">
+      <button class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">Deploy</button>
+      <button class="inline-flex items-center justify-center rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-200">Cancel</button>
+    </div>
+  </div>
+</div>`}
+/>
+
+<Callout type="insight" title="A library is a set of decisions you stop re-making">
+
+What makes this a *library* rather than four files is **consistency of contract**: every component
+takes a `class` override merged with `cn()`, every variant is a typed union, every tone draws from
+the same palette logic. A consumer learns the pattern once and predicts the rest. That predictability
+is the entire value proposition — your teammates stop deciding how a badge should look and start
+*using* the badge. When you design components, optimise for "obvious and uniform" over "clever." The
+best component library is the one nobody has to think about.
+
+</Callout>
+
+<Callout type="tip" title="Barrel-export for ergonomics">
+
+Re-export your primitives from `$lib/components/ui/index.ts` so consumers write
+`import { Button, Badge, Card, Alert } from '$lib/components/ui'`. Small touches like this make a
+library feel finished.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What single contract should every component in the library share?"
+	options={[
+		{ text: 'A fixed width', correct: false },
+		{ text: 'A `class` prop merged via cn() plus typed variant props', correct: true },
+		{ text: 'An internal store', correct: false },
+		{ text: 'A hard-coded colour', correct: false }
+	]}
+	explanation="Uniform contracts — cn() overrides + typed variants — are what turn separate components into a coherent library."
+/>
+
+## Recap & module wrap-up
+
+Module 7 complete. You've resolved the "utilities are repetitive" question for good: extract
+components, reach for `@apply` only when you must, compose with `cn()`, and expose typed variants —
+then package them as a consistent library.
+
+Next module: **Animation & Interactivity** — bringing your components to life with tasteful motion.

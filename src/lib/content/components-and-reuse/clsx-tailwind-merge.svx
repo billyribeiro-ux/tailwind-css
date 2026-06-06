@@ -1,0 +1,101 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const cnUtil = `import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}`;
+
+	const mergeButton = `${S} lang="ts">
+  import { cn } from '$lib/utils/cn';
+  import type { Snippet } from 'svelte';
+  let {
+    children,
+    class: className = ''
+  }: { children: Snippet; class?: string } = $props();
+${E}
+
+<!-- base classes first, caller overrides win thanks to twMerge -->
+<button class={cn('rounded-lg bg-indigo-600 px-4 py-2 text-white', className)}>
+  {@render children()}
+</button>`;
+
+	const overrideUsage = `<Button>Default indigo</Button>
+
+<!-- caller passes bg-emerald-600; twMerge ensures it WINS over bg-indigo-600 -->
+<Button class="bg-emerald-600">Green override</Button>`;
+</script>
+
+# Class Composition with cn()
+
+Two problems appear the moment components grow: **conditional classes** ("active when selected") and
+**override conflicts** (a caller passing `bg-emerald-600` to a button whose base is `bg-indigo-600`).
+The `cn()` helper solves both.
+
+## The helper
+
+`clsx` flattens conditionals; `tailwind-merge` resolves conflicting utilities so the **last one
+wins**. Together:
+
+<CodeBlock language="typescript" filename="src/lib/utils/cn.ts" code={cnUtil} />
+
+## Conditional classes
+
+<CodeBlock
+	language="typescript"
+	filename="conditionals"
+	code={`cn('rounded-lg px-4 py-2', isActive && 'bg-indigo-600 text-white', isDisabled && 'opacity-50')
+// → only the truthy parts are included`}
+/>
+
+## The override problem (and fix)
+
+Without `tailwind-merge`, a component with `bg-indigo-600` that also receives `bg-emerald-600` ends up
+with *both* classes — and which one wins is undefined source order. `cn()` makes the caller's class
+deterministically win.
+
+<CodeBlock language="svelte" filename="Button.svelte" code={mergeButton} />
+
+<CodeBlock language="svelte" filename="usage" code={overrideUsage} />
+
+<Callout type="insight" title="cn() is what makes your components composable">
+
+A reusable component must let callers *adjust* it — extra margin here, a different colour there —
+without forking the component or fighting CSS specificity. `cn(base, className)` with `tailwind-merge`
+turns that into a clean contract: "I provide sensible defaults; you can override any of them by
+passing the same utility." This single pattern is the backbone of every serious Tailwind component
+library (shadcn, Bits UI wrappers, your own). Put `cn` in `$lib/utils` on day one of any project —
+you'll use it in nearly every component you write.
+
+</Callout>
+
+<Callout type="warning" title="Order matters: base first, overrides last">
+
+`cn('p-2', className)` lets the caller override padding; `cn(className, 'p-2')` would force `p-2` to
+win and *ignore* the caller. Put your component's defaults first and the incoming `class` last.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What does tailwind-merge add on top of clsx?"
+	options={[
+		{ text: 'It minifies class names', correct: false },
+		{ text: 'It resolves conflicting Tailwind utilities so the last one wins', correct: true },
+		{ text: 'It validates that classes exist', correct: false },
+		{ text: 'It sorts classes alphabetically', correct: false }
+	]}
+	explanation="clsx handles conditionals; tailwind-merge dedupes conflicts (e.g. p-2 vs p-4) keeping the last."
+/>
+
+## Recap
+
+- **`cn()` = clsx + tailwind-merge**: conditionals *and* conflict resolution.
+- It enables **caller overrides** — the foundation of composable components.
+- Always order **base first, incoming `class` last**.

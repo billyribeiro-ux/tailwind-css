@@ -1,0 +1,85 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# @apply, and When Not To
+
+`@apply` lets you fold utilities into a real CSS class. It's the most *overused* feature in Tailwind,
+so this lesson is as much about restraint as technique.
+
+## What @apply does
+
+It inlines utilities into a custom class so you can apply them with one name.
+
+<CodeBlock
+	language="css"
+	filename="buttons.css"
+	code={`@layer components {
+  .btn {
+    @apply rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition;
+  }
+  .btn:hover {
+    @apply bg-indigo-700;
+  }
+}`}
+/>
+
+<CodeBlock
+	language="html"
+	code={`<button class="btn">Click me</button>`}
+/>
+
+It looks tidy — and that's the trap.
+
+## Why it's usually the wrong default
+
+When you `@apply`, you re-introduce the very problems utilities solved: you invent a name, you split
+styling across two files, and you lose the at-a-glance readability of seeing styles in the markup.
+You've essentially rebuilt traditional CSS with extra steps.
+
+<Callout type="insight" title="The @apply litmus test">
+
+Before reaching for `@apply`, ask: *"Could a component do this instead?"* In a framework project, the
+answer is almost always yes — and a component is strictly better (props, behaviour, a11y). Reserve
+`@apply` for the narrow cases where you **can't** use a component: styling third-party HTML you don't
+render, base-layer element defaults, or a class consumed by content you don't control (e.g. markdown
+output). If you find yourself building a component library out of `@apply` classes, you've taken a
+wrong turn — you're fighting the framework instead of using it. This restraint is a genuine marker of
+Tailwind maturity; juniors `@apply` everything, seniors almost never do.
+
+</Callout>
+
+## Legitimate uses
+
+<CodeBlock
+	language="css"
+	filename="good uses of @apply"
+	code={`@layer base {
+  /* Sensible default for all body links you don't render yourself */
+  a { @apply text-indigo-600 underline-offset-2 hover:underline; }
+}
+
+@layer components {
+  /* Styling HTML from a CMS/markdown where you can't add classes per element */
+  .rich-content table { @apply w-full border-collapse text-sm; }
+}`}
+/>
+
+## Knowledge check
+
+<Quiz
+	question="When is @apply the appropriate choice?"
+	options={[
+		{ text: 'For every repeated button or card', correct: false },
+		{ text: 'When you can’t use a component — e.g. styling third-party/markdown HTML or base element defaults', correct: true },
+		{ text: 'Always, to keep markup short', correct: false },
+		{ text: 'Never, under any circumstances', correct: false }
+	]}
+	explanation="Prefer components for reuse; reserve @apply for HTML you don't render or base-layer defaults."
+/>
+
+## Recap
+
+- `@apply` inlines utilities into a CSS class.
+- It **reintroduces** naming and file-splitting — usually a step backward.
+- Default to **components**; use `@apply` only for HTML you can't componentise.
