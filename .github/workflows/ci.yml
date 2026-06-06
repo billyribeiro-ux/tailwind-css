@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser (for component tests)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Lint (prettier + eslint)
+        run: pnpm run lint
+
+      - name: Type-check (svelte-check, strict)
+        run: pnpm run check
+
+      - name: Test (unit + component)
+        run: pnpm test
+
+      - name: Build (prerender)
+        run: pnpm run build
