@@ -1,0 +1,96 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const semanticTheme = `@theme {
+  --color-surface: white;
+  --color-ink: oklch(0.27 0.03 256);
+  --color-muted: oklch(0.55 0.02 256);
+  --color-accent: oklch(0.55 0.21 258);
+}`;
+</script>
+
+# Design Tokens as CSS Variables
+
+A *design token* is a named design decision — "the brand colour," "the default radius," "the body
+text colour" — stored once and referenced everywhere. Tokens are how design systems stay consistent
+at scale, and v4 makes them first-class.
+
+## Raw values vs semantic tokens
+
+There are two layers:
+
+- **Primitive tokens** describe *what a value is*: `--color-blue-500`.
+- **Semantic tokens** describe *what a value is for*: `--color-accent`, `--color-surface`,
+  `--color-ink`.
+
+Components should use **semantic** tokens. Then re-theming is a matter of repointing semantics — no
+component edits.
+
+<CodeBlock
+	language="css"
+	filename="two layers of tokens"
+	code={`@theme {
+  /* primitives */
+  --color-blue-500: oklch(0.62 0.2 256);
+  --color-slate-800: oklch(0.27 0.03 256);
+
+  /* semantics → point at primitives */
+  --color-accent: var(--color-blue-500);
+  --color-ink: var(--color-slate-800);
+  --color-surface: white;
+}`}
+/>
+
+## Build UI from semantics
+
+This Playground is themed with semantic tokens (`surface`, `ink`, `muted`, `accent`). The markup
+never mentions a raw colour — only *intent*.
+
+<CodeBlock
+	playground
+	themeCss={semanticTheme}
+	filename="semantic UI"
+	code={`<div class="rounded-xl bg-surface p-6 shadow ring-1 ring-black/5">
+  <h3 class="text-lg font-semibold text-ink">Semantic tokens</h3>
+  <p class="mt-1 text-sm text-muted">This text uses 'muted', not a specific grey.</p>
+  <button class="mt-4 rounded-lg bg-accent px-4 py-2 font-medium text-white">Accent action</button>
+</div>`}
+/>
+
+<Callout type="insight" title="Semantic tokens are the contract between design and engineering">
+
+The single most valuable habit in design-system work is **components consume semantics, never
+primitives**. When a button uses `bg-accent` instead of `bg-blue-600`, rebranding the entire product
+is a one-line change to what `accent` points at — and dark mode is just a second mapping of the same
+semantics. Teams that skip this layer end up with `blue-600` sprinkled across thousands of files and a
+rebrand that takes a quarter. The indirection feels like overhead on day one and pays for itself a
+hundred times over by year one. This is the lesson that most separates senior from staff/principal
+design-system thinking.
+
+</Callout>
+
+<Callout type="tip" title="Reference tokens in arbitrary values too">
+
+Even outside generated utilities, you can reach a token with `var()`: `shadow-[0_4px_20px_var(--color-accent)]`.
+Tokens are just CSS variables, usable anywhere CSS is.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why should a Button component use `bg-accent` instead of `bg-blue-600`?"
+	options={[
+		{ text: 'It renders faster', correct: false },
+		{ text: 'Re-theming/branding becomes a single token change instead of edits everywhere', correct: true },
+		{ text: 'blue-600 doesn’t exist in v4', correct: false },
+		{ text: 'Semantic names are required by the compiler', correct: false }
+	]}
+	explanation="Semantic tokens decouple intent from value, so a rebrand or theme is a remap, not a find-and-replace."
+/>
+
+## Recap
+
+- Tokens = named design decisions stored once, referenced everywhere.
+- Separate **primitives** (what it is) from **semantics** (what it's for).
+- **Components consume semantics** — that's what makes theming and rebranding trivial.

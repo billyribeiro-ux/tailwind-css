@@ -1,0 +1,103 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const customScale = `@theme {
+  --font-display: 'Georgia', serif;
+  --radius-blob: 2rem;
+  --color-lagoon-500: oklch(0.7 0.13 195);
+}`;
+</script>
+
+# Custom Scales & Fonts
+
+Tailwind's defaults are excellent, but your brand isn't the default. v4 lets you extend or replace
+*any* scale — colours, spacing, radii, fonts — by adding theme variables.
+
+## Custom fonts
+
+Define a font family token and it becomes a `font-*` utility.
+
+<CodeBlock
+	language="css"
+	filename="fonts"
+	code={`@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Clash Display', sans-serif;
+}`}
+/>
+
+<CodeBlock
+	playground
+	themeCss={customScale}
+	filename="font-display"
+	code={`<h1 class="font-display text-4xl font-bold text-slate-900">A display headline</h1>
+<p class="mt-2 text-slate-600">Body text stays in the default sans family.</p>`}
+/>
+
+## Custom colours and radii
+
+Add a new colour ramp or a one-off radius and use it like any built-in.
+
+<CodeBlock
+	playground
+	themeCss={customScale}
+	filename="custom token utilities"
+	code={`<div class="rounded-blob bg-lagoon-500 p-6 text-white">
+  rounded-blob (2rem) + bg-lagoon-500 — both are tokens I defined.
+</div>`}
+/>
+
+## Extend vs override
+
+Adding `--color-lagoon-500` *extends* the palette. Reusing an existing key like `--color-blue-500`
+*overrides* it. You can also disable a whole default namespace by setting it to `initial`
+(e.g. `--color-*: initial;`) and defining your own from scratch — useful for tightly branded systems.
+
+<CodeBlock
+	language="css"
+	filename="start from a clean palette"
+	code={`@theme {
+  --color-*: initial;          /* drop Tailwind's default colours */
+  --color-white: #fff;
+  --color-ink: oklch(0.27 0.03 256);
+  --color-brand-500: oklch(0.62 0.2 256);
+}`}
+/>
+
+<Callout type="insight" title="Use oklch and let the scale do the work">
+
+Tailwind v4 defines colours in **oklch**, a perceptually-uniform colour space — equal numeric steps
+*look* equally different to the eye, and lightness is independent of hue. When you author a custom
+ramp, stay in oklch and keep lightness consistent across hues (your `500` of every colour at a
+similar L). That discipline is exactly why mixing Tailwind colours looks balanced, and it's the
+difference between a palette that feels engineered and one that feels random. Generating ramps by eye
+in hex is how brands end up with a "muddy" colour that never quite works.
+
+</Callout>
+
+<Callout type="warning" title="Don't recreate the whole palette without reason">
+
+Wiping `--color-*: initial` is powerful but it's a commitment — you now own *every* colour, including
+the greys you'll need for borders and text. Only do it for strongly branded systems with a real
+palette; otherwise extend the excellent defaults.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You add `--radius-blob: 2rem` to @theme. What can you now write?"
+	options={[
+		{ text: 'blob-2rem', correct: false },
+		{ text: 'rounded-blob', correct: true },
+		{ text: 'radius-blob', correct: false },
+		{ text: 'Nothing — radii can’t be customised', correct: false }
+	]}
+	explanation="The --radius-* namespace generates rounded-* utilities, so --radius-blob → rounded-blob."
+/>
+
+## Recap
+
+- Any scale is extensible via theme variables in the right **namespace**.
+- **Extend** by adding new keys; **override** by reusing keys; reset with `: initial`.
+- Author custom colours in **oklch** with consistent lightness for a balanced palette.

@@ -1,0 +1,100 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const multiBrand = `@theme {
+  --color-accent: oklch(0.55 0.21 258);
+}
+[data-brand='sunset'] { --color-accent: oklch(0.68 0.19 35); }
+[data-brand='forest'] { --color-accent: oklch(0.6 0.15 150); }`;
+</script>
+
+# Multi-Brand Theming
+
+One codebase, many looks. White-label products, brand families, and theme switchers all need the
+*same components* to render in *different skins* at runtime. Semantic tokens + CSS variables make this
+almost free.
+
+## The pattern: override semantics per scope
+
+Define defaults in `@theme`, then override the semantic variables under a selector — a `data-brand`
+attribute, a class, whatever scopes a subtree.
+
+<CodeBlock
+	language="css"
+	filename="app.css"
+	code={`@theme {
+  --color-accent: oklch(0.55 0.21 258); /* default brand */
+}
+
+[data-brand='sunset'] { --color-accent: oklch(0.68 0.19 35); }
+[data-brand='forest'] { --color-accent: oklch(0.6 0.15 150); }`}
+/>
+
+## See it switch live
+
+The Playground is themed with three brands. Change the `data-brand` value on the wrapper between
+`sunset` and `forest` and the *same* `bg-accent` button re-skins — no component changes.
+
+<CodeBlock
+	playground
+	themeCss={multiBrand}
+	filename="runtime brand switch"
+	code={`<div data-brand="sunset" class="space-y-4 rounded-xl border border-slate-200 p-6">
+  <p class="text-sm text-slate-500">Change data-brand to "forest" ↑</p>
+  <button class="rounded-lg bg-accent px-4 py-2 font-medium text-white">Accent button</button>
+  <div class="h-2 w-full rounded-full bg-accent"></div>
+</div>`}
+/>
+
+## Switching at runtime
+
+Because brands are just CSS variable overrides, switching is a single attribute change — instant,
+no rebuild, no reload.
+
+<CodeBlock
+	language="typescript"
+	filename="brand.ts"
+	code={`function setBrand(brand: 'default' | 'sunset' | 'forest') {
+  document.documentElement.dataset.brand = brand;
+}`}
+/>
+
+<Callout type="insight" title="This is the same machinery as dark mode — and that's the point">
+
+Dark mode, multi-brand, high-contrast, per-tenant white-labelling — they are all *the same problem*:
+remap semantic tokens under a scope. Once your components consume semantics (never primitives), each
+new theme is just another block of variable overrides. A team that understands this builds a
+white-label SaaS the same way it builds dark mode, and adds a customer's brand in an afternoon. A
+team that hard-codes colours rewrites components for every variant. The architecture you chose back
+in the tokens lesson is what unlocks all of this — theming is a *downstream benefit* of good token
+discipline.
+
+</Callout>
+
+<Callout type="tip" title="Combine scopes">
+
+Brand and colour-scheme stack cleanly: `[data-brand='forest'].dark { … }` lets a brand define its own
+dark palette. Compose the scopes rather than exploding into a class for every combination.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What makes runtime multi-brand theming nearly free in Tailwind v4?"
+	options={[
+		{ text: 'Recompiling Tailwind per brand', correct: false },
+		{ text: 'Components use semantic tokens (CSS variables) that you override per scope', correct: true },
+		{ text: 'A separate stylesheet per brand loaded on demand', correct: false },
+		{ text: 'JavaScript that rewrites every class name', correct: false }
+	]}
+	explanation="Semantic tokens are CSS variables; overriding them under a selector re-skins components instantly."
+/>
+
+## Recap
+
+- Define semantic defaults in `@theme`; **override them under a scope** (attribute/class).
+- Switching brands is a one-line **attribute change** at runtime.
+- Dark mode and multi-brand are the **same pattern** — remap semantics per scope.
+
+Next: build a small, swappable token system end to end.

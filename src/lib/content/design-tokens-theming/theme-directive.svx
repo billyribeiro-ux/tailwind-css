@@ -1,0 +1,104 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const brandTheme = `@theme {
+  --color-brand-500: oklch(0.62 0.2 256);
+  --color-brand-600: oklch(0.54 0.21 258);
+}`;
+</script>
+
+# The @theme Directive
+
+This is the lesson where Tailwind v4 clicks. In v3 your design system lived in a JavaScript config
+file. In v4 it lives in **CSS**, through one directive: `@theme`. Understand this and you understand
+the soul of v4.
+
+## What @theme does
+
+Inside `@theme`, you define **theme variables**. Each one does *two* things at once: it becomes a
+**CSS custom property** *and* it generates **utility classes**.
+
+<CodeBlock
+	language="css"
+	filename="app.css"
+	code={`@import 'tailwindcss';
+
+@theme {
+  --color-brand-500: oklch(0.62 0.2 256);
+}`}
+/>
+
+That single line gives you:
+
+- a variable `var(--color-brand-500)` you can use anywhere, and
+- utilities `bg-brand-500`, `text-brand-500`, `border-brand-500`, `ring-brand-500`, …
+
+## See it live
+
+The Playground below is configured with the `@theme` from this lesson, so `bg-brand-500` is a real,
+usable utility inside the preview. Edit the markup and watch your custom token work.
+
+<CodeBlock
+	playground
+	themeCss={brandTheme}
+	filename="using a custom token"
+	code={`<div class="space-y-2">
+  <div class="rounded-lg bg-brand-500 p-4 text-white">bg-brand-500 (a token I defined)</div>
+  <div class="rounded-lg border-2 border-brand-600 p-4 text-brand-600">border + text brand-600</div>
+</div>`}
+/>
+
+## The naming namespaces
+
+The *prefix* of a theme variable tells Tailwind which utilities to generate:
+
+<CodeBlock
+	language="css"
+	filename="namespaces"
+	code={`@theme {
+  --color-*    /* → bg-*, text-*, border-*, ring-*, …   */
+  --font-*     /* → font-*                               */
+  --text-*     /* → text-* (font sizes)                  */
+  --spacing-*  /* → p-*, m-*, gap-*, w-*, h-*, …         */
+  --radius-*   /* → rounded-*                            */
+  --shadow-*   /* → shadow-*                             */
+  --breakpoint-* /* → sm:, md:, lg: … responsive prefixes */
+}`}
+/>
+
+<Callout type="insight" title="Why CSS-first is a structural win, not a style choice">
+
+Moving the theme into CSS isn't cosmetic. Your design tokens now live in the *same language* as your
+styles, readable by any tool that understands CSS — no JS evaluation, no config import graph. They're
+available as native custom properties at runtime, which is what makes runtime theming (multi-brand,
+dark mode) trivial. And because the engine reads CSS directly, builds are dramatically faster. When a
+tool aligns itself with the platform like this, it tends to get *simpler* over time, not more
+baroque. That's a signal worth recognising when you choose dependencies.
+
+</Callout>
+
+<Callout type="warning" title="@theme is for design tokens, not arbitrary CSS">
+
+`@theme` defines *theme variables that generate utilities*. For plain global custom properties that
+shouldn't spawn utilities, use a normal `:root { --x: … }`. Keep `@theme` for genuine design tokens.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What happens when you add `--color-brand-500` inside `@theme`?"
+	options={[
+		{ text: 'Only a CSS variable is created', correct: false },
+		{ text: 'Both a CSS variable AND utilities like bg-brand-500 are generated', correct: true },
+		{ text: 'Nothing until you also edit tailwind.config.js', correct: false },
+		{ text: 'It overrides all existing colours', correct: false }
+	]}
+	explanation="A theme variable is simultaneously a custom property and a source of utilities — the core v4 idea."
+/>
+
+## Recap
+
+- **`@theme`** defines theme variables that are *both* CSS variables *and* utility generators.
+- The variable **prefix** (`--color-`, `--spacing-`, …) decides which utilities appear.
+- This CSS-first model is what makes v4 fast and runtime-themeable.
