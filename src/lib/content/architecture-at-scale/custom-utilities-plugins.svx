@@ -1,0 +1,103 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const utilityTheme = `@utility text-balance-pretty {
+  text-wrap: pretty;
+}
+@utility content-grid {
+  display: grid;
+  grid-template-columns: 1fr min(65ch, 100%) 1fr;
+}`;
+</script>
+
+# Custom Utilities & Plugins
+
+When a pattern recurs across your whole system and isn't expressible with existing utilities, v4 lets
+you mint your own — with `@utility` and `@custom-variant`, right in CSS.
+
+## Custom utilities with @utility
+
+`@utility` registers a real utility (works with variants like `hover:`, `md:`).
+
+<CodeBlock
+	language="css"
+	filename="app.css"
+	code={`@utility content-grid {
+  display: grid;
+  grid-template-columns: 1fr min(65ch, 100%) 1fr;
+}
+/* now usable as a class, and as md:content-grid, etc. */`}
+/>
+
+Utilities can take arguments via the `--value()` function for scale-aware custom properties — but
+most custom utilities are simple static ones like above.
+
+## Custom variants with @custom-variant
+
+You already used one: `@custom-variant dark`. Define your own stateful or structural variants the
+same way.
+
+<CodeBlock
+	language="css"
+	filename="custom variants"
+	code={`/* style when an ancestor has [data-state="open"] */
+@custom-variant open (&:where([data-state="open"] *));
+
+/* style the third child */
+@custom-variant third (&:nth-child(3));`}
+/>
+
+<CodeBlock
+	language="html"
+	code={`<div data-state="open">
+  <p class="text-slate-400 open:text-indigo-600">I turn indigo when the panel is open</p>
+</div>`}
+/>
+
+## When to write a plugin
+
+For utilities/variants shared across *multiple repos*, package them. In v4 much of this lives in CSS
+you can publish and `@import`; a JS plugin (via `@plugin`) is for logic-driven generation (e.g.
+producing a family of utilities from data).
+
+<Callout type="insight" title="Extend the framework last, not first">
+
+Custom utilities and plugins are powerful, which makes them tempting to over-reach for. The right
+order of preference is: **utilities → component recipe → custom utility → plugin.** Most "I need a
+plugin" moments are really "I need a component." Reserve `@utility` for genuinely *atomic, reusable*
+CSS patterns that don't carry markup or behaviour (a layout primitive like `content-grid`, a
+text-wrap helper). Reserve plugins for cross-repo distribution or generated families. Every custom
+extension is something your team must now learn and maintain — and the best design systems are
+remarkably small. Knowing when *not* to extend the framework is the senior skill this whole module
+has been building toward.
+
+</Callout>
+
+<Callout type="warning" title="A custom utility is API surface too">
+
+The moment you add `content-grid`, it's a thing teammates will use and depend on. Name it well,
+document it, and don't churn it. The governance discipline from the tokens lesson applies to custom
+utilities and variants just as much.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You have an atomic, reusable layout pattern (a special grid) used in many places, with no markup or behaviour. Best tool?"
+	options={[
+		{ text: 'A JS Tailwind plugin', correct: false },
+		{ text: 'A custom utility via @utility', correct: true },
+		{ text: 'Copy-paste the classes everywhere', correct: false },
+		{ text: 'A Svelte component', correct: false }
+	]}
+	explanation="Atomic, behaviour-free CSS patterns are exactly what @utility is for; components are for markup+behaviour."
+/>
+
+## Recap
+
+- **`@utility`** mints real, variant-compatible custom utilities in CSS.
+- **`@custom-variant`** defines your own state/structural variants.
+- Prefer **utilities → recipes → custom utilities → plugins**; extend the framework last.
+
+Next: bring Module 10 together by building a small accessible, performant design system.

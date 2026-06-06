@@ -1,0 +1,87 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Token Governance
+
+A token system only stays valuable if it stays *coherent*. Governance is the set of conventions and
+processes that prevent token sprawl as dozens of people contribute over years.
+
+## Name by intent, at the right altitude
+
+Good token names describe *purpose*, not appearance or location. `--color-danger` survives a rebrand;
+`--color-red` or `--color-delete-button` doesn't.
+
+<CodeBlock
+	language="css"
+	filename="naming"
+	code={`/* ✅ intent-based, reusable */
+--color-surface  --color-surface-raised  --color-ink  --color-muted
+--color-accent   --color-danger          --color-success
+
+/* ❌ ties the name to a value or a single use */
+--color-light-grey   --color-signup-button-bg   --color-red-thing`}
+/>
+
+## Tiers: global → semantic → component
+
+Large systems add a third tier — *component tokens* that reference semantics — so a component can be
+tuned without touching global meaning.
+
+<CodeBlock
+	language="css"
+	filename="three tiers"
+	code={`@theme {
+  --color-accent: oklch(0.55 0.21 258);     /* semantic */
+}
+:root {
+  --button-bg: var(--color-accent);          /* component token → semantic */
+  --button-bg-hover: var(--color-accent);
+}`}
+/>
+
+## Evolving safely
+
+- **Add freely**, deprecate slowly. Removing a token is a breaking change.
+- **Document every token** — what it's for, not just its value.
+- **Review token PRs** with the same rigor as API changes; tokens *are* an API.
+- **Lint for raw values** in component code to catch primitive leakage.
+
+<Callout type="insight" title="Treat tokens as a versioned public API, because they are">
+
+The moment more than one team consumes your tokens, you've published an API — and APIs have
+consumers who break when you change them. The governance mindset shift is to stop thinking "these are
+our variables" and start thinking "these are a contract other teams build on." That means semver
+discipline (adding is minor, renaming/removing is major), deprecation windows, changelogs, and a
+review bar. The hardest part of leading a design system isn't the CSS; it's saying *no* to one-off
+tokens that would erode the system, and shepherding necessary changes without breaking downstream
+teams. Governance is leadership expressed as process.
+
+</Callout>
+
+<Callout type="warning" title="One-off tokens are how systems die">
+
+The request "can we add `--color-promo-banner-orange` just for this campaign?" feels harmless. Ten of
+those and your system is a junk drawer. Push back: does it map to an existing semantic? If it's truly
+one-off, it belongs in the feature, not the system.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Which token name will best survive a rebrand?"
+	options={[
+		{ text: '--color-blue-button', correct: false },
+		{ text: '--color-accent', correct: true },
+		{ text: '--color-light-grey', correct: false },
+		{ text: '--color-homepage-hero', correct: false }
+	]}
+	explanation="Intent-based names (accent, danger, surface) decouple from value and location, surviving change."
+/>
+
+## Recap
+
+- Name tokens by **intent**, not value or location.
+- Use tiers: **global → semantic → component** for safe local tuning.
+- Govern tokens like a **versioned API**: add freely, deprecate slowly, document and review.

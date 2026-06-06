@@ -1,0 +1,85 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Performance & Bundle Size
+
+A common myth: "Tailwind ships huge CSS." The truth is the opposite — used correctly, Tailwind
+produces some of the *smallest* CSS in the industry. Understanding *why* lets you keep it that way.
+
+## How the engine keeps CSS small
+
+Tailwind generates only the utilities you actually use. It scans your source for class names and emits
+CSS for exactly those — so a thousand-component app and a one-page site share the *same* utilities and
+the file barely grows. This is why utility-first scales: CSS size flattens as the app grows, because
+classes are reused, not duplicated.
+
+<CodeBlock
+	language="text"
+	filename="the size curve"
+	code={`Traditional CSS:  grows roughly linearly with features (new components → new CSS)
+Tailwind:         grows fast at first, then flattens (new features reuse existing utilities)`}
+/>
+
+## What actually bloats CSS
+
+- **Arbitrary values everywhere** (`p-[13px]`, `text-[#abc123]`): each unique one is a new rule.
+  Prefer tokens.
+- **Dynamically constructed class names**: `class={\`bg-\${color}-500\`}` can't be statically found —
+  either it's missing or you over-safelist. Use complete class names mapped from props.
+- **Unused heavy plugins** or giant component CSS via `@apply`.
+
+<CodeBlock
+	language="svelte"
+	filename="findable classes"
+	code={`<!-- ❌ engine can't see these -->
+<div class={\`text-\${tone}-600\`}></div>
+
+<!-- ✅ full class names, statically analysable -->
+<div class={tone === 'danger' ? 'text-red-600' : 'text-emerald-600'}></div>`}
+/>
+
+## Beyond CSS: the whole budget
+
+CSS is usually not your bottleneck — JS and images are. Set a **performance budget** and measure:
+ship prerendered/critical CSS, lazy-load heavy widgets (like the Monaco editor in this very course),
+and prefer CSS solutions (Modules 8–9) over JS where possible.
+
+<Callout type="insight" title="Measure the system, not the framework">
+
+Engineers love to argue about framework byte counts, but users experience *total* page weight and
+*time to interactive*. A 10KB CSS file is irrelevant next to a 500KB unsplit JS bundle or an
+unoptimised hero image. The senior move is to instrument real metrics (Core Web Vitals, bundle
+analysis, a CI size budget that fails the build on regression) and optimise where the data points —
+which is rarely Tailwind. This course practises what it preaches: Monaco is dynamically imported only
+when an editor mounts, so the lesson pages stay light. Optimise with evidence, and you'll spend your
+effort where it actually moves the needle.
+
+</Callout>
+
+<Callout type="warning" title="Don't construct class names from fragments">
+
+`bg-${color}-500` is the classic bundle/footgun: the scanner can't see it, so the class may be missing
+in production or force you to safelist broadly. Always emit *complete* class names (a prop→class map
+is the clean pattern).
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why does Tailwind's CSS size flatten as an app grows?"
+	options={[
+		{ text: 'It compresses CSS at runtime', correct: false },
+		{ text: 'Utilities are reused across components, so new features rarely add new CSS', correct: true },
+		{ text: 'It deletes old components automatically', correct: false },
+		{ text: 'It loads CSS lazily per route', correct: false }
+	]}
+	explanation="The engine emits each used utility once; features reuse the same classes, so CSS growth flattens."
+/>
+
+## Recap
+
+- Tailwind emits only used utilities; CSS size **flattens** as apps grow.
+- Avoid **arbitrary-value sprawl** and **dynamically built class names**.
+- Set a **performance budget**, measure real metrics, and optimise where data points (usually JS/images).

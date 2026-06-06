@@ -1,0 +1,82 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Design-System Architecture
+
+At small scale, "just write utilities" works. At company scale — many teams, many products, years of
+change — you need *architecture*. This lesson gives you the layered model that keeps large systems
+coherent.
+
+## The four layers
+
+Think of a design system as a stack, each layer depending only on the one below:
+
+<CodeBlock
+	language="text"
+	filename="the layers"
+	code={`4. Application   — pages compose features and primitives
+3. Recipes       — opinionated components: Button, Card, Modal (variant APIs)
+2. Semantic tokens — intent: surface, ink, accent, danger, radius-card
+1. Primitive tokens — raw values: color-blue-500, spacing scale, fonts`}
+/>
+
+- **Primitives** (Module 6): raw values, rarely used directly.
+- **Semantics** (Module 6): intent-named, the contract everything above consumes.
+- **Recipes** (Module 7): your typed, variant-driven components.
+- **Application**: feature code that composes recipes — and writes very few raw utilities.
+
+## The dependency rule
+
+Dependencies point **downward only**. A recipe uses semantics; it never reaches past them to a
+primitive. Application code uses recipes; it doesn't redefine tokens. Violations are what turn a
+system into spaghetti.
+
+<CodeBlock
+	language="svelte"
+	filename="layers in practice"
+	code={`<!-- ✅ recipe consumes semantics -->
+<button class="bg-accent text-accent-ink rounded-card">…</button>
+
+<!-- ❌ recipe reaching past semantics to a primitive -->
+<button class="bg-blue-600 text-white rounded-[12px]">…</button>`}
+/>
+
+<Callout type="insight" title="Architecture is mostly about restricting dependencies">
+
+Every durable software architecture — layered, hexagonal, clean — is fundamentally a set of rules
+about *what may depend on what*. Design systems are no different. The single rule "components consume
+semantic tokens, never primitives, and apps consume components, never raw tokens" is what lets each
+layer evolve independently: designers re-tune primitives, the system team reshapes semantics, product
+teams ship features — without stepping on each other. When you're asked to *lead* a design system,
+your real job isn't picking pretty colours; it's defining and defending these boundaries so a hundred
+engineers can move fast without colliding. Spend your influence on the dependency rule.
+
+</Callout>
+
+<Callout type="warning" title="Beware the 'utility soup' anti-pattern at scale">
+
+Utilities everywhere is fine in a small app. In a large one, raw `bg-blue-600 p-3` scattered across
+feature code means a rebrand touches thousands of files. The fix isn't banning utilities — it's
+ensuring most utilities live *inside recipes*, and feature code mostly composes recipes.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="In the layered model, what may a Button recipe depend on?"
+	options={[
+		{ text: 'Primitive tokens like blue-600 directly', correct: false },
+		{ text: 'Semantic tokens like accent / accent-ink', correct: true },
+		{ text: 'Application page code', correct: false },
+		{ text: 'Nothing — it hard-codes hex values', correct: false }
+	]}
+	explanation="Dependencies point downward: recipes consume the semantic layer, never reaching to primitives."
+/>
+
+## Recap
+
+- Four layers: **primitives → semantics → recipes → application**.
+- Dependencies point **downward only**; that's what enables independent evolution.
+- Most raw utilities should live **inside recipes**, not feature code.

@@ -1,0 +1,143 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+
+	const dsTheme = `@theme {
+  --color-surface: white;
+  --color-surface-raised: oklch(0.98 0.005 256);
+  --color-ink: oklch(0.27 0.03 256);
+  --color-muted: oklch(0.50 0.02 256);
+  --color-accent: oklch(0.55 0.21 258);
+  --color-accent-ink: white;
+  --color-danger: oklch(0.58 0.22 27);
+  --radius-card: 0.875rem;
+}
+.dark {
+  --color-surface: oklch(0.21 0.02 256);
+  --color-surface-raised: oklch(0.27 0.03 256);
+  --color-ink: oklch(0.96 0.01 256);
+  --color-muted: oklch(0.70 0.02 256);
+}`;
+</script>
+
+# Project: Accessible Design System
+
+This is the integration project for the whole "architecture" tier. You'll assemble a small but
+*principled* design system: layered tokens, a couple of recipes, contrast-safe theming, and a custom
+utility — the seed of something a real team could grow.
+
+<ProjectBrief
+	title="Build a small, accessible, performant design system"
+	time="75 min"
+	goal="Define layered tokens (with light/dark + contrast-safe pairings), build Button and Card recipes that consume only semantics, add one custom utility, and document it — all accessible and tiny."
+	requirements={[
+		'Semantic tokens for surface/ink/muted/accent/danger + radius-card',
+		'A verified-contrast dark theme override',
+		'Button and Card recipes consuming only semantic tokens',
+		'A custom utility (e.g. a content-grid or focus-ring helper)',
+		'Visible focus, semantic HTML, sr-only labels where needed',
+		'A documentation page listing tokens and components'
+	]}
+	stretch={[
+		'Add a danger Button variant wired to --color-danger',
+		'Add a high-contrast theme override',
+		'Add a Vitest test asserting variant classes'
+	]}
+/>
+
+## The token foundation
+
+<CodeBlock
+	language="css"
+	filename="design-system.css"
+	code={`@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-surface: white;
+  --color-surface-raised: oklch(0.98 0.005 256);
+  --color-ink: oklch(0.27 0.03 256);
+  --color-muted: oklch(0.50 0.02 256);
+  --color-accent: oklch(0.55 0.21 258);
+  --color-accent-ink: white;
+  --color-danger: oklch(0.58 0.22 27);
+  --radius-card: 0.875rem;
+}
+.dark {
+  --color-surface: oklch(0.21 0.02 256);
+  --color-surface-raised: oklch(0.27 0.03 256);
+  --color-ink: oklch(0.96 0.01 256);
+  --color-muted: oklch(0.70 0.02 256);
+}
+
+/* a custom utility: a consistent, accessible focus ring */
+@utility focus-ring {
+  outline: none;
+}
+@utility focus-ring {
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-accent);
+  }
+}`}
+/>
+
+## The system in action
+
+Toggle the site theme — the whole system re-skins, and every pairing stays contrast-safe because the
+*tokens* guarantee it.
+
+<CodeBlock
+	playground
+	themeCss={dsTheme}
+	filename="design-system-demo.html"
+	code={`<div class="space-y-4 bg-surface p-6">
+  <div class="rounded-card bg-surface-raised p-6 shadow-sm ring-1 ring-black/5">
+    <h3 class="text-lg font-semibold text-ink">Account settings</h3>
+    <p class="mt-1 text-sm text-muted">Every colour here is a semantic token — try dark mode.</p>
+    <div class="mt-4 flex gap-2">
+      <button class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-ink">Save</button>
+      <button class="rounded-lg px-4 py-2 text-sm font-medium text-danger hover:bg-danger/10">Delete account</button>
+    </div>
+  </div>
+</div>`}
+/>
+
+## Document it
+
+A design system nobody can discover doesn't exist. Ship a docs page: a token table (name → value →
+purpose), a component gallery (every variant rendered), and usage rules. This course *is* that
+pattern — a living, browsable system.
+
+<Callout type="insight" title="Small, principled, and documented beats large and ad-hoc">
+
+The instinct at this level is to build *more* — more tokens, more components, more options. Resist it.
+The best design systems are striking in their *smallness*: a tight token set, a handful of
+well-considered recipes, ruthless consistency, and excellent docs. Every addition is a lifetime
+maintenance and learning cost paid by every engineer who touches it. When you lead a system, your
+scarcest resource is your team's attention — spend it on getting the foundations exactly right and
+documenting them clearly, not on breadth. A system people understand and trust gets adopted; a sprawling
+one gets worked around. This restraint, applied consistently, is what the rest of this course has
+quietly been teaching you to value.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What single property makes this system 'accessible by construction'?"
+	options={[
+		{ text: 'It uses lots of colours', correct: false },
+		{ text: 'Contrast is guaranteed at the token layer and focus/semantics are baked into recipes', correct: true },
+		{ text: 'It only works in light mode', correct: false },
+		{ text: 'It avoids components', correct: false }
+	]}
+	explanation="When tokens guarantee contrast and recipes carry focus + semantic HTML, components inherit accessibility."
+/>
+
+## Recap & module wrap-up
+
+Module 10 complete. You can architect a design system as layered tokens and recipes, govern it as a
+versioned API, make accessibility and performance *system properties*, and extend the framework
+judiciously. This is staff/principal-level work.
+
+Next module: **Production Engineering** — shipping and maintaining this in the real world: SSR,
+testing, CI, and living docs.

@@ -1,0 +1,88 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Accessibility & Contrast
+
+We've touched accessibility throughout; now we make it systematic. At scale, a11y can't be per-PR
+heroics — it has to be built into your tokens, components, and defaults.
+
+## Contrast as a token constraint
+
+WCAG requires **4.5:1** contrast for normal text, **3:1** for large text and UI boundaries. Bake this
+into your semantics: every `ink`-on-`surface` pairing must pass, in *both* light and dark themes.
+
+<CodeBlock
+	language="css"
+	filename="contrast-safe pairings"
+	code={`@theme {
+  --color-surface: white;
+  --color-ink: oklch(0.27 0.03 256);     /* ~12:1 on white ✓ */
+  --color-muted: oklch(0.50 0.02 256);   /* ~4.6:1 on white ✓ (verify!) */
+}
+.dark {
+  --color-surface: oklch(0.27 0.03 256);
+  --color-ink: oklch(0.96 0.01 256);     /* re-verify in dark */
+}`}
+/>
+
+If a colour pair passes contrast as a *token*, every component using it inherits compliance for free.
+
+## Focus, motion, and semantics
+
+- **Focus:** a visible `focus-visible:ring` on every interactive element (Module 4).
+- **Motion:** honour `prefers-reduced-motion` globally (Module 8).
+- **Semantics:** use real elements — `<button>`, `<nav>`, `<main>`, headings in order. Tailwind
+  styles them; HTML carries the meaning screen readers need.
+
+<CodeBlock
+	language="html"
+	filename="semantic + a11y utilities"
+	code={`<!-- sr-only: visible to screen readers, hidden visually -->
+<button class="rounded-lg p-2 hover:bg-slate-100">
+  <span class="sr-only">Close dialog</span>
+  <svg aria-hidden="true">…</svg>
+</button>`}
+/>
+
+`sr-only` is essential for icon-only buttons; `aria-hidden` hides decorative glyphs from the
+accessibility tree.
+
+<Callout type="insight" title="Accessibility scales only when it's a default, not a checklist">
+
+A team cannot a11y-review its way to an accessible product at scale — humans forget, deadlines win.
+The leverage move is to make accessibility *fall out of the system*: contrast guaranteed by tokens,
+focus rings baked into your Button recipe, reduced-motion handled globally, semantic elements
+required by component APIs (a `Button` that renders a real `<button>`, never a styled `<div>`). Then
+the *easy* path is the *accessible* path, and individual engineers can't accidentally regress it.
+Position accessibility as an architectural property, owned by the system — that's how principal
+engineers make inclusion durable instead of heroic.
+
+</Callout>
+
+<Callout type="warning" title="Never ship an icon-only control without a label">
+
+A bare icon button is invisible to screen readers. Always add an `sr-only` label or `aria-label`, and
+mark the glyph `aria-hidden`. Audit for this specifically — it's the most common a11y regression in
+icon-heavy UIs.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What's the most scalable way to guarantee text contrast across a large product?"
+	options={[
+		{ text: 'Ask reviewers to eyeball every PR', correct: false },
+		{ text: 'Verify contrast at the token level so every component inherits compliant pairings', correct: true },
+		{ text: 'Only support light mode', correct: false },
+		{ text: 'Increase all font sizes', correct: false }
+	]}
+	explanation="If ink-on-surface pairs pass at the token layer (both themes), components are compliant by construction."
+/>
+
+## Recap
+
+- Bake **WCAG contrast** into token pairings, verified in light *and* dark.
+- Build focus, reduced-motion, and **semantic HTML** into components by default.
+- Use `sr-only` + `aria-hidden` for icon-only controls; make a11y a system property.
