@@ -1,0 +1,103 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# What is Tailwind CSS?
+
+Welcome. Before you write a single class, let's build the right mental model — because
+**how you think about Tailwind matters more than memorising class names.**
+
+Tailwind CSS is a **utility-first** CSS framework. Instead of writing CSS in a separate file
+and inventing names for everything, you compose designs directly in your markup using small,
+single-purpose classes like `flex`, `pt-4`, `text-center`, and `text-blue-600`.
+
+## Why this matters
+
+For decades the "correct" way to write CSS was to name a component (`.card`, `.btn-primary`)
+and define its styles elsewhere. It sounds tidy, but at scale it creates three quiet problems:
+
+- **Naming is hard and never ends.** Every new variation needs a new name (`.card`,
+  `.card--featured`, `.card--featured-compact`…).
+- **CSS only grows.** You're afraid to delete old rules because you can't be sure nothing uses
+  them, so stylesheets balloon over time.
+- **Context-switching is expensive.** You jump between HTML and CSS files to understand or change
+  one element.
+
+Utility-first flips this. The styling lives with the markup, the class names are a fixed,
+well-designed vocabulary you reuse everywhere, and your CSS bundle stays tiny because you're
+reusing the same handful of utilities across the whole app.
+
+## See it in one example
+
+Here is the same button written two ways. Read the Tailwind version like a sentence:
+"padding-x 4, padding-y 2, rounded large, background brand-600, white text, font medium, and on
+hover background brand-700."
+
+<CodeBlock
+	playground
+	filename="button.html"
+	code={`<button class="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700">
+  Get started
+</button>`}
+/>
+
+Click **Open in Playground** above, then change `bg-blue-600` to `bg-emerald-600` or `px-4` to
+`px-8`. The preview updates as you type. This instant feedback loop is the heart of the Tailwind
+experience.
+
+## The mental model
+
+Every utility maps to a small, predictable slice of CSS:
+
+<CodeBlock
+	language="css"
+	filename="what the utilities mean"
+	code={`.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.text-white { color: #fff; }
+.bg-blue-600 { background-color: oklch(0.55 0.22 263); }`}
+/>
+
+Once you internalise that utilities are just *named, constrained CSS values*, the whole framework
+becomes learnable — you're not memorising magic, you're learning a vocabulary.
+
+<Callout type="insight" title="The distinguished-engineer view">
+
+Utility-first isn't really about typing less CSS — it's a **constraint system**. By pulling values
+from a fixed design scale (`p-2`, `p-4`, `p-6`…) instead of arbitrary numbers, a whole team
+produces consistent spacing, color, and type *by default*, without a design review on every PR.
+The deepest value of Tailwind is that it makes the consistent thing the easy thing. Keep that lens
+as you learn: you're adopting guardrails, not just shortcuts.
+
+</Callout>
+
+<Callout type="warning" title="Won't my HTML get ugly?">
+
+The honest answer: class lists get long, and that's the most common first objection. We address it
+properly in **Module 7 (Components & Reuse)** — the fix is component extraction and class
+composition, *not* abandoning utilities. For now, lean into it.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What does 'utility-first' mean?"
+	options={[
+		{ text: 'You write all your CSS in one giant file first', correct: false },
+		{ text: 'You compose UI from small, single-purpose classes in your markup', correct: true },
+		{ text: 'Utilities are generated only after you ship to production', correct: false },
+		{ text: 'It is a JavaScript framework like Svelte', correct: false }
+	]}
+	explanation="Tailwind gives you a constrained vocabulary of small classes you compose directly in HTML."
+/>
+
+## Recap
+
+- Tailwind is a **utility-first** framework: compose designs from small classes in your markup.
+- It solves CSS's hardest scaling problems: naming, ever-growing files, and context-switching.
+- The real win is **consistency through constraints** — the design scale guides every decision.
+- Long class lists are a solved problem (Module 7), not a reason to avoid utilities.
+
+Next, we'll get a real, production-grade project running on your machine.

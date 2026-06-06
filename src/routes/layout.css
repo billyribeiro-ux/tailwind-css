@@ -1,0 +1,84 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Class-based dark mode: toggle `.dark` on <html> instead of relying on the OS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens. In Tailwind v4 the theme IS your CSS — every token below becomes
+ * both a CSS variable (e.g. `var(--color-brand-500)`) and a utility (e.g. `bg-brand-500`).
+ * This is the v4 "CSS-first" model the course teaches in Module 6.
+ */
+@theme {
+	--font-sans:
+		'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+		sans-serif;
+	--font-mono:
+		'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+
+	/* Brand scale — used across the course shell. */
+	--color-brand-50: oklch(0.97 0.02 256);
+	--color-brand-100: oklch(0.94 0.04 256);
+	--color-brand-200: oklch(0.88 0.07 256);
+	--color-brand-300: oklch(0.8 0.11 256);
+	--color-brand-400: oklch(0.7 0.16 256);
+	--color-brand-500: oklch(0.62 0.2 256);
+	--color-brand-600: oklch(0.54 0.21 258);
+	--color-brand-700: oklch(0.46 0.18 260);
+	--color-brand-800: oklch(0.39 0.14 262);
+	--color-brand-900: oklch(0.33 0.1 264);
+	--color-brand-950: oklch(0.22 0.07 266);
+
+	/* Accent for "Principal Insight" highlights. */
+	--color-accent-400: oklch(0.78 0.16 70);
+	--color-accent-500: oklch(0.72 0.18 60);
+	--color-accent-600: oklch(0.64 0.18 52);
+
+	--radius-card: 1rem;
+}
+
+/* Base layer: sensible, themeable defaults the whole app inherits. */
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		@apply bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200;
+	}
+
+	/* Honour reduced-motion preferences (accessibility, taught in Module 10). */
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
+	}
+
+	/* Consistent focus ring for keyboard users. */
+	:focus-visible {
+		@apply ring-2 ring-brand-500 ring-offset-2 ring-offset-white outline-none dark:ring-offset-slate-950;
+	}
+}
+
+/*
+ * Lesson prose. mdsvex renders Markdown straight into the page; this `.lesson-prose`
+ * wrapper styles that HTML via the typography plugin, tuned for dark mode.
+ */
+@layer components {
+	.lesson-prose {
+		@apply prose max-w-none prose-slate dark:prose-invert;
+		@apply prose-headings:scroll-mt-24 prose-headings:font-semibold;
+		@apply prose-a:font-medium prose-a:text-brand-600 hover:prose-a:text-brand-700 dark:prose-a:text-brand-400;
+		@apply prose-code:rounded prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:before:content-[''] prose-code:after:content-[''] dark:prose-code:bg-slate-800;
+		@apply prose-pre:bg-slate-900 prose-pre:text-slate-100;
+		@apply prose-img:rounded-xl;
+	}
+}
