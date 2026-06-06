@@ -1,0 +1,89 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Mobile-First Breakpoints
+
+Responsive design in Tailwind is astonishingly simple once the mental model clicks: **unprefixed
+utilities apply everywhere; prefixed utilities apply from a breakpoint up.**
+
+## The breakpoints
+
+`sm` 40rem · `md` 48rem · `lg` 64rem · `xl` 80rem · `2xl` 96rem. A prefix like `md:` means "at this
+width **and larger**."
+
+<CodeBlock
+	language="html"
+	filename="reading responsive classes"
+	code={`<div class="text-sm md:text-base lg:text-lg">
+  small phones: text-sm · tablets+: text-base · laptops+: text-lg
+</div>`}
+/>
+
+## Mobile-first means base = smallest
+
+Design the phone layout with unprefixed classes, then *layer on* changes for larger screens. You add
+complexity as space grows — you never strip it away.
+
+<CodeBlock
+	playground
+	filename="responsive grid"
+	code={`<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="rounded bg-indigo-200 p-4">1</div>
+  <div class="rounded bg-indigo-200 p-4">2</div>
+  <div class="rounded bg-indigo-200 p-4">3</div>
+  <div class="rounded bg-indigo-200 p-4">4</div>
+</div>`}
+/>
+
+Drag the preview pane narrow and wide: one column on phones, two on small screens, four on large.
+
+## A responsive layout switch
+
+A common pattern: stack on mobile, sit side-by-side on desktop.
+
+<CodeBlock
+	playground
+	filename="stack to row"
+	code={`<div class="flex flex-col gap-4 md:flex-row">
+  <div class="flex-1 rounded bg-emerald-200 p-6">Sidebar</div>
+  <div class="flex-[2] rounded bg-emerald-300 p-6">Main content</div>
+</div>`}
+/>
+
+<Callout type="insight" title="Mobile-first is a discipline, not just a default">
+
+Why does Tailwind force mobile-first? Because designing for the constrained case first produces
+better products. When you start on a phone, you're forced to decide what truly matters — there's no
+room for clutter. Then you *progressively enhance* for bigger screens. Teams that design
+desktop-first almost always ship broken or bolted-on mobile experiences. The `md:` prefix isn't just
+syntax; it nudges your whole team toward the right order of thinking.
+
+</Callout>
+
+<Callout type="warning" title="`md:` is min-width, not 'only on medium'">
+
+`md:flex` means "flex at medium **and up**," not "flex only on medium." To target a single range you
+combine prefixes, e.g. `md:max-lg:hidden`. But most of the time you don't need ranges — embrace the
+min-width cascade.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What does `lg:grid-cols-4` do?"
+	options={[
+		{ text: 'Always uses 4 columns', correct: false },
+		{ text: 'Uses 4 columns only on exactly the lg screen size', correct: false },
+		{ text: 'Uses 4 columns at the lg breakpoint and every size larger', correct: true },
+		{ text: 'Uses 4 columns below lg', correct: false }
+	]}
+	explanation="Breakpoint prefixes are min-width: they apply from that width upward."
+/>
+
+## Recap
+
+- Breakpoints: **`sm md lg xl 2xl`**; prefixes mean "from this width **up**."
+- **Unprefixed = base (mobile)**; layer larger-screen overrides on top.
+- Classic patterns: responsive grid columns, stack-to-row with `flex-col md:flex-row`.

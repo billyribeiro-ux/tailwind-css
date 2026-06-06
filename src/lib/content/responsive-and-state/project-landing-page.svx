@@ -1,0 +1,120 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Project: Responsive Landing Page
+
+Everything from Modules 1–4 converges here: layout, type, colour, responsive breakpoints, state
+variants, and dark mode — in a real marketing hero.
+
+<ProjectBrief
+	title="Build a responsive marketing hero"
+	time="45 min"
+	goal="Create a landing-page hero with a responsive nav, a headline + subcopy, two call-to-action buttons with hover/focus states, a feature row that reflows by screen size, and full dark-mode support."
+	requirements={[
+		'A header that lays out logo and actions with justify-between',
+		'A centered hero: badge, large responsive headline, subcopy, two CTAs',
+		'A three-up feature row: stacked on mobile, side-by-side on desktop',
+		'Hover and focus-visible states on all interactive elements',
+		'Every surface and text colour adapts with dark:'
+	]}
+	stretch={[
+		'Add a gradient text effect on one headline word',
+		'Add a group-hover lift to the feature cards',
+		'Add a sticky header with backdrop-blur'
+	]}
+/>
+
+## The finished hero
+
+Toggle the site theme (top-right) and resize the preview to see it adapt.
+
+<CodeBlock
+	playground
+	filename="landing.html (solution)"
+	code={`<div class="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+  <header class="flex items-center justify-between p-4">
+    <span class="text-lg font-bold">Nimbus</span>
+    <nav class="flex items-center gap-2 text-sm">
+      <a href="#" class="hidden rounded-lg px-3 py-2 hover:bg-slate-100 sm:block dark:hover:bg-slate-800">Features</a>
+      <a href="#" class="hidden rounded-lg px-3 py-2 hover:bg-slate-100 sm:block dark:hover:bg-slate-800">Pricing</a>
+      <button class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-400 outline-none">
+        Sign up
+      </button>
+    </nav>
+  </header>
+
+  <section class="mx-auto max-w-2xl px-4 py-16 text-center">
+    <span class="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+      New · v4 ready
+    </span>
+    <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl">
+      Ship interfaces
+      <span class="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">at light speed</span>
+    </h1>
+    <p class="mx-auto mt-4 max-w-prose text-slate-600 dark:text-slate-400">
+      A responsive, dark-mode-ready hero built entirely with utilities you now know.
+    </p>
+    <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+      <button class="rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition hover:bg-indigo-700">Get started</button>
+      <button class="rounded-xl border border-slate-300 px-6 py-3 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Live demo</button>
+    </div>
+  </section>
+
+  <section class="mx-auto grid max-w-4xl grid-cols-1 gap-4 px-4 pb-16 sm:grid-cols-3">
+    <div class="group rounded-xl border border-slate-200 p-5 transition hover:-translate-y-1 dark:border-slate-700">
+      <div class="mb-3 h-10 w-10 rounded-lg bg-indigo-100 transition group-hover:bg-indigo-600 dark:bg-indigo-500/20"></div>
+      <h3 class="font-semibold">Fast</h3>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Microsecond rebuilds.</p>
+    </div>
+    <div class="group rounded-xl border border-slate-200 p-5 transition hover:-translate-y-1 dark:border-slate-700">
+      <div class="mb-3 h-10 w-10 rounded-lg bg-indigo-100 transition group-hover:bg-indigo-600 dark:bg-indigo-500/20"></div>
+      <h3 class="font-semibold">Responsive</h3>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Mobile-first by default.</p>
+    </div>
+    <div class="group rounded-xl border border-slate-200 p-5 transition hover:-translate-y-1 dark:border-slate-700">
+      <div class="mb-3 h-10 w-10 rounded-lg bg-indigo-100 transition group-hover:bg-indigo-600 dark:bg-indigo-500/20"></div>
+      <h3 class="font-semibold">Themeable</h3>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Dark mode included.</p>
+    </div>
+  </section>
+</div>`}
+/>
+
+## What to study in the solution
+
+- **Responsive headline:** `text-3xl sm:text-5xl` — smaller on phones, dramatic on desktop.
+- **Stack → row CTAs:** `flex-col sm:flex-row`.
+- **Feature grid:** `grid-cols-1 sm:grid-cols-3`.
+- **Every colour has a `dark:` partner** — and notice surfaces use `slate-900`, not pure black.
+- **Interaction everywhere:** `hover:`, `focus-visible:ring`, and `group-hover` on the feature icons.
+
+<Callout type="insight" title="A landing page is a stress test for your fundamentals">
+
+Nothing here is exotic — and that's the point. A great hero is just fundamentals applied with taste:
+restrained palette, clear type hierarchy, generous spacing, considered interaction, and a single
+obvious call to action. When you can build this fluently from a blank file, you've genuinely
+internalised the first third of the course. Everything beyond this is about *scaling* these
+fundamentals across a whole product.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Which class set makes the CTAs stack on mobile and sit in a row on small screens and up?"
+	options={[
+		{ text: 'flex flex-row sm:flex-col', correct: false },
+		{ text: 'flex flex-col sm:flex-row', correct: true },
+		{ text: 'grid grid-cols-2', correct: false },
+		{ text: 'block sm:inline', correct: false }
+	]}
+	explanation="Mobile-first: base is flex-col (stacked); sm:flex-row switches to a row from sm upward."
+/>
+
+## Recap & module wrap-up
+
+Module 4 complete. Your interfaces now adapt to any screen and respond to the user, in light and dark
+themes. You built a production-quality landing hero from scratch.
+
+Next module: **Typography & Forms** — readable long-form content and accessible, stateful inputs.

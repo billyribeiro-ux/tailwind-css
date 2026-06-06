@@ -1,0 +1,101 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Dark Mode
+
+Dark mode is table stakes now. Tailwind's `dark:` variant lets you design both themes side by side,
+right in your markup.
+
+## The dark: variant
+
+Prefix any utility with `dark:` and it applies when dark mode is active.
+
+<CodeBlock
+	playground
+	filename="dark-aware card"
+	code={`<div class="rounded-xl bg-white p-6 text-slate-900 shadow dark:bg-slate-800 dark:text-slate-100">
+  <h3 class="font-semibold">I adapt to the theme</h3>
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+    Toggle this whole site's theme (top-right) and watch every dark: utility flip.
+  </p>
+</div>`}
+/>
+
+<Callout type="tip" title="Try the global toggle">
+
+This course uses class-based dark mode. Use the sun/moon button in the header — the preview above
+re-renders in the active theme because the Playground mirrors the site's `dark` class.
+
+</Callout>
+
+## Class strategy vs media strategy
+
+By default `dark:` follows the OS setting. For a user-controlled toggle, switch to the **class
+strategy**: define a custom variant and toggle a `dark` class on `<html>`.
+
+<CodeBlock
+	language="css"
+	filename="app.css (class-based dark mode in v4)"
+	code={`@import 'tailwindcss';
+
+/* Make dark: respond to a .dark class instead of the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));`}
+/>
+
+<CodeBlock
+	language="typescript"
+	filename="toggle.ts"
+	code={`// Flip the class and remember the choice
+function toggleTheme() {
+  const dark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}`}
+/>
+
+## Avoid the flash
+
+Set the class **before first paint** with a tiny inline script in your HTML head, reading
+`localStorage`. Otherwise users see a flash of the wrong theme on load.
+
+<CodeBlock
+	language="html"
+	filename="app.html (anti-flash)"
+	code={`<script>
+  const saved = localStorage.getItem('theme');
+  const dark = saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
+  if (dark) document.documentElement.classList.add('dark');
+</script>`}
+/>
+
+<Callout type="insight" title="Dark mode is a design system problem, not a paint job">
+
+Slapping `dark:` on a few backgrounds produces muddy, low-contrast results. Done right, dark mode is
+a *second set of semantic tokens*: surface, text, border, and accent each get a dark value chosen for
+contrast and depth (pure black is usually wrong — `slate-900/950` reads better). In Module 6 you'll
+define these as CSS variables so a component never hard-codes `dark:bg-slate-800` — it just uses
+`bg-surface` and the token resolves per theme. That's how large apps keep two themes coherent without
+doubling every class.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="A user toggles to dark mode but sees a flash of light theme on every page load. The fix?"
+	options={[
+		{ text: 'Add more dark: classes', correct: false },
+		{ text: 'Set the `dark` class in an inline head script before first paint', correct: true },
+		{ text: 'Switch to the media strategy', correct: false },
+		{ text: 'Disable server-side rendering', correct: false }
+	]}
+	explanation="Apply the saved theme synchronously in the head, before the page paints, to avoid the flash."
+/>
+
+## Recap
+
+- **`dark:`** styles the dark theme inline; great for designing both at once.
+- Use the **class strategy** (`@custom-variant dark` + a `.dark` class) for a user toggle.
+- Prevent the flash with an **inline head script**; think in **semantic tokens**, not ad-hoc colours.
+
+Next: a full responsive landing page tying everything together.

@@ -1,0 +1,144 @@
+<script>
+	import { CodeBlock, Callout, Quiz, ProjectBrief } from '$lib/components/lesson';
+
+	const stepperLogic = `<` + `script lang="ts">
+  let step = $state(1);
+  const total = 3;
+  const next = () => (step = Math.min(step + 1, total));
+  const back = () => (step = Math.max(step - 1, 1));
+<` + `/script>
+
+<div class="mx-auto max-w-md rounded-2xl bg-white p-6 shadow-lg">
+  <!-- progress -->
+  <div class="mb-6 flex items-center gap-2">
+    {#each Array(total) as _, i}
+      <div class="h-1.5 flex-1 rounded-full {i < step ? 'bg-indigo-600' : 'bg-slate-200'}"></div>
+    {/each}
+  </div>
+
+  {#if step === 1}
+    <h2 class="text-lg font-semibold">Your details</h2>
+    <!-- step 1 fields -->
+  {:else if step === 2}
+    <h2 class="text-lg font-semibold">Your plan</h2>
+    <!-- step 2 fields -->
+  {:else}
+    <h2 class="text-lg font-semibold">Review</h2>
+    <!-- summary -->
+  {/if}
+
+  <div class="mt-6 flex justify-between">
+    <button onclick={back} disabled={step === 1}
+      class="rounded-lg px-4 py-2 text-slate-600 disabled:opacity-40">Back</button>
+    <button onclick={next}
+      class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white">
+      {step === total ? 'Submit' : 'Continue'}
+    </button>
+  </div>
+</div>`;
+</script>
+
+# Project: Multi-Step Form
+
+Multi-step forms reduce overwhelm by chunking a long flow into digestible steps. You'll combine
+Svelte 5 state with everything from this module: clean inputs, validation states, accessible labels,
+and a progress indicator.
+
+<ProjectBrief
+	title="Build an accessible multi-step signup"
+	time="50 min"
+	goal="Create a three-step signup (details → plan → review) with a progress bar, Back/Continue navigation driven by Svelte 5 runes, validated and accessible inputs, and a final review step."
+	requirements={[
+		'A progress indicator showing current step of total',
+		'Step state managed with a Svelte 5 $state rune',
+		'Back/Continue buttons; Back disabled on step 1, Submit label on the last step',
+		'Accessible, labelled, validated inputs on each step',
+		'A review step summarising the entered data'
+	]}
+	stretch={[
+		'Block Continue until the current step is valid',
+		'Animate step transitions (preview of Module 8)',
+		'Persist progress to localStorage so a refresh resumes'
+	]}
+/>
+
+## The stepper UI (live)
+
+Here's the visual design of the stepper — progress bar, a focused field group, and the button row.
+The live logic comes next.
+
+<CodeBlock
+	playground
+	filename="stepper-ui.html"
+	code={`<div class="mx-auto max-w-md rounded-2xl bg-white p-6 shadow-lg">
+  <div class="mb-6 flex items-center gap-2">
+    <div class="h-1.5 flex-1 rounded-full bg-indigo-600"></div>
+    <div class="h-1.5 flex-1 rounded-full bg-indigo-600"></div>
+    <div class="h-1.5 flex-1 rounded-full bg-slate-200"></div>
+  </div>
+
+  <h2 class="text-lg font-semibold text-slate-900">Your plan</h2>
+  <p class="text-sm text-slate-500">Step 2 of 3</p>
+
+  <label class="mt-4 block text-sm font-medium text-slate-700">
+    Workspace name
+    <input required placeholder="Acme Inc."
+      class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
+  </label>
+
+  <div class="mt-6 flex justify-between">
+    <button class="rounded-lg px-4 py-2 text-slate-600 hover:bg-slate-100">Back</button>
+    <button class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700">Continue</button>
+  </div>
+</div>`}
+/>
+
+## The Svelte logic
+
+This is where Tailwind meets a real framework. A single `$state` rune holds the current step;
+Svelte's `{#if}` blocks swap the step content; the progress bar maps over the step count.
+
+<CodeBlock language="svelte" filename="MultiStepForm.svelte" code={stepperLogic} />
+
+Notice how little code drives the whole flow — the styling is utilities, the logic is a handful of
+runes. That separation is exactly what makes this maintainable.
+
+<Callout type="insight" title="State lives in the framework; presentation lives in utilities">
+
+The clean architecture here is worth internalising: **Svelte owns *what* is shown (step, validity,
+data); Tailwind owns *how* it looks.** The dynamic class `i < step ? 'bg-indigo-600' : 'bg-slate-200'`
+is the bridge — a tiny expression that maps state to style. As components grow, keep this separation
+crisp: when you find yourself encoding business logic in class strings, or visual constants in your
+script, pause and re-draw the line. Clear boundaries are what keep components understandable a year
+later.
+
+</Callout>
+
+<Callout type="warning" title="Don't lose accessibility in the steps">
+
+When the active step changes, move focus to the new step's heading (or first field) and consider an
+`aria-live` region announcing "Step 2 of 3." Visual progress isn't enough for screen-reader users —
+they need the change announced.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="In this design, what is the right home for the current step number?"
+	options={[
+		{ text: 'A Tailwind class on the container', correct: false },
+		{ text: 'A Svelte $state rune in the component script', correct: true },
+		{ text: 'A CSS variable', correct: false },
+		{ text: 'The URL only', correct: false }
+	]}
+	explanation="State belongs in the framework ($state); utilities render it. Keep that boundary clean."
+/>
+
+## Recap & module wrap-up
+
+Module 5 complete. You can render readable content with `prose`, build clean and consistent forms,
+communicate validation states, and keep everything accessible — then wire it to real Svelte state.
+
+Next module: **Design Tokens & Theming** — the CSS-first heart of Tailwind v4, where your design
+system becomes real.

@@ -1,0 +1,95 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Form States & Validation
+
+A good form *communicates*: it shows what's required, what's focused, what's wrong, and what's been
+fixed. Tailwind has variants for all of it — much of it without JavaScript.
+
+## Built-in validation variants
+
+The browser already knows validity from your HTML attributes (`required`, `type="email"`,
+`pattern`). Style it with `required:`, `invalid:`, and `focus:`.
+
+<CodeBlock
+	playground
+	filename="invalid styling"
+	code={`<label class="block">
+  <span class="mb-1 block text-sm font-medium text-slate-700">Email (required)</span>
+  <input type="email" required placeholder="type something invalid"
+    class="block w-full rounded-lg border border-slate-300 px-3 py-2 outline-none
+           focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200
+           invalid:border-red-400 invalid:focus:ring-red-200" />
+  <p class="mt-1 text-sm text-slate-400">Border turns red when the value isn't a valid email.</p>
+</label>`}
+/>
+
+<Callout type="warning" title="`invalid:` fires immediately — even when empty">
+
+A bare `invalid:` styles a required-but-empty field as an error before the user has typed anything,
+which feels hostile. Two fixes: only validate after interaction (e.g. add an `error` class from your
+framework on blur/submit), or use `user-invalid` where supported. Validation *timing* matters as much
+as validation itself.
+
+</Callout>
+
+## focus-within for grouping
+
+`focus-within:` styles a container when anything inside it is focused — great for highlighting the
+active field group.
+
+<CodeBlock
+	playground
+	filename="focus-within"
+	code={`<div class="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 transition focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-200">
+  <span class="text-slate-400">@</span>
+  <input placeholder="username" class="w-full outline-none" />
+</div>`}
+/>
+
+## Peer-driven error messages
+
+Combine Module 4's `peer` with validation: show a hint that turns into an error based on the input's
+state — no JS.
+
+<CodeBlock
+	playground
+	filename="peer validation"
+	code={`<div>
+  <input type="email" required placeholder="you@example.com"
+    class="peer w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500" />
+  <p class="mt-1 hidden text-sm text-red-600 peer-[&:not(:placeholder-shown):invalid]:block">
+    Please enter a valid email address.
+  </p>
+</div>`}
+/>
+
+<Callout type="insight" title="Let the platform validate, then layer your UX on top">
+
+Engineers reach for JavaScript validation reflexively, but the browser already validates `required`,
+`email`, `url`, `min`, `max`, and `pattern` for free — accessibly, before any script loads. The
+senior approach: lean on native constraint validation for the *rules*, and add JavaScript only for
+the *experience* (timing, friendly messages, async checks like "username taken"). You'll write less
+code, ship faster feedback, and stay accessible by default.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why is a bare `invalid:` style often a poor UX?"
+	options={[
+		{ text: 'It doesn’t work without JavaScript', correct: false },
+		{ text: 'It flags required fields as errors before the user has typed', correct: true },
+		{ text: 'It only works in dark mode', correct: false },
+		{ text: 'It disables the submit button', correct: false }
+	]}
+	explanation="invalid: matches immediately, so empty-but-required fields look like errors prematurely; control the timing."
+/>
+
+## Recap
+
+- Style validity with `required:`, `invalid:`, `focus:`, `focus-within:`.
+- Mind validation **timing** — don't shout errors before interaction.
+- Use **native constraint validation** for rules; add JS only for experience.

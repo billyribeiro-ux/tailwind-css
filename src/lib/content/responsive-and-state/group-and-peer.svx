@@ -1,0 +1,87 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Group & Peer
+
+Sometimes an element should react to *another* element's state — a caption appearing when you hover
+the whole card, or a hint turning red when an input is invalid. `group` and `peer` make this
+possible with pure utilities.
+
+## group: style children from parent state
+
+Mark a parent `group`, then use `group-hover:` (or `group-focus:`, etc.) on any descendant.
+
+<CodeBlock
+	playground
+	filename="group-hover"
+	code={`<a href="#" class="group flex items-center gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-indigo-400">
+  <div class="h-10 w-10 rounded-lg bg-indigo-100 transition group-hover:bg-indigo-600"></div>
+  <div>
+    <p class="font-medium text-slate-900">Hover the whole row</p>
+    <p class="text-sm text-slate-500 transition group-hover:text-indigo-600">Children react to the parent</p>
+  </div>
+</a>`}
+/>
+
+Hovering anywhere on the row changes the icon *and* the subtitle — because they watch the `group`.
+
+## peer: style siblings from sibling state
+
+Mark an element `peer`, then style a *later sibling* with `peer-*`. Perfect for inputs and their
+labels/hints.
+
+<CodeBlock
+	playground
+	filename="peer with input"
+	code={`<div>
+  <input type="email" placeholder="you@example.com" required
+    class="peer w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500" />
+  <p class="mt-1 text-sm text-slate-400 peer-focus:text-indigo-600">
+    We'll never share your email.
+  </p>
+</div>`}
+/>
+
+Focus the input and the hint colour follows — no JavaScript.
+
+## Named groups and peers
+
+When you nest, name them to avoid ambiguity: `group/item` … `group-hover/item:`. This lets an inner
+element respond to a *specific* ancestor, not just the nearest.
+
+<Callout type="insight" title="Reach for group/peer before reaching for JavaScript">
+
+A surprising amount of "interactive" UI — hover reveals, dependent states, custom checkboxes,
+expanding cards — needs no JS at all. `group` and `peer` push that logic into CSS, where it's faster,
+works before hydration, and can't break. The senior instinct is to ask *"can the platform do this?"*
+before adding a state variable and an event handler. Fewer moving parts means fewer bugs. Save your
+JavaScript for genuine application logic.
+
+</Callout>
+
+<Callout type="warning" title="peer only styles *later* siblings">
+
+CSS can't look backwards across siblings here: `peer-*` affects elements that come **after** the
+`peer` in the DOM. If your hint must react to an input, put the hint after the input.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You want a caption to appear when the user hovers anywhere on a card. What do you use?"
+	options={[
+		{ text: 'hover: on the caption', correct: false },
+		{ text: '`group` on the card and `group-hover:` on the caption', correct: true },
+		{ text: 'peer on the caption', correct: false },
+		{ text: 'A Svelte on:mouseenter handler', correct: false }
+	]}
+	explanation="group marks the parent; group-hover: lets any descendant respond to the parent being hovered."
+/>
+
+## Recap
+
+- **`group`** + `group-hover:`/`group-focus:` → children react to a parent.
+- **`peer`** + `peer-focus:`/`peer-invalid:` → later siblings react to an element.
+- Name them (`group/x`) when nesting; reach for these **before JavaScript**.

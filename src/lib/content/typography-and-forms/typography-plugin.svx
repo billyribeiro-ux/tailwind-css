@@ -1,0 +1,93 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# The Typography Plugin
+
+When you render content you *didn't* hand-write class-by-class — a blog post from markdown, a CMS
+field, an AI response — you need beautiful defaults for raw HTML. That's the `@tailwindcss/typography`
+plugin, and its `prose` class.
+
+## The problem it solves
+
+Tailwind's preflight intentionally strips default styles (headings aren't bold, lists have no
+bullets). Great for UI, terrible for an article. `prose` re-adds tasteful, readable typography to a
+whole block of generated HTML.
+
+## Enabling and using it
+
+<CodeBlock
+	language="css"
+	filename="app.css"
+	code={`@import 'tailwindcss';
+@plugin '@tailwindcss/typography';`}
+/>
+
+<CodeBlock
+	playground
+	filename="prose"
+	code={`<article class="prose prose-slate max-w-none">
+  <h1>The art of readable text</h1>
+  <p>With <code>prose</code>, this raw HTML gets sensible spacing, heading sizes, and list styling
+     automatically — no per-element classes.</p>
+  <ul>
+    <li>Bulleted lists look right</li>
+    <li>Links are styled and underlined</li>
+  </ul>
+  <blockquote>Even blockquotes get the treatment.</blockquote>
+</article>`}
+/>
+
+## Modifiers
+
+- **Size:** `prose-sm`, `prose-lg`, `prose-xl`.
+- **Theme:** `prose-slate`, `prose-zinc`, etc.; **`dark:prose-invert`** for dark mode.
+- **Element overrides:** `prose-headings:font-bold`, `prose-a:text-indigo-600`, `prose-img:rounded-xl`.
+
+<CodeBlock
+	language="html"
+	filename="customised prose"
+	code={`<article class="prose prose-lg max-w-none dark:prose-invert
+                prose-headings:font-bold
+                prose-a:text-indigo-600 hover:prose-a:text-indigo-700
+                prose-img:rounded-xl">
+  <!-- markdown-rendered HTML -->
+</article>`}
+/>
+
+<Callout type="tip" title="This course uses it">
+
+Every lesson body you're reading is rendered with a customised `prose` (see `.lesson-prose` in the
+project's `layout.css`). The mdsvex markdown becomes HTML, and `prose` makes it readable — exactly
+the use case the plugin exists for.
+
+</Callout>
+
+<Callout type="insight" title="`prose` is for content, not for UI — keep the boundary sharp">
+
+A common mistake is wrapping application UI in `prose`, then fighting its opinionated spacing with
+overrides everywhere. Draw a firm line: **`prose` is for rendered long-form content** (articles,
+docs, markdown); **utilities are for application chrome** (nav, cards, forms). Use `not-prose` to
+opt a UI island out of `prose` when content and UI must coexist. Knowing *where a tool stops* is as
+important as knowing how to use it.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="When is `prose` the right tool?"
+	options={[
+		{ text: 'For styling your nav bar and buttons', correct: false },
+		{ text: 'For HTML you render from markdown/CMS where you can’t add per-element classes', correct: true },
+		{ text: 'For making a CSS grid', correct: false },
+		{ text: 'Only in dark mode', correct: false }
+	]}
+	explanation="prose gives readable defaults to generated long-form HTML; use utilities for app UI."
+/>
+
+## Recap
+
+- `@plugin '@tailwindcss/typography'` then `prose` styles whole blocks of generated HTML.
+- Modify with size (`prose-lg`), theme (`dark:prose-invert`), and element targets (`prose-a:`).
+- Keep the boundary: **`prose` for content, utilities for UI**; `not-prose` to opt out.

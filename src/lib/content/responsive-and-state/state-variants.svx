@@ -1,0 +1,83 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# State Variants
+
+Static UI is dead UI. State variants let you style interaction — hover, focus, active, disabled —
+with the same prefix grammar you already know.
+
+## Hover, focus, active
+
+<CodeBlock
+	playground
+	filename="interactive button"
+	code={`<button class="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition hover:bg-indigo-700 active:scale-95">
+  Hover and click me
+</button>`}
+/>
+
+`hover:` on pointer-over, `active:` while pressed, `focus:` when focused. Add `transition` so changes
+animate smoothly instead of snapping.
+
+## focus-visible for keyboard users
+
+`focus:` fires on mouse *and* keyboard. `focus-visible:` fires only when the browser thinks a focus
+ring is warranted (typically keyboard navigation) — the modern, accessible choice.
+
+<CodeBlock
+	playground
+	filename="accessible focus"
+	code={`<button class="rounded-lg border border-slate-300 px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+  Tab to me with the keyboard
+</button>`}
+/>
+
+## Disabled and other states
+
+`disabled:` styles a disabled control; you'll also meet `checked:`, `required:`, and `invalid:` in
+Module 5's forms lessons.
+
+<CodeBlock
+	playground
+	filename="disabled"
+	code={`<button disabled class="rounded-lg bg-indigo-600 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500">
+  Can't click me
+</button>`}
+/>
+
+<Callout type="insight" title="Never remove focus styles — replace them">
+
+It's tempting to write `outline-none` to kill the "ugly" default focus ring. Doing so without a
+replacement makes your app unusable for keyboard and screen-reader users — a serious accessibility
+regression that a senior reviewer will block. The correct pattern is always `outline-none
+focus-visible:ring-2 …`: remove the default, provide a *better* one. Treat a visible focus state as a
+non-negotiable requirement, not a style preference.
+
+</Callout>
+
+<Callout type="tip" title="Always pair state changes with `transition`">
+
+`hover:bg-indigo-700` without `transition` snaps instantly and feels cheap. Add `transition` (and
+optionally `duration-200`) so interactions feel responsive and intentional.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What's the accessible way to remove the default focus outline?"
+	options={[
+		{ text: 'Just use outline-none', correct: false },
+		{ text: 'outline-none combined with focus-visible:ring-2', correct: true },
+		{ text: 'Set the text colour to match the background', correct: false },
+		{ text: 'Use hover: instead of focus:', correct: false }
+	]}
+	explanation="Remove the default but provide a clear focus-visible replacement so keyboard users can navigate."
+/>
+
+## Recap
+
+- `hover: focus: active: disabled:` style interaction; stack with breakpoints freely.
+- Prefer **`focus-visible:`** for focus rings (keyboard-aware).
+- **Never** strip focus styles without a replacement; always add `transition`.

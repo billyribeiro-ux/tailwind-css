@@ -1,0 +1,97 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Styling Forms
+
+Native form controls are inconsistent across browsers and awkward to style. The
+`@tailwindcss/forms` plugin resets them to a clean, predictable baseline you can then style with
+ordinary utilities.
+
+## Enable the plugin
+
+<CodeBlock
+	language="css"
+	filename="app.css"
+	code={`@import 'tailwindcss';
+@plugin '@tailwindcss/forms';`}
+/>
+
+With it enabled, inputs, selects, checkboxes and radios start from a sane, stylable base.
+
+## A clean text input
+
+<CodeBlock
+	playground
+	filename="text input"
+	code={`<label class="block">
+  <span class="mb-1 block text-sm font-medium text-slate-700">Email</span>
+  <input type="email" placeholder="you@example.com"
+    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
+</label>`}
+/>
+
+## Selects, checkboxes, radios
+
+The plugin makes these themeable too — `accent`/colour utilities and sizing just work.
+
+<CodeBlock
+	playground
+	filename="controls"
+	code={`<div class="space-y-4">
+  <select class="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500">
+    <option>Starter</option><option>Pro</option><option>Enterprise</option>
+  </select>
+
+  <label class="flex items-center gap-2 text-sm text-slate-700">
+    <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+    Subscribe to the newsletter
+  </label>
+
+  <div class="flex gap-4 text-sm text-slate-700">
+    <label class="flex items-center gap-2">
+      <input type="radio" name="plan" class="border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Monthly
+    </label>
+    <label class="flex items-center gap-2">
+      <input type="radio" name="plan" class="border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Yearly
+    </label>
+  </div>
+</div>`}
+/>
+
+<Callout type="tip" title="Wrap inputs in <label>">
+
+Putting the input *inside* its `<label>` (or linking via `for`/`id`) means clicking the label focuses
+the control and screen readers announce it correctly. It's a one-line habit with a big accessibility
+payoff — more in the Accessible Forms lesson.
+
+</Callout>
+
+<Callout type="insight" title="Consistency in forms is a trust signal">
+
+Forms are where users hand you their data — and inconsistent, janky inputs quietly erode trust. The
+`forms` plugin exists so an entire team produces inputs that look and behave identically without each
+developer reinventing focus rings and borders. Define your input styling **once** (you'll extract it
+into a component in Module 7) and reuse it everywhere. Uniform forms say "this software is careful,"
+and careful is exactly what users want when typing their credit card number.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What does @tailwindcss/forms primarily give you?"
+	options={[
+		{ text: 'Form validation logic', correct: false },
+		{ text: 'A clean, consistent, stylable baseline for native form controls', correct: true },
+		{ text: 'Pre-built form components', correct: false },
+		{ text: 'Server-side form handling', correct: false }
+	]}
+	explanation="It resets native controls to a predictable base you then style with utilities — not logic or components."
+/>
+
+## Recap
+
+- `@plugin '@tailwindcss/forms'` normalises native controls for styling.
+- Style inputs/selects/checkboxes/radios with ordinary utilities + focus states.
+- Always associate a `<label>`; define input styling once for consistency.
