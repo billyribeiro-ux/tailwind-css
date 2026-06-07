@@ -6,6 +6,7 @@
  */
 export { default as CodeBlock } from './CodeBlock.svelte';
 export { default as Playground } from './Playground.svelte';
+export { default as Exercise } from './Exercise.svelte';
 export { default as Callout } from './Callout.svelte';
 export { default as Quiz } from './Quiz.svelte';
 export { default as ProjectBrief } from './ProjectBrief.svelte';
