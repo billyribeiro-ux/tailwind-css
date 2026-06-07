@@ -13,6 +13,7 @@
 		Buildings,
 		Gear,
 		Crown,
+		Cpu,
 		BookOpen
 	} from 'phosphor-svelte';
 
@@ -38,7 +39,8 @@
 		squaresFour: SquaresFour,
 		buildings: Buildings,
 		gear: Gear,
-		crown: Crown
+		crown: Crown,
+		cpu: Cpu
 	};
 
 	const Icon = $derived(map[name] ?? BookOpen);

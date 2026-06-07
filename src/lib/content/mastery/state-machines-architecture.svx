@@ -1,0 +1,130 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+
+	const S = '<' + 'script';
+	const E = '<' + '/script>';
+
+	const machine = `${S} lang="ts">
+  type State = 'idle' | 'loading' | 'success' | 'error';
+
+  // The ONLY legal transitions. Anything else is impossible by construction.
+  const transitions: Record<State, Partial<Record<string, State>>> = {
+    idle:    { submit: 'loading' },
+    loading: { ok: 'success', fail: 'error' },
+    success: { reset: 'idle' },
+    error:   { retry: 'loading' }
+  };
+
+  let state = $state<State>('idle');
+  function send(event: string) {
+    const next = transitions[state][event];
+    if (next) state = next; // ignore illegal events instead of crashing
+  }
+
+  async function submit() {
+    send('submit');
+    try {
+      await save();
+      send('ok');
+    } catch {
+      send('fail');
+    }
+  }
+${E}
+
+<!-- data-state is the bridge: the machine owns it, CSS styles off it -->
+<button
+  data-state={state}
+  disabled={state === 'loading'}
+  onclick={submit}
+  class="rounded-lg px-4 py-2 font-medium text-white transition
+         data-[state=idle]:bg-indigo-600
+         data-[state=loading]:bg-indigo-400 data-[state=loading]:cursor-wait
+         data-[state=success]:bg-emerald-600
+         data-[state=error]:bg-red-600"
+>
+  {state === 'loading' ? 'Saving…' : state === 'success' ? 'Saved ✓' : state === 'error' ? 'Retry' : 'Save'}
+</button>`;
+</script>
+
+# Component State Machines
+
+`isLoading`, `isError`, `isSuccess`, `isOpen`, `isDisabled` — once a component accrues a handful of
+booleans, you have **2ⁿ possible combinations**, most of them nonsensical ("loading AND success"?).
+Bugs live in those impossible states. The fix is to model state *explicitly* as a finite state
+machine, then style it declaratively.
+
+## Booleans don't scale; states do
+
+A finite state machine says: there is exactly **one** current state, and only **defined transitions**
+between states. Impossible combinations literally cannot be represented.
+
+<CodeBlock language="svelte" filename="AsyncButton.svelte" code={machine} />
+
+Three things make this robust:
+
+- **One source of truth** (`state`), not five booleans that can contradict each other.
+- **Explicit transitions** — `send('ok')` from `idle` is simply ignored, not a crash or a glitch.
+- **`data-state` is the bridge**: the machine owns the state; CSS styles off the attribute with
+  `data-[state=…]` variants. The view is a pure function of state.
+
+## See the states
+
+<CodeBlock
+	playground
+	filename="the four visual states"
+	code={`<div class="flex flex-wrap gap-3">
+  <button class="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white">Save</button>
+  <button class="rounded-lg bg-indigo-400 px-4 py-2 font-medium text-white cursor-wait">Saving…</button>
+  <button class="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white">Saved ✓</button>
+  <button class="rounded-lg bg-red-600 px-4 py-2 font-medium text-white">Retry</button>
+</div>`}
+/>
+
+## This is exactly how headless libraries work
+
+When Module 12's headless components expose `data-state="open"` and you style `data-[state=open]:`,
+you're consuming *their* state machine. Adopting the same pattern in your own components makes them
+predictable, testable (assert reachable states), and stylable without prop-drilling visual flags.
+
+<Callout type="insight" title="Make illegal states unrepresentable">
+
+This phrase — *make illegal states unrepresentable* — is one of the most valuable ideas in software
+design, and it applies from a button to a distributed system. Every impossible state you *can* encode
+is a bug someone will eventually hit and you'll spend a day debugging. A discriminated union or state
+machine deletes that whole class of bug at the type level: the compiler and the runtime simply won't
+let "loading and success" exist. As you grow, you'll apply this far beyond UI — to API responses
+(`{status:'ok', data} | {status:'error', message}` instead of nullable everything), to feature flags,
+to deployment states. The button here is a teaching scale model of a principle that, applied
+relentlessly, removes more bugs than any test suite: don't *handle* impossible states, make them
+impossible.
+
+</Callout>
+
+<Callout type="warning" title="Keep the machine tiny, or reach for a library">
+
+For three or four states, a `Record` of transitions like this is perfect — no dependency. When you
+have nested states, parallel regions, guards, delays, and side-effects, hand-rolling becomes its own
+liability; that's when a real statechart library (XState-style) earns its keep. Match the tool to the
+complexity, as always.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why model an async action as a state machine instead of `isLoading`/`isError`/`isSuccess` booleans?"
+	options={[
+		{ text: 'It renders faster', correct: false },
+		{ text: 'A single state with defined transitions makes contradictory/impossible combinations unrepresentable', correct: true },
+		{ text: 'Booleans cannot be used in Svelte', correct: false },
+		{ text: 'It removes the need for CSS', correct: false }
+	]}
+	explanation="One explicit state + allowed transitions eliminates the 2ⁿ impossible combinations that boolean flags permit."
+/>
+
+## Recap
+
+- Replace piles of boolean flags with **one explicit state** + **defined transitions**.
+- Expose state as **`data-state`** and style it with **attribute variants** — the view becomes a function of state.
+- It's the same model headless libraries use; **make illegal states unrepresentable** everywhere, not just in UI.

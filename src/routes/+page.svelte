@@ -2,8 +2,27 @@
 	import { curriculum } from '$lib/course/curriculum';
 	import { firstLesson, totalLessons } from '$lib/course/navigation';
 	import { progress } from '$lib/stores/progress.svelte';
+	import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from '$lib/config';
 	import ModuleCard from '$lib/components/ModuleCard.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+
+	// Course structured data for rich search results.
+	const courseSchema = {
+		'@context': 'https://schema.org',
+		'@type': 'Course',
+		name: SITE_NAME,
+		description: SITE_DESCRIPTION,
+		url: SITE_URL,
+		inLanguage: 'en',
+		teaches: 'Tailwind CSS, Svelte 5, SvelteKit, design systems',
+		provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+		hasCourseInstance: {
+			'@type': 'CourseInstance',
+			courseMode: 'online',
+			courseWorkload: 'PT25H'
+		}
+	};
 	import {
 		ArrowRight,
 		GraduationCap,
@@ -43,6 +62,8 @@
 		content="A hands-on Tailwind CSS course — Svelte 5, SvelteKit, Tailwind v4. 65 lessons, 16 projects, a live editor in every lesson."
 	/>
 </svelte:head>
+
+<JsonLd data={courseSchema} />
 
 <!-- Hero -->
 <section class="relative overflow-hidden">

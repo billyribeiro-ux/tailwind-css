@@ -4,7 +4,8 @@ An interactive course that teaches **Tailwind CSS from absolute beginner to dist
 engineer**, delivered as navigable HTML pages with next/previous controls. The app is itself
 built with the stack it teaches around, so the course is its own best example.
 
-- **12 modules · 65 lessons · 16 hands-on projects** (a project in every module + four capstones)
+- **13 modules · 72 lessons · 17 hands-on projects** — beginner → distinguished, incl. an
+  "Under the Hood & Mastery" tier (engine internals, modern CSS, plugins, state machines, observability)
 - Plain-English narration with **"Principal Insight"** callouts that teach Level 7+ judgement
 - **Monaco editor** in every code block (copy-paste friendly) with an **"Open in Playground"**
   toggle that compiles Tailwind v4 live in a sandboxed preview

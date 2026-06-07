@@ -1,0 +1,110 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# The Engine & Cascade Layers
+
+You've used Tailwind for twelve modules. Now let's open the hood. Understanding *how* the engine
+turns your markup into CSS — and how the **cascade** makes utilities win predictably — is what lets
+you debug the hard cases and reason about the framework instead of guessing.
+
+## How v4 generates your CSS
+
+Tailwind v4's engine (rewritten in Rust, internally "Oxide") does three things on every build:
+
+1. **Scans your source** for *candidates* — anything that looks like it could be a class name. It is
+   deliberately dumb and fast: it doesn't parse your JS/HTML semantically, it just extracts tokens.
+2. **Generates CSS** for the candidates that map to real utilities, pulling values from your `@theme`.
+3. **Emits nothing else.** Unused utilities never exist. This is why CSS size *flattens* as the app
+   grows — you reuse the same candidates.
+
+<Callout type="warning" title="Why broken class names silently vanish">
+
+Because the scanner only sees *text*, a class you assemble at runtime from a variable (a `bg-` prefix
+joined to a colour name) is never a candidate, so its CSS is never generated — the scanner literally
+never saw the string `bg-red-500`.
+This is the single most important consequence of how the engine works: **always write complete class
+names.** Map props to full strings; never concatenate fragments.
+
+</Callout>
+
+## Cascade layers: the real magic
+
+Here is the first line v4 puts in your stylesheet:
+
+<CodeBlock
+	language="css"
+	filename="what @import 'tailwindcss' expands to (conceptually)"
+	code={`@layer theme, base, components, utilities;`}
+/>
+
+This single statement declares **four cascade layers in a fixed order**. Everything Tailwind emits
+goes into one of them: your tokens into `theme`, the preflight reset into `base`, any
+`@layer components` rules into `components`, and every utility into `utilities`.
+
+The CSS cascade resolves layers **in declaration order, and later layers win** — *regardless of
+specificity or source order*. Because `utilities` is declared last, a utility **always** beats a
+base or component rule, even a more specific one.
+
+<CodeBlock
+	language="css"
+	filename="why utilities always win"
+	code={`@layer base {
+  /* high specificity, but in an earlier layer */
+  article h1.title { color: black; }
+}
+@layer utilities {
+  /* low specificity (one class), but a later layer → this wins */
+  .text-brand-600 { color: var(--color-brand-600); }
+}`}
+/>
+
+This is the elegant answer to a decades-old CSS pain: you no longer fight specificity wars. A utility
+on an element wins because of *where it sits in the layer order*, not because you stacked selectors or
+reached for `!important`.
+
+## Specificity within utilities
+
+Every utility is a **single class** — specificity `(0,1,0)` — so within the `utilities` layer,
+conflicts are resolved by *source order* (last one wins). Tailwind sorts its output in a deterministic
+property order so this is stable, and at authoring time you reach for `tailwind-merge` (Module 7's
+`cn()`) to guarantee the caller's class wins.
+
+<Callout type="insight" title="Layers are an architecture, not a trick">
+
+Most engineers use `@layer` as a curiosity. A distinguished engineer recognises it as the load-bearing
+decision that makes utility-first *composable at scale*: it decouples "who wins" from "who is most
+specific," which means a 300-engineer codebase can add utilities to any element and trust the outcome.
+When you design your own systems — in CSS or any layered architecture — copy the principle: make
+precedence a property of *structure* (layers, modules, ports) rather than of accidental detail
+(specificity, import order, timing). Predictable precedence is what turns a big system from terrifying
+into boring, and boring is the highest compliment infrastructure can earn.
+
+</Callout>
+
+## Where your custom CSS goes
+
+- `@theme { … }` → the `theme` layer (and generates utilities + variables).
+- `@utility name { … }` → the `utilities` layer (so it composes with variants and beats base).
+- Plain CSS outside any layer is **unlayered**, and unlayered styles beat *all* layers — useful for
+  rare hard overrides, dangerous as a habit.
+
+## Knowledge check
+
+<Quiz
+	question="A base-layer rule `article h1.title &lbrace; color: black &rbrace;` and a utility `.text-brand-600` both target the same element. Which wins, and why?"
+	options={[
+		{ text: 'The base rule — it has higher specificity', correct: false },
+		{ text: 'The utility — the utilities layer is declared after base, and later layers win regardless of specificity', correct: true },
+		{ text: 'Whichever appears later in the file', correct: false },
+		{ text: 'Neither — it is a conflict error', correct: false }
+	]}
+	explanation="Cascade layers resolve by layer order first; utilities is last, so it wins even against a more specific base selector."
+/>
+
+## Recap
+
+- The engine **scans candidates → generates only used utilities**; runtime-built class names never get generated.
+- v4 declares `@layer theme, base, components, utilities` — **later layers win regardless of specificity**.
+- Utilities are single-class; within the layer, **source order** decides, stabilised by Tailwind's sort and `cn()`.
+- Make precedence a property of **structure** (layers), not accident (specificity) — the principle generalises far beyond CSS.

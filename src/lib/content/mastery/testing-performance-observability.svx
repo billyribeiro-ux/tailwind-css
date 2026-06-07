@@ -1,0 +1,124 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Testing, Budgets & Observability
+
+Shipping a design system other teams depend on means proving it works and *stays* working. This
+lesson is the engineering-rigor layer: a sane test pyramid, performance as an enforced budget, and
+observability so you learn what real users experience.
+
+## The UI test pyramid
+
+Spend your test budget where it catches the most regressions per second of runtime:
+
+<CodeBlock
+	language="text"
+	filename="from most → fewest"
+	code={`Unit (pure logic)        cn(), variant maps, navigation, state machines     — milliseconds
+Component/interaction    render a component, assert behaviour + a11y by role  — fast
+Contract/integrity       curriculum ↔ content parity, token contracts        — fast
+Visual regression        screenshot diffs of key components/states            — slower
+End-to-end (few)         critical user journeys only                          — slowest`}
+/>
+
+This very course follows it: unit tests for `cn()` and navigation, a browser **component** test and
+an **axe a11y** test, and a **content-integrity** test that fails the build if any curriculum lesson
+lacks its `.svx` file (or vice-versa) — drift caught automatically, not in production.
+
+<CodeBlock
+	language="typescript"
+	filename="content-integrity test (the idea)"
+	code={`import { allLessons } from '$lib/course/navigation';
+const files = import.meta.glob('/src/lib/content/**/*.svx');
+test('every lesson has matching content, and vice-versa', () => {
+  const expected = allLessons().map((l) => \`/src/lib/content/\${l.module.slug}/\${l.lesson.slug}.svx\`);
+  expect(new Set(Object.keys(files))).toEqual(new Set(expected));
+});`}
+/>
+
+## Test the contract, query by role
+
+Recall Module 11: assert *what the component promises*, not its DOM shape, and query by **role + name**
+so the test doubles as an accessibility check (if the test can't find it, neither can a screen reader).
+Brittle snapshot-everything suites scream on every legitimate change and get ignored.
+
+## Performance as an enforced budget
+
+A budget nobody enforces is a wish. Put real numbers in CI and **fail the build** on regression.
+
+<CodeBlock
+	language="yaml"
+	filename="size budget in CI"
+	code={`- name: Enforce bundle budget
+  run: pnpm build && node scripts/check-size.mjs   # exits non-zero if any chunk > its limit`}
+/>
+
+Track the metrics users actually feel — **LCP** (load), **INP** (responsiveness; the modern successor
+to FID), and **CLS** (stability) — not just bytes. Reserve space for async content (`aspect-ratio`,
+fixed dimensions) to keep CLS near zero, and lazy-load heavy widgets (this course loads Monaco only
+when an editor mounts).
+
+<CodeBlock
+	language="css"
+	filename="cheap rendering wins"
+	code={`/* skip rendering work for off-screen sections (long pages, big lists) */
+.deferred-section { content-visibility: auto; contain-intrinsic-size: 0 600px; }`}
+/>
+
+## Observability: measure real users
+
+Lab metrics lie; field data tells the truth. Sample the Web Vitals from real sessions and send them
+somewhere you'll look.
+
+<CodeBlock
+	language="typescript"
+	filename="real-user monitoring"
+	code={`import { onCLS, onINP, onLCP } from 'web-vitals';
+function report(metric: { name: string; value: number }) {
+  navigator.sendBeacon('/rum', JSON.stringify(metric)); // non-blocking
+}
+onCLS(report); onINP(report); onLCP(report);`}
+/>
+
+<Callout type="insight" title="Quality you don't automate, you don't have">
+
+The throughline of this whole module is the same idea expressed three ways: **encode quality into the
+system so it can't regress.** Cascade layers encode precedence; state machines encode legal states;
+tokens encode design decisions. Tests, budgets, and RUM do it for behaviour, performance, and reality.
+A distinguished engineer's leverage isn't being the person who *checks* these things — it's building
+the **ratchets** (CI gates, integrity tests, budgets that fail builds, dashboards that page) so that a
+hundred other engineers can't easily make it worse, and you learn instantly when reality diverges from
+your assumptions. Heroic vigilance doesn't scale; automated invariants do. When you join a struggling
+codebase, the fastest way to turn it around is rarely a rewrite — it's installing the ratchets that
+stop the bleeding and make the good path the easy one.
+
+</Callout>
+
+<Callout type="warning" title="Don't measure what you won't act on">
+
+RUM and dashboards have a cost: collection, storage, and attention. Instrument the few metrics tied to
+real user pain and to a budget you'll defend. A wall of graphs nobody reads is theatre, not
+observability.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="What turns a performance budget from aspiration into guarantee?"
+	options={[
+		{ text: 'Documenting it in the README', correct: false },
+		{ text: 'A CI check that fails the build when the budget is exceeded', correct: true },
+		{ text: 'Measuring once before launch', correct: false },
+		{ text: 'Asking the team to be mindful', correct: false }
+	]}
+	explanation="Enforcement in CI is the ratchet: regressions can't merge. Everything else is a wish."
+/>
+
+## Recap
+
+- Follow the **pyramid**: lots of fast unit/contract tests, fewer visual/e2e; include an **integrity** test against drift.
+- Test the **contract** and query by **role/name** (a11y for free).
+- Make performance a **CI-enforced budget**; track **LCP/INP/CLS**; lazy-load heavy code; reserve space.
+- Add **RUM** for field truth — but only metrics you'll act on. Encode quality as **automated ratchets**.

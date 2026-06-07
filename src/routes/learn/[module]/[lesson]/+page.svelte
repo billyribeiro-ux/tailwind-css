@@ -3,10 +3,24 @@
 	import { goto } from '$app/navigation';
 	import { House, CaretRight, Clock, Wrench, PencilSimple } from 'phosphor-svelte';
 	import LessonNav from '$lib/components/LessonNav.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import { commandPalette } from '$lib/stores/ui.svelte';
+	import { SITE_URL, SITE_NAME } from '$lib/config';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	const schema = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'LearningResource',
+		name: data.flat.lesson.title,
+		description: data.flat.lesson.summary,
+		url: `${SITE_URL}${data.flat.path}`,
+		learningResourceType: data.flat.lesson.kind === 'lesson' ? 'lesson' : 'project',
+		timeRequired: `PT${data.flat.lesson.duration}M`,
+		isPartOf: { '@type': 'Course', name: SITE_NAME, url: SITE_URL },
+		inLanguage: 'en'
+	});
 
 	const editUrl = $derived(
 		`https://github.com/billyribeiro-ux/tailwind-css/edit/claude/tailwind-svelte-course-B6gZ9/src/lib/content/${data.flat.module.slug}/${data.flat.lesson.slug}.svx`
@@ -42,6 +56,8 @@
 	<meta property="og:title" content="{data.flat.lesson.title} · Tailwind Mastery" />
 	<meta property="og:description" content={data.flat.lesson.summary} />
 </svelte:head>
+
+<JsonLd data={schema} />
 
 <svelte:window onkeydown={onKeydown} />
 

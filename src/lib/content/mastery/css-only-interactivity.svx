@@ -1,0 +1,127 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# CSS-Only Interactivity
+
+A surprising amount of "interactive" UI needs no JavaScript at all anymore. Modern CSS — `:has()`,
+`@starting-style`, container units, anchor positioning — moves whole categories of behaviour into the
+platform, where it's faster, works before hydration, and can't break. This lesson is the frontier.
+
+## `:has()` — the parent selector
+
+For twenty years CSS could only style *down* the tree. `:has()` lets a parent react to its
+descendants. Tailwind exposes it as the `has-[…]` variant.
+
+<CodeBlock
+	playground
+	filename="card reacts to its own checkbox"
+	code={`<label class="flex items-center gap-3 rounded-xl border-2 border-slate-200 p-4 transition has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50">
+  <input type="checkbox" class="size-5 rounded text-indigo-600" />
+  <span class="font-medium">Select this plan</span>
+</label>`}
+/>
+
+Check the box — the **whole card** restyles, no JS. Combine with `group-has-[…]` to let an ancestor
+react to any descendant's state. This single feature retires a huge amount of state-juggling code.
+
+## Enter *and* exit animation, no JS: `@starting-style`
+
+Animating an element *in* used to require JS to add a class after mount; animating it *out* required
+keeping it in the DOM during the transition. `@starting-style` plus `transition-behavior: allow-discrete`
+solves both natively — even for elements toggling `display` or the top layer (dialog/popover).
+
+<CodeBlock
+	language="css"
+	filename="popover that fades both ways — zero JS"
+	code={`[popover] {
+  opacity: 0;
+  translate: 0 8px;
+  transition:
+    opacity 0.2s,
+    translate 0.2s,
+    overlay 0.2s allow-discrete,
+    display 0.2s allow-discrete;
+}
+[popover]:popover-open { opacity: 1; translate: 0 0; }
+/* the state to animate FROM when it first renders */
+@starting-style {
+  [popover]:popover-open { opacity: 0; translate: 0 8px; }
+}`}
+/>
+
+Paired with the native **Popover API** (`<button popovertarget>` / `<div popover>`), you get an
+accessible, animated popover with no script and no library.
+
+## Container query units
+
+Beyond `@container` breakpoints (Module 9), you can size things **fluidly** to the container with
+`cqw`/`cqi` (1% of container inline-size). True intrinsic responsiveness — type that scales to its
+box, not the viewport.
+
+<CodeBlock
+	playground
+	filename="fluid type in a container"
+	code={`<div class="@container rounded-xl border border-slate-200 p-4">
+  <p class="font-bold text-[8cqi] leading-tight">I scale to my container</p>
+  <p class="text-[3cqi] text-slate-500">Resize the preview — the heading tracks the container width.</p>
+</div>`}
+/>
+
+## Anchor positioning
+
+The newest primitive: tether one element to another (tooltip to its trigger, menu to its button)
+*without* JavaScript position math, including collision handling via `position-try`.
+
+<CodeBlock
+	language="css"
+	filename="anchor positioning (cutting edge)"
+	code={`.trigger { anchor-name: --trigger; }
+.tooltip {
+  position: absolute;
+  position-anchor: --trigger;
+  top: anchor(bottom);
+  justify-self: anchor-center;
+  position-try-fallbacks: flip-block; /* flip above if it would overflow */
+}`}
+/>
+
+<Callout type="insight" title="The platform is eating the libraries — track the frontier deliberately">
+
+Tooltips, popovers, accordions, "active when child is checked," fluid type, collision-aware menus —
+each used to mean a dependency and a pile of JavaScript. Each is now (or is becoming) a CSS feature.
+The distinguished move isn't to chase every new spec; it's to **maintain an accurate map of what the
+platform now does for free**, and to periodically delete code that the platform has obsoleted. Teams
+accrete libraries faster than they remove them, and that drift is where bundle bloat and bugs live.
+Once or twice a year, ask: "what are we shipping JavaScript for that the browser now does natively?"
+That question, asked consistently, keeps a codebase lean for a decade.
+
+</Callout>
+
+<Callout type="warning" title="Progressive enhancement, always">
+
+These features have varying support. Use them as *enhancements*: the base experience must work
+without them (a popover still opens; type is still readable), and the modern CSS makes it nicer where
+supported. Pair with `@supports` when a feature is load-bearing.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You want a card to highlight when a checkbox inside it is checked, with no JavaScript. What do you reach for?"
+	options={[
+		{ text: 'A Svelte on:change handler toggling a class', correct: false },
+		{ text: 'The `has-[:checked]:` variant (CSS :has())', correct: true },
+		{ text: 'peer-checked: on the card', correct: false },
+		{ text: 'An @starting-style rule', correct: false }
+	]}
+	explanation=":has() lets the parent react to a descendant's state; `has-[:checked]:` is its Tailwind variant. (peer only works on later siblings, not ancestors.)"
+/>
+
+## Recap
+
+- **`:has()`** (`has-[…]`) finally lets parents react to descendants — retiring much state code.
+- **`@starting-style` + `allow-discrete`** give native enter *and* exit animation, even for dialogs/popovers.
+- **Container units** (`cqi`/`cqw`) enable fluid, container-relative sizing.
+- **Anchor positioning** tethers elements without JS. Use all of these as **progressive enhancements**.

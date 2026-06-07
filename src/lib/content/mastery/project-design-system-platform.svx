@@ -1,0 +1,127 @@
+<script>
+	import { CodeBlock, Callout, ProjectBrief } from '$lib/components/lesson';
+</script>
+
+# Capstone: Design-System Platform
+
+The final capstone of the course is not a screen — it's a **platform**. You'll architect how a
+multi-package design system is versioned, released, governed, and adopted across an organisation. This
+is the work that defines a distinguished engineer: not the component, but the *system that produces
+components* and the *culture that keeps it healthy*.
+
+<ProjectBrief
+	title="Architect and govern a design-system platform"
+	time="Open-ended"
+	goal="Design a monorepo of versioned packages (@acme/tokens, @acme/ui, @acme/tailwind-plugin), with an automated release pipeline, codemods for breaking changes, contribution governance, and architecture decision records — then prove adoption with a downstream app."
+	requirements={[
+		'A monorepo with separately-versioned packages: tokens, components, tailwind plugin',
+		'Semver policy written down: what is patch / minor / major for tokens and components',
+		'Automated releases + changelogs (e.g. Changesets) gated by CI (lint/check/test/build/budget)',
+		'At least one codemod that migrates consumers across a breaking change',
+		'Architecture Decision Records for the load-bearing choices',
+		'A downstream app consuming the published packages, upgraded via the codemod'
+	]}
+	stretch={[
+		'Visual-regression CI on the component gallery',
+		'A contribution RFC template + deprecation policy',
+		'RUM dashboard tracking adoption (which app versions use which token versions)'
+	]}
+/>
+
+## Package boundaries = the dependency rule, versioned
+
+The layered model from Module 10 (primitives → semantics → recipes → app) becomes **package
+boundaries**, each under its own semver:
+
+<CodeBlock
+	language="text"
+	filename="packages/"
+	code={`@acme/tokens          # @theme tokens (CSS) — the design language
+@acme/tailwind-plugin # custom utilities/variants (depends on nothing app-specific)
+@acme/ui              # recipes (Button, Card…) — depends on tokens + plugin
+apps/*                # products — depend on @acme/ui, never redefine tokens`}
+/>
+
+Dependencies point downward, now enforced by the package graph, not just convention.
+
+## Semver for a design system
+
+Spell out, in writing, what each change *means* — because consumers upgrade on faith:
+
+<CodeBlock
+	language="text"
+	filename="VERSIONING.md"
+	code={`tokens:
+  patch  → value tweak within the same perceptual intent (brand-500 nudged)
+  minor  → new token added
+  major  → token renamed/removed, or a semantic's meaning changes
+components:
+  patch  → bug/visual fix, same API & a11y
+  minor  → new prop/variant (backwards compatible)
+  major  → prop renamed/removed, DOM/role change, default behaviour change`}
+/>
+
+## Breaking changes ship with a codemod
+
+You own your consumers' migration. A breaking rename is acceptable *if* upgrading is mechanical:
+
+<CodeBlock
+	language="javascript"
+	filename="codemods/rename-accent-to-primary.js"
+	code={`// npx @acme/codemods rename-accent-to-primary ./src
+// Rewrites bg-accent → bg-primary, text-accent → text-primary, --color-accent → --color-primary
+export default function transform(source) {
+  return source
+    .replace(/\\b((?:bg|text|border|ring|fill|stroke)-)accent\\b/g, '$1primary')
+    .replace(/--color-accent\\b/g, '--color-primary');
+}`}
+/>
+
+## Architecture Decision Records
+
+Capture *why*, not just *what*, so future maintainers (including you) don't relitigate settled
+choices. This repository ships real ADRs in `docs/adr/` — model yours on them.
+
+<CodeBlock
+	language="markdown"
+	filename="docs/adr/0001-css-first-tokens.md"
+	code={`# 1. CSS-first design tokens (@theme)
+Status: Accepted
+Context: We need one source of truth for design decisions, usable at runtime for theming.
+Decision: Define tokens in CSS via @theme; components consume semantic tokens only.
+Consequences: Runtime multi-brand/dark theming is trivial; rebrand = remap; no JS theme config.`}
+/>
+
+<Callout type="insight" title="Your deliverable is leverage, measured in other people's output">
+
+Step all the way back. Lesson one taught you to centre a box; this capstone asks you to design how an
+entire company builds interfaces. The distance between them is the career. At this altitude your code
+is a vanishingly small fraction of your impact — your real artifacts are **boundaries** (package
+graphs, layers, token contracts), **ratchets** (CI, codemods, integrity tests, budgets), and
+**culture** (ADRs, RFCs, mentoring) that let hundreds of engineers move quickly *and* coherently
+without you in the room. The mark of a Level 7++ engineer isn't that they can build anything — many
+can — it's that they multiply the judgement of everyone around them and leave systems that stay
+healthy for a decade after they move on. The tool, all along, was Tailwind. The subject was always
+**leverage**: making the consistent, accessible, performant, maintainable choice the *easy* choice,
+for everyone, by default. Go build that — and bring people up with you.
+
+</Callout>
+
+## Acceptance criteria
+
+- Three independently-versioned packages with a downward-only dependency graph.
+- A written semver policy; automated, changelog-backed releases gated by full CI + budget.
+- At least one working codemod; a downstream app upgraded across a breaking change using it.
+- ADRs for the load-bearing decisions.
+
+---
+
+## 🏁 Course complete — the distinguished tier
+
+You've now gone from your first utility class to architecting a design-system platform — and looked
+*under the hood* at the engine, the cascade, modern colour and CSS, plugins, state machines, and the
+testing/observability rigor that keeps it all honest.
+
+The whole course has rehearsed one idea at increasing scale: **encode good decisions into the system
+so the easy path is the right path** — for one element, one component, one product, and finally a
+whole organisation. That is the work. Now go do it for real.

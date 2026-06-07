@@ -1,0 +1,123 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Modern Colour: oklch, P3 & @property
+
+Tailwind v4 moved its entire palette to **oklch**. This isn't cosmetic — it unlocks wide-gamut
+colour, perceptually-even scales, and runtime colour math. Understanding it is what separates a
+palette that *feels* engineered from one that's muddy.
+
+## Why oklch beats hex and hsl
+
+`oklch(L C H)` is **perceptually uniform**: equal numeric steps look equally different to the human
+eye, and **lightness is independent of hue** (unlike HSL, where yellow at 50% looks far brighter than
+blue at 50%). That's why Tailwind's `500` of every colour reads as the same "weight."
+
+<CodeBlock
+	playground
+	filename="oklch is predictable"
+	code={`<div class="space-y-2">
+  <div class="rounded p-3 text-white bg-[oklch(0.62_0.2_20)]">oklch L=0.62 — red</div>
+  <div class="rounded p-3 text-white bg-[oklch(0.62_0.2_150)]">oklch L=0.62 — green</div>
+  <div class="rounded p-3 text-white bg-[oklch(0.62_0.2_260)]">oklch L=0.62 — blue</div>
+</div>`}
+/>
+
+Same `L`, same perceived lightness across hues. Try that with HSL and the green will glow.
+
+## Wide gamut (P3)
+
+oklch can express colours **outside sRGB** — the vivid end of modern displays (Display-P3). On a
+capable screen these are noticeably more saturated; on older screens the browser gamut-maps them
+gracefully. You get richer colour for free, with a safe fallback.
+
+## Colour math with color-mix()
+
+`color-mix()` blends colours *in a chosen space* at runtime — perfect for tints, shades, and state
+colours derived from one token instead of hand-picking ten.
+
+<CodeBlock
+	playground
+	filename="derive shades from one token"
+	code={`<div class="space-y-2">
+  <div class="rounded p-3 bg-[color-mix(in_oklch,var(--color-brand-500),white_70%)]">+70% white (tint)</div>
+  <div class="rounded p-3 text-white bg-[color-mix(in_oklch,var(--color-brand-500),white_0%)]">brand-500</div>
+  <div class="rounded p-3 text-white bg-[color-mix(in_oklch,var(--color-brand-500),black_30%)]">+30% black (shade)</div>
+</div>`}
+/>
+
+This is exactly how Tailwind implements opacity modifiers like `bg-brand-500/50` under the hood —
+`color-mix` with transparent.
+
+## Relative colour syntax
+
+You can derive a colour *from another*, channel by channel — e.g. "the brand colour but lighter":
+
+<CodeBlock
+	language="css"
+	filename="relative colour"
+	code={`/* take brand-500, keep hue & chroma, raise lightness */
+--brand-hover: oklch(from var(--color-brand-500) calc(l + 0.08) c h);`}
+/>
+
+## @property: typed, animatable token variables
+
+Plain CSS variables can't be *transitioned* — the browser doesn't know a `--x` is a colour or a
+number, so it snaps. `@property` registers a custom property with a **type**, making it animatable and
+giving it a real initial value.
+
+<CodeBlock
+	language="css"
+	filename="animatable gradient angle"
+	code={`@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.spin-border {
+  background: conic-gradient(from var(--angle), var(--color-brand-500), transparent);
+  transition: --angle 1s linear;
+}
+.spin-border:hover { --angle: 360deg; } /* now this actually animates */`}
+/>
+
+<Callout type="insight" title="Colour is a system input, not a paint bucket">
+
+The shift from hex to oklch + `color-mix` + relative colour changes how you *architect* a palette. You
+stop maintaining a giant table of hand-tuned shades and start defining a few **seed tokens** plus
+**rules** that derive the rest (hover = +8% L, disabled = mix 40% surface, ring = brand at 0.4 alpha).
+The palette becomes a small program. That's more robust (a rebrand changes the seeds, the rules
+re-derive everything), more consistent, and far less to maintain. Recognising when to replace *data*
+(hundreds of shades) with a *generator* (a few tokens + rules) is a hallmark of senior systems
+thinking — and modern CSS finally makes it native, no build step required.
+
+</Callout>
+
+<Callout type="warning" title="Provide fallbacks for older engines">
+
+P3 and relative-colour syntax are well-supported in current evergreen browsers, but for long-tail
+audiences keep a sane fallback (an sRGB value declared first, then the oklch/relative one). The
+cascade uses the last value it understands.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="Why does `@property` matter for a custom property you want to animate?"
+	options={[
+		{ text: 'It makes the variable global', correct: false },
+		{ text: 'It gives the property a type so the browser can interpolate it instead of snapping', correct: true },
+		{ text: 'It is required for color-mix to work', correct: false },
+		{ text: 'It improves selector specificity', correct: false }
+	]}
+	explanation="Registering a syntax/type lets the browser interpolate the value over a transition; unregistered vars just jump."
+/>
+
+## Recap
+
+- **oklch** is perceptually uniform with hue-independent lightness — the basis of v4's balanced palette and wide-gamut (P3) colour.
+- **`color-mix()`** and **relative colour** let you *derive* tints/shades/states from seed tokens at runtime.
+- **`@property`** types a custom property so it can be **animated**.
+- Architect colour as **seeds + rules**, not a table of hand-tuned shades.

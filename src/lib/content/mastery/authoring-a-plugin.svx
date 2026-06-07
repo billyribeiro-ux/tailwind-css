@@ -1,0 +1,131 @@
+<script>
+	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+</script>
+
+# Authoring a Production Plugin
+
+In Module 12 you met plugins conceptually. Now we build a real one — the kind you'd publish for a
+whole org — covering the three pillars: **static utilities**, **functional (theme-driven) utilities**,
+and **custom variants**, plus types and a test.
+
+## CSS-first functional utilities with `--value()`
+
+Before reaching for JS, know that v4 can do *functional* utilities in pure CSS. `--value()` reads the
+part after the dash and validates it against the theme or a type.
+
+<CodeBlock
+	language="css"
+	filename="a functional utility in CSS"
+	code={`/* generates  .text-shadow-sm / -md / -lg  from theme values,
+   and accepts arbitrary values like  text-shadow-[2px_2px_0_black]  */
+@utility text-shadow-* {
+  text-shadow: --value(--text-shadow-*, [length]+);
+}
+@theme {
+  --text-shadow-sm: 1px 1px 2px rgb(0 0 0 / 0.2);
+  --text-shadow-md: 2px 3px 6px rgb(0 0 0 / 0.25);
+}`}
+/>
+
+This single declaration gives you a whole utility *family* that participates in variants
+(`hover:text-shadow-lg`, `md:text-shadow-sm`) — no JavaScript.
+
+## When you need JS: the plugin API
+
+Reach for a JS plugin when you need *logic* or *distribution*. The three core APIs:
+
+<CodeBlock
+	language="javascript"
+	filename="plugins/ui.js"
+	code={`import plugin from 'tailwindcss/plugin';
+export default plugin(function ({ addUtilities, matchUtilities, addVariant, theme }) {
+  // 1) static utility
+  addUtilities({
+    '.text-balance': { 'text-wrap': 'balance' }
+  });
+  // 2) functional utility generated from a theme scale (supports arbitrary values too)
+  matchUtilities(
+    { 'grid-auto': (value) => ({ 'grid-template-columns': \`repeat(auto-fit, minmax(\${value}, 1fr))\` }) },
+    { values: theme('spacing') }
+  );
+  // 3) custom variants
+  addVariant('hocus', ['&:hover', '&:focus-visible']);          // combined state
+  addVariant('busy', '&:where([aria-busy="true"], [aria-busy="true"] *)'); // attribute-driven
+});`}
+/>
+
+Register it from your CSS with `@plugin './plugins/ui.js'`.
+
+## Type it
+
+If you publish, ship types so consumers get autocomplete on any options and your variants are
+documented in the source of truth.
+
+<CodeBlock
+	language="typescript"
+	filename="plugin with typed options"
+	code={`import plugin from 'tailwindcss/plugin';
+interface Options { prefix?: string }
+export default plugin.withOptions<Options>((options = {}) => ({ addVariant }) => {
+  const p = options.prefix ?? 'ui';
+  addVariant(\`\${p}-open\`, '&:where([data-state="open"], [data-state="open"] *)');
+});`}
+/>
+
+## Test it
+
+A plugin is a public API; test the *generated CSS contract*, not the implementation. Compile a tiny
+snippet and assert the output.
+
+<CodeBlock
+	language="typescript"
+	filename="ui.plugin.spec.ts"
+	code={`import { compile } from 'tailwindcss';
+import { expect, test } from 'vitest';
+test('grid-auto generates an auto-fit grid', async () => {
+  const css = await compile(\`@plugin './plugins/ui.js'; @tailwind utilities;\`)
+    .then((c) => c.build(['grid-auto-40']));
+  expect(css).toContain('repeat(auto-fit, minmax(10rem, 1fr))'); // spacing.40 = 10rem
+});`}
+/>
+
+<Callout type="insight" title="Prefer the smallest tool that distributes the decision">
+
+There's a ladder of power here, and the discipline is to stop at the lowest rung that solves the
+problem: **utilities → `@utility` (static) → `@utility --value()` (functional, no JS) → JS plugin →
+published package.** Each rung up adds capability *and* lifetime cost — a JS plugin is code to test,
+version, document, and support across repos. Most "we need a plugin" moments are really "we need a
+CSS `@utility`," and most of *those* are "we need a component." Reaching for the heaviest tool first
+is the classic mid-level mistake; reaching for the lightest tool that still distributes the decision
+to everyone who needs it is the senior one. Power you don't need is just maintenance you signed up
+for.
+
+</Callout>
+
+<Callout type="warning" title="A published plugin is a versioned contract">
+
+The moment another team `@plugin`s your package, its utilities and variants are an API under semver.
+Adding is a minor; renaming or removing a utility is a **breaking** change that needs a deprecation
+window and ideally a codemod. Treat it with the rigor of any public library.
+
+</Callout>
+
+## Knowledge check
+
+<Quiz
+	question="You need a `text-shadow-*` utility family driven by theme values, with no special logic. The best tool?"
+	options={[
+		{ text: 'A JS plugin with matchUtilities', correct: false },
+		{ text: 'A CSS `@utility text-shadow-*` using --value()', correct: true },
+		{ text: 'Hand-write every shadow class with @apply', correct: false },
+		{ text: 'A published npm package', correct: false }
+	]}
+	explanation="Functional utilities driven by the theme need no JS — `@utility … --value(--text-shadow-*)` is the lightest tool that works."
+/>
+
+## Recap
+
+- v4 can build **functional utility families in pure CSS** with `@utility … --value()`.
+- The **JS plugin API** (`addUtilities`, `matchUtilities`, `addVariant`, `withOptions`) is for logic and distribution.
+- **Type** and **test** plugins (assert the generated-CSS contract); treat published ones as a **versioned API**.
+- Climb the power ladder only as far as you must.

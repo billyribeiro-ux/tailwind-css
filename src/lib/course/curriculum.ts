@@ -607,6 +607,67 @@ export const curriculum: Curriculum = [
 				kind: 'capstone'
 			}
 		]
+	},
+	{
+		slug: 'mastery',
+		index: 13,
+		title: 'Under the Hood & Mastery',
+		tagline: 'Engine internals and the bleeding edge, demystified',
+		description:
+			'The deepest tier: how the v4 engine and the CSS cascade actually work, modern colour and CSS-only interactivity, authoring production plugins, component state machines, and testing/observability for UI at scale.',
+		difficulty: 'distinguished',
+		icon: 'cpu',
+		lessons: [
+			{
+				slug: 'engine-and-cascade-layers',
+				title: 'The Engine & Cascade Layers',
+				summary: 'How v4 generates CSS and why @layer makes utilities win predictably.',
+				duration: 22,
+				kind: 'lesson'
+			},
+			{
+				slug: 'modern-color',
+				title: 'Modern Colour: oklch, P3 & @property',
+				summary: 'Wide-gamut colour, color-mix(), relative colours, and animatable token vars.',
+				duration: 22,
+				kind: 'lesson'
+			},
+			{
+				slug: 'css-only-interactivity',
+				title: 'CSS-Only Interactivity',
+				summary: ':has(), @starting-style, allow-discrete, container units & anchor positioning.',
+				duration: 24,
+				kind: 'lesson'
+			},
+			{
+				slug: 'authoring-a-plugin',
+				title: 'Authoring a Production Plugin',
+				summary: 'matchUtilities, addVariant, --value() and types — packaged and tested.',
+				duration: 24,
+				kind: 'lesson'
+			},
+			{
+				slug: 'state-machines-architecture',
+				title: 'Component State Machines',
+				summary: 'Model complex component state explicitly; style it with attribute variants.',
+				duration: 22,
+				kind: 'lesson'
+			},
+			{
+				slug: 'testing-performance-observability',
+				title: 'Testing, Budgets & Observability',
+				summary: 'The UI test pyramid, visual regression, perf budgets and RUM at scale.',
+				duration: 22,
+				kind: 'lesson'
+			},
+			{
+				slug: 'project-design-system-platform',
+				title: 'Capstone: Design-System Platform',
+				summary: 'Govern a multi-package design system: tokens, codemods, semver, ADRs.',
+				duration: 150,
+				kind: 'capstone'
+			}
+		]
 	}
 ];
 
