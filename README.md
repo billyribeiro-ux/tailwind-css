@@ -8,7 +8,14 @@ built with the stack it teaches around, so the course is its own best example.
 - Plain-English narration with **"Principal Insight"** callouts that teach Level 7+ judgement
 - **Monaco editor** in every code block (copy-paste friendly) with an **"Open in Playground"**
   toggle that compiles Tailwind v4 live in a sandboxed preview
-- Light/dark theming, persisted progress, and a fully responsive shell
+- **Auto-graded exercises** — edit code, press _Check my work_, get per-requirement pass/fail
+- **Command palette** (`⌘K` / `/`), keyboard lesson nav (`←`/`→`), sidebar filter, reading-progress bar
+- **Gamification** — XP, levels, daily streak, and a printable completion **certificate**
+- **Reference** — searchable utility **cheatsheet** + **glossary**
+- **Showcase** — four _runnable_ mini-apps (marketing, dashboard, components, design tokens)
+- **Accessible & installable** — axe-audited components, skip link, focus rings, **PWA** with
+  offline caching, sitemap, and OpenGraph metadata
+- Light/dark theming, persisted progress, view-transition page crossfades, fully responsive shell
 
 ## Stack
 
@@ -54,15 +61,18 @@ pnpm dev           # http://localhost:5173
 ```
 src/
 ├── lib/
-│   ├── course/        # curriculum data model + navigation (single source of truth)
+│   ├── course/        # curriculum, navigation, search index (single source of truth)
 │   ├── content/       # every lesson as an mdsvex .svx file: <module>/<lesson>.svx
-│   ├── components/    # CodeBlock, Playground, Callout, Quiz, ProjectBrief, Sidebar, …
-│   ├── monaco/        # client-only Monaco setup
-│   ├── stores/        # theme + progress (Svelte 5 runes, persisted)
+│   ├── components/    # CodeBlock, Playground, Exercise, Callout, Quiz, CommandPalette, …
+│   ├── reference/     # cheatsheet + glossary data
+│   ├── monaco/        # client-only Monaco setup + shared live-preview builder
+│   ├── stores/        # theme, progress (XP/streak), command-palette UI state (runes)
 │   └── utils/         # cn() class composition
+├── service-worker.ts  # offline PWA caching
 └── routes/
     ├── +page.svelte                       # landing / learning path
-    ├── projects/+page.svelte              # all projects & capstones
+    ├── projects/ · showcase/ · reference/ # projects index, runnable apps, cheatsheet/glossary
+    ├── certificate/ · sitemap.xml/        # certificate + SEO sitemap endpoint
     └── learn/[module]/[lesson]/           # dynamic lesson route (prerendered)
 ```
 
