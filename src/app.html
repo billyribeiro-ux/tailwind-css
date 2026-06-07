@@ -4,6 +4,19 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+
+		<!-- PWA + theming -->
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<meta name="theme-color" content="#4f46e5" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+
+		<!-- Constant social meta; per-page og:title/og:description set in each page head -->
+		<meta property="og:site_name" content="Tailwind Mastery" />
+		<meta property="og:type" content="website" />
+		<meta property="og:image" content="/og.svg" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content="/og.svg" />
+
 		<script>
 			// Apply the saved theme before first paint to avoid a flash of the wrong theme.
 			(function () {

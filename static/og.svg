@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#0f172a" />
+			<stop offset="1" stop-color="#1e1b4b" />
+		</linearGradient>
+		<linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#818cf8" />
+			<stop offset="1" stop-color="#6366f1" />
+		</linearGradient>
+	</defs>
+	<rect width="1200" height="630" fill="url(#bg)" />
+	<g transform="translate(96,150)">
+		<rect width="120" height="120" rx="28" fill="url(#mark)" />
+		<path
+			d="M28 74c0-16 11-26 23-26 9 0 15 5 19 12 3 5 6 8 9 8 6 0 9-4 10-11 0 16-11 26-23 26-9 0-15-5-19-12-3-5-6-8-9-8-6 0-9 4-10 11Z"
+			fill="#fff"
+			transform="translate(0,0)"
+		/>
+	</g>
+	<text x="96" y="360" font-family="Inter, system-ui, sans-serif" font-size="76" font-weight="800" fill="#ffffff">Tailwind Mastery</text>
+	<text x="96" y="430" font-family="Inter, system-ui, sans-serif" font-size="36" fill="#c7d2fe">From your first utility to distinguished engineer</text>
+	<text x="96" y="500" font-family="Inter, system-ui, sans-serif" font-size="28" fill="#94a3b8">Svelte 5 · SvelteKit · Tailwind CSS v4 · 65 lessons · 16 projects</text>
+</svg>

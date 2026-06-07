@@ -34,6 +34,14 @@
 		name="description"
 		content="A hands-on Tailwind CSS course built with Svelte 5, SvelteKit and Tailwind v4 — from absolute beginner to principal/distinguished engineer, with a project in every module."
 	/>
+	<meta
+		property="og:title"
+		content="Tailwind Mastery · From First Utility to Distinguished Engineer"
+	/>
+	<meta
+		property="og:description"
+		content="A hands-on Tailwind CSS course — Svelte 5, SvelteKit, Tailwind v4. 65 lessons, 16 projects, a live editor in every lesson."
+	/>
 </svelte:head>
 
 <!-- Hero -->

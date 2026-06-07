@@ -1,10 +1,26 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import { House, CaretRight, Clock, Wrench } from 'phosphor-svelte';
+	import { goto } from '$app/navigation';
+	import { House, CaretRight, Clock, Wrench, PencilSimple } from 'phosphor-svelte';
 	import LessonNav from '$lib/components/LessonNav.svelte';
+	import { commandPalette } from '$lib/stores/ui.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	const editUrl = $derived(
+		`https://github.com/billyribeiro-ux/tailwind-css/edit/claude/tailwind-svelte-course-B6gZ9/src/lib/content/${data.flat.module.slug}/${data.flat.lesson.slug}.svx`
+	);
+
+	// Keyboard navigation: ←/→ move between lessons (ignored while typing or in the palette).
+	function onKeydown(e: KeyboardEvent): void {
+		if (commandPalette.open) return;
+		const el = e.target as HTMLElement | null;
+		if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+		if (e.metaKey || e.ctrlKey || e.altKey) return;
+		if (e.key === 'ArrowLeft' && data.prev) void goto(data.prev.path);
+		else if (e.key === 'ArrowRight' && data.next) void goto(data.next.path);
+	}
 
 	// Synchronous glob → the matched lesson renders into the prerendered HTML.
 	const lessonModules = import.meta.glob('/src/lib/content/**/*.svx', {
@@ -23,7 +39,11 @@
 <svelte:head>
 	<title>{data.flat.lesson.title} · Tailwind Mastery</title>
 	<meta name="description" content={data.flat.lesson.summary} />
+	<meta property="og:title" content="{data.flat.lesson.title} · Tailwind Mastery" />
+	<meta property="og:description" content={data.flat.lesson.summary} />
 </svelte:head>
+
+<svelte:window onkeydown={onKeydown} />
 
 <div class="mx-auto max-w-3xl px-4 py-8 sm:px-8 sm:py-12">
 	<!-- Breadcrumb + meta -->
@@ -54,6 +74,14 @@
 		>
 			{data.flat.module.difficulty}
 		</span>
+		<a
+			href={editUrl}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-slate-500 transition hover:bg-slate-100 hover:text-brand-600 dark:text-slate-400 dark:hover:bg-slate-800"
+		>
+			<PencilSimple size={14} weight="bold" /> Edit
+		</a>
 	</div>
 
 	<article class="lesson-prose">

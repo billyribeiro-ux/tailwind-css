@@ -21,9 +21,11 @@
 	<div
 		class="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
 		role="progressbar"
+		aria-label={label || 'Progress'}
 		aria-valuenow={value}
 		aria-valuemin={0}
 		aria-valuemax={max}
+		aria-valuetext="{percent}%"
 	>
 		<div
 			class="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400 transition-[width] duration-500"
