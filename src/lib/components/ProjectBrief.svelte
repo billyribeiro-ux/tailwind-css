@@ -22,7 +22,12 @@
 	<div class="border-b border-brand-200 px-6 py-4 dark:border-brand-500/30">
 		<div class="flex items-center justify-between gap-3">
 			<h3 class="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
-				<RocketLaunch size={22} weight="duotone" class="text-brand-600 dark:text-brand-400" />
+				<RocketLaunch
+					size={22}
+					weight="duotone"
+					class="text-brand-600 dark:text-brand-400"
+					aria-hidden="true"
+				/>
 				{title}
 			</h3>
 			{#if time}
@@ -37,7 +42,12 @@
 
 	<div class="space-y-5 px-6 py-5">
 		<div class="flex gap-3">
-			<Target size={20} weight="duotone" class="mt-0.5 shrink-0 text-brand-500" />
+			<Target
+				size={20}
+				weight="duotone"
+				class="mt-0.5 shrink-0 text-brand-500"
+				aria-hidden="true"
+			/>
 			<div>
 				<p class="text-sm font-semibold text-slate-800 dark:text-slate-100">The goal</p>
 				<p class="text-sm text-slate-600 dark:text-slate-300">{goal}</p>
@@ -46,7 +56,12 @@
 
 		{#if requirements.length}
 			<div class="flex gap-3">
-				<ListChecks size={20} weight="duotone" class="mt-0.5 shrink-0 text-brand-500" />
+				<ListChecks
+					size={20}
+					weight="duotone"
+					class="mt-0.5 shrink-0 text-brand-500"
+					aria-hidden="true"
+				/>
 				<div class="min-w-0">
 					<p class="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-100">Requirements</p>
 					<ul class="space-y-1 text-sm text-slate-600 dark:text-slate-300">
@@ -63,7 +78,12 @@
 
 		{#if stretch.length}
 			<div class="flex gap-3">
-				<RocketLaunch size={20} weight="duotone" class="mt-0.5 shrink-0 text-accent-500" />
+				<RocketLaunch
+					size={20}
+					weight="duotone"
+					class="mt-0.5 shrink-0 text-accent-500"
+					aria-hidden="true"
+				/>
 				<div class="min-w-0">
 					<p class="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-100">Stretch goals</p>
 					<ul class="space-y-1 text-sm text-slate-600 dark:text-slate-300">

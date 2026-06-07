@@ -1,5 +1,5 @@
 <script>
-	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+	import { CodeBlock, Callout, Quiz, Exercise } from '$lib/components/lesson';
 </script>
 
 # Your First Utilities
@@ -80,6 +80,26 @@ bugs and design drift. As a lead, you'll come to value tools that make the *cons
 *default* choice — it's how you keep quality high without policing every pull request.
 
 </Callout>
+
+## Your turn
+
+Style the bare button below into a proper primary button. Edit the code, then press **Check my
+work** — the preview updates live as you type.
+
+<Exercise
+	title="Style a primary button"
+	start={`<button class="">Get started</button>`}
+	solution={`<button class="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white">Get started</button>`}
+	checks={[
+		{ label: 'Blue background (bg-blue-600)', includes: 'bg-blue-600' },
+		{ label: 'White text (text-white)', includes: 'text-white' },
+		{ label: 'Horizontal & vertical padding (px-, py-)', includes: ['px-', 'py-'] },
+		{ label: 'Rounded corners (rounded…)', includes: 'rounded' }
+	]}
+>
+	Add classes so the button has a blue background, white text, comfortable padding, and rounded
+	corners.
+</Exercise>
 
 ## Knowledge check
 

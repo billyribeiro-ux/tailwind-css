@@ -39,6 +39,8 @@
 <svelte:head>
 	<title>{data.flat.lesson.title} · Tailwind Mastery</title>
 	<meta name="description" content={data.flat.lesson.summary} />
+	<meta property="og:title" content="{data.flat.lesson.title} · Tailwind Mastery" />
+	<meta property="og:description" content={data.flat.lesson.summary} />
 </svelte:head>
 
 <svelte:window onkeydown={onKeydown} />

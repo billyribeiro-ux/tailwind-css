@@ -1,5 +1,5 @@
 <script>
-	import { CodeBlock, Callout, Quiz } from '$lib/components/lesson';
+	import { CodeBlock, Callout, Quiz, Exercise } from '$lib/components/lesson';
 </script>
 
 # Flexbox
@@ -86,6 +86,27 @@ Spacing flex children with `gap-*` is cleaner than margins: no trailing-margin c
 identically in flex and grid.
 
 </Callout>
+
+## Your turn
+
+Center the inner box **both** horizontally and vertically inside the grey area using flexbox.
+
+<Exercise
+	title="Center a box with flexbox"
+	start={`<div class="h-40 rounded-xl bg-slate-100">
+  <div class="rounded-lg bg-indigo-600 px-4 py-2 text-white">Center me</div>
+</div>`}
+	solution={`<div class="flex h-40 items-center justify-center rounded-xl bg-slate-100">
+  <div class="rounded-lg bg-indigo-600 px-4 py-2 text-white">Center me</div>
+</div>`}
+	checks={[
+		{ label: 'The container is a flex container (flex)', includes: 'flex' },
+		{ label: 'Centered on the cross axis (items-center)', includes: 'items-center' },
+		{ label: 'Centered on the main axis (justify-center)', includes: 'justify-center' }
+	]}
+>
+	Add the three classes that turn the container into a centering flex box.
+</Exercise>
 
 ## Knowledge check
 

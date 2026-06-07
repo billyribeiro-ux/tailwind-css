@@ -55,11 +55,11 @@
 				>
 					<span class="shrink-0">
 						{#if reveal}
-							<CheckCircle size={20} weight="fill" class="text-emerald-500" />
+							<CheckCircle size={20} weight="fill" class="text-emerald-500" aria-hidden="true" />
 						{:else if chosen}
-							<XCircle size={20} weight="fill" class="text-red-500" />
+							<XCircle size={20} weight="fill" class="text-red-500" aria-hidden="true" />
 						{:else}
-							<Circle size={20} class="text-slate-400" />
+							<Circle size={20} class="text-slate-400" aria-hidden="true" />
 						{/if}
 					</span>
 					<span class="text-slate-700 dark:text-slate-200">{option.text}</span>
